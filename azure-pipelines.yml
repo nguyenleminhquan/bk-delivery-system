@@ -6,7 +6,7 @@ stages:
   - stage: Testing
     displayName: Testing
     pool:
-      vmImage: ubuntu-20.04
+      name: VM-CPU12195
     jobs:
       - job: Testing
         steps:
