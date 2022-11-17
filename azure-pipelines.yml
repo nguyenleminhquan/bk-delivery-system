@@ -1,0 +1,17 @@
+pr:
+  - master
+  - develop
+  
+stages:
+  - stage: Testing
+    displayName: Testing
+    pool:
+      vmImage: ubuntu-20.04
+    jobs:
+      - job: Testing
+        steps:
+          - task: Bash@3
+            displayName: Test
+            inputs:
+              targetType: inline
+              script: echo "Hello!!!"
