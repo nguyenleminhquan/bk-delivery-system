@@ -40,4 +40,41 @@ stages:
               buildContext: backend/
               tags:
                 $(tag)
-
+          - task: Bash@3
+            displayName: Create an container for testing
+            inputs:
+              targetType: inline
+              script: docker container run -d --name healthcheck -p 5000:5000 $(repository):$(tag) 
+          - task: Bash@3
+            displayName: Health check
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x healthcheck.sh 
+                . ./healthcheck.sh
+          - task: Bash@3
+            displayName: Remove container health check
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x remove-healthcheck.sh
+                . ./remove-healthcheck.sh
+          - task: Docker@2
+            displayName: Push image to Docker Hub
+            inputs:
+              command: push
+              repository: $(repoBackend)
+              tags: 
+                $(tag)
+          # - task: Bash@3
+          #   displayName: Retag image to latest
+          #   inputs:
+          #     targetType: inline
+          #     script: |
+          #       docker tag $(repository):$(tag) $(repository):latest
+          # - task: Docker@2  
+          #   displayName: Push image with latest tag
+          #   inputs:
+          #     command: push
+          #     repository: $(repository)
+          #     tags: latest
