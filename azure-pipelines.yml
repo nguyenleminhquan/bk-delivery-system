@@ -51,7 +51,7 @@ stages:
             displayName: Create an container for testing
             inputs:
               targetType: inline
-              script: docker container run -d --name healthcheck -p 5000:5000 $(repoBackend):$(tag) 
+              script: docker container run -d --name healthcheck -p 5001:5000 $(repoBackend):$(tag) 
           - task: Bash@3
             displayName: Health check
             inputs:
@@ -66,13 +66,6 @@ stages:
               script: |
                 chmod +x rm-healthcheck.sh
                 . ./rm-healthcheck.sh
-          - task: Docker@2
-            displayName: Push image to Docker Hub
-            inputs:
-              command: push
-              repository: $(repoBackend)
-              tags: 
-                $(tag)
           - task: Bash@3
             displayName: Retag image to latest
             inputs:
@@ -104,10 +97,96 @@ stages:
               script: |
                 chmod +x rm-old-be-container.sh
                 . ./rm-old-be-container.sh
+
+      - job: run_be
+        displayName: Run Backend container
+        dependsOn: build_be_image
+        condition: succeeded()
+        steps:
           - task: Bash@3
             displayName: Run Backend image
             inputs:
               targetType: inline
               script: |
                 docker run -d -p 5000:5000 --name backend $(repoBackend):latest
-
+            
+      - job: build_fe_image
+        displayName: Build Frontend image
+        dependsOn: run_be
+        condition: succeeded()
+        steps:
+          - task: Docker@2
+            displayName: Login to Docker Hub
+            inputs:
+              command: login
+              containerRegistry: $(containerRegistry)
+          - task: Docker@2
+            displayName: Build image
+            inputs:
+              command: build
+              repository: $(repoFrontend)
+              Dockerfile: frontend/Dockerfile
+              buildContext: frontend/
+              tags:
+                $(tag)
+          - task: Bash@3
+            displayName: Create an container for testing
+            inputs:
+              targetType: inline
+              script: docker container run -d --name healthcheck -p 3001:3000 $(repoFrontend):$(tag) 
+          - task: Bash@3
+            displayName: Health check
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x healthcheck.sh 
+                . ./healthcheck.sh
+          - task: Bash@3
+            displayName: Remove container health check
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x rm-healthcheck.sh
+                . ./rm-healthcheck.sh
+          - task: Bash@3
+            displayName: Retag image to latest
+            inputs:
+              targetType: inline
+              script: |
+                docker tag $(repoFrontend):$(tag) $(repoFrontend):latest
+          - task: Docker@2  
+            displayName: Push image with latest tag
+            inputs:
+              command: push
+              repository: $(repoFrontend)
+              tags: latest
+          - task: Bash@3
+            displayName: Remove image with tag number
+            inputs:
+              targetType: inline 
+              script: |
+                docker image rm -f $(repoFrontend):$(tag)
+          - task: Bash@3
+            displayName: Remove image with tag latest
+            inputs:
+              targetType: inline
+              script: |
+                docker image rm -f $(repoFrontend):latest
+          - task: Bash@3
+            displayName: Remove older Frontend container
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x rm-old-fe-container.sh
+                . ./rm-old-fe-container.sh
+      - job: run_fe
+        displayName: Run Frontend container
+        dependsOn: build_fe_image
+        condition: succeeded()
+        steps:
+          - task: Bash@3
+            displayName: Run Frontend image
+            inputs:
+              targetType: inline
+              script: |
+                docker run -d -p 3000:3000 --name frontend $(repoFrontend):latest
