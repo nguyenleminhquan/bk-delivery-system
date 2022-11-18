@@ -19,4 +19,4 @@ stages:
               script: |
                 echo "Hello!!!"
                 env | grep SHELL
-                nvm -v
+                node -v
