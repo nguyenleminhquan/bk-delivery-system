@@ -105,7 +105,7 @@ stages:
                 chmod +x rm-old-be-container.sh
                 . ./rm-old-be-container.sh
 
-      - job: run-be
+      - job: run_be
         displayName: Run Backend image
         steps:
           - task: Bash@3
@@ -190,7 +190,7 @@ stages:
                 chmod +x rm-old-fe-container.sh
                 . ./rm-old-fe-container.sh
 
-      - job: run-fe
+      - job: run_fe
         displayName: Run Frontend image
         steps:
           - task: Bash@3
