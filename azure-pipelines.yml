@@ -1,17 +1,21 @@
+trigger: none
 pr:
   - master
   - develop
   
 stages:
-  - stage: Testing
-    displayName: Testing
+  - stage: Build
+    displayName: Build and deploy 
     pool:
       name: VM-CPU12195
     jobs:
-      - job: Testing
+      - job: checkVersion
+        displayName: Check node and npm version
         steps:
           - task: Bash@3
-            displayName: Test
+            displayName: Check node and npm version
             inputs:
               targetType: inline
-              script: echo "Hello!!!"
+              script: |
+                node -v
+                npm -v
