@@ -23,7 +23,7 @@ stages:
                 node -v
                 npm -v
                 echo $(Build.Repository.LocalPath)
-      - job: build-be-image
+      - job: build_be_image
         displayName: Build Backend image
         steps:
           - task: Docker@2
