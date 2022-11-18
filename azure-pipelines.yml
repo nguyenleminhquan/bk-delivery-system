@@ -73,15 +73,41 @@ stages:
               repository: $(repoBackend)
               tags: 
                 $(tag)
-          # - task: Bash@3
-          #   displayName: Retag image to latest
-          #   inputs:
-          #     targetType: inline
-          #     script: |
-          #       docker tag $(repository):$(tag) $(repository):latest
-          # - task: Docker@2  
-          #   displayName: Push image with latest tag
-          #   inputs:
-          #     command: push
-          #     repository: $(repository)
-          #     tags: latest
+          - task: Bash@3
+            displayName: Retag image to latest
+            inputs:
+              targetType: inline
+              script: |
+                docker tag $(repoBackend):$(tag) $(repoBackend):latest
+          - task: Docker@2  
+            displayName: Push image with latest tag
+            inputs:
+              command: push
+              repository: $(repoBackend)
+              tags: latest
+          - task: Bash@3
+            displayName: Remove image with tag number
+            inputs:
+              targetType: inline 
+              script: |
+                docker image rm -f $(repoBackend):$(tag)
+          - task: Bash@3
+            displayName: Remove image with tag latest
+            inputs:
+              targetType: inline
+              script: |
+                docker image rm -f $(repoBackend):latest
+          - task: Bash@3
+            displayName: Remove older Backend container
+            inputs:
+              targetType: inline
+              script: |
+                chmod +x rm-old-be-container.sh
+                . ./rm-old-be-container.sh
+          - task: Bash@3
+            displayName: Run Backend image
+            inputs:
+              targetType: inline
+              script: |
+                docker run -d -p 5000:5000 --name backend $(repoBackend):latest
+
