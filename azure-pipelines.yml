@@ -66,13 +66,6 @@ stages:
               script: |
                 chmod +x rm-healthcheck.sh
                 . ./rm-healthcheck.sh
-          - task: Docker@2
-            displayName: Push image to Docker Hub
-            inputs:
-              command: push
-              repository: $(repoBackend)
-              tags: 
-                $(tag)
           - task: Bash@3
             displayName: Retag image to latest
             inputs:
@@ -104,6 +97,12 @@ stages:
               script: |
                 chmod +x rm-old-be-container.sh
                 . ./rm-old-be-container.sh
+
+      - job: run_be
+        displayName: Run Backend container
+        dependsOn: build_be_image
+        condition: succeeded()
+        steps:
           - task: Bash@3
             displayName: Run Backend image
             inputs:
@@ -113,7 +112,7 @@ stages:
             
       - job: build_fe_image
         displayName: Build Frontend image
-        dependsOn: build_be_image
+        dependsOn: run_be
         condition: succeeded()
         steps:
           - task: Docker@2
@@ -149,13 +148,6 @@ stages:
               script: |
                 chmod +x rm-healthcheck.sh
                 . ./rm-healthcheck.sh
-          - task: Docker@2
-            displayName: Push image to Docker Hub
-            inputs:
-              command: push
-              repository: $(repoFrontend)
-              tags: 
-                $(tag)
           - task: Bash@3
             displayName: Retag image to latest
             inputs:
@@ -187,6 +179,11 @@ stages:
               script: |
                 chmod +x rm-old-fe-container.sh
                 . ./rm-old-fe-container.sh
+      - job: run_fe
+        displayName: Run Frontend container
+        dependsOn: build_fe_image
+        condition: succeeded()
+        steps:
           - task: Bash@3
             displayName: Run Frontend image
             inputs:
