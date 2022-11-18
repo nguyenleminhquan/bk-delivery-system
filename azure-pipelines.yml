@@ -64,8 +64,8 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x remove-healthcheck.sh
-                . ./remove-healthcheck.sh
+                chmod +x rm-healthcheck.sh
+                . ./rm-healthcheck.sh
           - task: Docker@2
             displayName: Push image to Docker Hub
             inputs:
