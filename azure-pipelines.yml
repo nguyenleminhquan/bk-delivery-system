@@ -18,6 +18,4 @@ stages:
               targetType: inline
               script: |
                 echo "Hello!!!"
-                nvm --version
-                node --version
-                npm --version
+                env | grep SHELL
