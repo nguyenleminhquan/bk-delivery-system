@@ -16,4 +16,8 @@ stages:
             displayName: Test
             inputs:
               targetType: inline
-              script: echo "Hello!!!"
+              script: |
+                echo "Hello!!!"
+                nvm --version
+                node --version
+                npm --version
