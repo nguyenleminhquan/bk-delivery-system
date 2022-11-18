@@ -3,6 +3,9 @@ pr:
   - master
   - develop
   
+variables:
+  - group: docker-repo
+
 stages:
   - stage: Build
     displayName: Build and deploy 
@@ -19,3 +22,22 @@ stages:
               script: |
                 node -v
                 npm -v
+                echo $(Build.Repository.LocalPath)
+      - job: build-be-image
+        displayName: Build Backend image
+        steps:
+          - task: Docker@2
+            displayName: Login to Docker Hub
+            inputs:
+              command: login
+              containerRegistry: $(containerRegistry)
+          - task: Docker@2
+            displayName: Build image
+            inputs:
+              command: build
+              repository: $(repository)
+              Dockerfile: backend/Dockerfile
+              buildContext: backend/
+              tags:
+                $(tag)
+
