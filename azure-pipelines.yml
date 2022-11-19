@@ -20,9 +20,13 @@ stages:
             inputs:
               targetType: inline
               script: |
+                echo "-------------------------------"
+                echo "Node version"
                 node -v
+                echo "-------------------------------"
+                echo "npm version"
                 npm -v
-                echo $(Build.Repository.LocalPath)
+                echo "-------------------------------"
       - job: build_be_image
         displayName: Build Backend image
         steps:
@@ -31,8 +35,8 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x copy-env.sh
-                . ./copy-env.sh
+                chmod +x azure-devops/copy-env.sh
+                . ./azure-devops/copy-env.sh
           - task: Docker@2
             displayName: Login to Docker Hub
             inputs:
@@ -57,15 +61,15 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x healthcheck.sh 
-                . ./healthcheck.sh
+                chmod +x azure-devops/healthcheck.sh 
+                . ./azure-devops/healthcheck.sh
           - task: Bash@3
             displayName: Remove container health check
             inputs:
               targetType: inline
               script: |
-                chmod +x rm-healthcheck.sh
-                . ./rm-healthcheck.sh
+                chmod +x azure-devops/rm-healthcheck.sh
+                . ./azure-devops/rm-healthcheck.sh
           - task: Bash@3
             displayName: Retag image to latest
             inputs:
@@ -95,8 +99,8 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x rm-old-be-container.sh
-                . ./rm-old-be-container.sh
+                chmod +x azure-devops/rm-old-be-container.sh
+                . ./azure-devops/rm-old-be-container.sh
 
       - job: run_be
         displayName: Run Backend container
@@ -139,15 +143,15 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x healthcheck.sh 
-                . ./healthcheck.sh
+                chmod +x azure-devops/healthcheck.sh 
+                . ./azure-devops/healthcheck.sh
           - task: Bash@3
             displayName: Remove container health check
             inputs:
               targetType: inline
               script: |
-                chmod +x rm-healthcheck.sh
-                . ./rm-healthcheck.sh
+                chmod +x azure-devops/rm-healthcheck.sh
+                . ./azure-devops/rm-healthcheck.sh
           - task: Bash@3
             displayName: Retag image to latest
             inputs:
@@ -177,8 +181,8 @@ stages:
             inputs:
               targetType: inline
               script: |
-                chmod +x rm-old-fe-container.sh
-                . ./rm-old-fe-container.sh
+                chmod +x azure-devops/rm-old-fe-container.sh
+                . ./azure-devops/rm-old-fe-container.sh
       - job: run_fe
         displayName: Run Frontend container
         dependsOn: build_fe_image
