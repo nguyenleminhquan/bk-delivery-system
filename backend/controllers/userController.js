@@ -4,8 +4,6 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import generateToken from '../middlewares/generateToken.js'
 
-let storage_refresh_token = {}
-
 const userRegister = async (req, res, next) => {
     const body = req.body
     // Tim tai khoan ton tai voi email
@@ -68,14 +66,10 @@ const userLogin = async (req, res, next) => {
 }
 
 // Refresh access token
-const refreshToken = async (req, res, next) => {
+const refreshToken = async (req, res) => {
     const body = req.body
-    if (storage_refresh_token[body.refresh_token]) {
-        const token = generateToken({ email: body.email, password: body.password })
-        return res.json({ token })
-    } else {
-        return next(createError(400))
-    }
+    const token = generateToken({ email: body.email, password: body.password })
+    return res.json({ token })
 }
 
 export {
