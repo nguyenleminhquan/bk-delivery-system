@@ -39,8 +39,8 @@ const userLogin = async (req, res, next) => {
         // Neu mat khau match
         if (match) {
             // Tao token va refresh_token
-            const token = generateToken({ email: exist.email, password: exist.password })
-            const refresh_token = jwt.sign({ email: exist.email, password: exist.password }, 
+            const token = generateToken({ email: exist.email })
+            const refresh_token = jwt.sign({ email: exist.email }, 
                 process.env.SECRET_REFRESH, { expiresIn: process.env.SECRET_REFRESH_LIFE }) 
             // Data tra ve
             const data = {
@@ -67,7 +67,7 @@ const userLogin = async (req, res, next) => {
 // Refresh access token
 const refreshToken = async (req, res) => {
     const body = req.body
-    const token = generateToken({ email: body.email, password: body.password })
+    const token = generateToken({ email: body.email })
     return res.json({ token })
 }
 
