@@ -1,0 +1,24 @@
+.outer-template {
+    background-color: #9CE4E1;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.left {
+    position: relative;
+    img {
+        position: absolute;
+        bottom: 0;
+        right: -155px;
+        width: 120%;
+    }
+}
+
+.right {
+    background-color: #fff;
+    border-top-left-radius: 36px;
+    border-bottom-left-radius: 36px;
+    display: grid;
+}
