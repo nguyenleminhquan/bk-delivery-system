@@ -54,7 +54,6 @@ const userLogin = async (req, res, next) => {
                 token, refresh_token 
             }
             
-            storage_refresh_token[refresh_token] = data
             return res.json(data)
         } else {
             return next(createError(400, "Password doesn't match"))
