@@ -3,6 +3,7 @@ import SharedLayout from 'pages/SharedLayout';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Error, Landing, Login, ProtectedRoute, Register } from './pages';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
