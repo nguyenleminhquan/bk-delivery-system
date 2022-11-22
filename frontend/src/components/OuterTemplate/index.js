@@ -7,7 +7,7 @@ function OuterTemplate({ children }) {
     <div className='outer-template'>
         <div className='left'>
             <Logo />
-            <img src={require('assests/images/truck-illustration.png')} />
+            <img className='truck' src={require('assests/images/truck-illustration.png')} />
         </div>
         <div className='right'>
             { children }

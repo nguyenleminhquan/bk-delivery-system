@@ -8,11 +8,14 @@
 
 .left {
     position: relative;
-    img {
+    img.truck {
         position: absolute;
         bottom: 0;
         right: -155px;
         width: 120%;
+    }
+    img.logo {
+        position: relative;
     }
 }
 
