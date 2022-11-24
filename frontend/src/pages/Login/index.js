@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginFields } from 'utils/constants';
+import { toast } from 'react-toastify'
 import './index.scss'
 
 const initialState = {
@@ -27,10 +28,13 @@ function Login() {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const { email, password } = values;
-		if (!email || !password) return;
-		dispatch(loginUser({email: email, password: password}))
+		if (!email || !password) {
+			toast.error('Please fill out all fields');
+      		return;
+		}
+		dispatch(loginUser({ email: email, password: password }))
 	}
-
+	
 	useEffect(() => {
 		if (user) {
 		setTimeout(() => {
