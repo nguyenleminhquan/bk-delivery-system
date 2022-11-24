@@ -1,9 +1,12 @@
 import FormInput from 'components/FormInput'
 import OuterTemplate from 'components/OuterTemplate'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { registerUser } from 'features/user/userSlice';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import { registerFields } from 'utils/constants';
+import { toast } from 'react-toastify';
 import './index.scss'
+import { useDispatch, useSelector } from 'react-redux';
 
 const initialState = {
 	fullname: '',
@@ -15,6 +18,9 @@ const initialState = {
 
 function Register() {
 	const [values, setValues] = useState(initialState);
+	const { user, isLoading } = useSelector((state) => state.user);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const handleChange = (e) => {
 		const name = e.target.name;
@@ -24,10 +30,32 @@ function Register() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const { fullname, email, phone, password } = values;
-		if (!fullname || !email || !phone || !password) return;
-		// dispatch(loginUser({email: email, password: password}));
+		const { fullname, email, phone, password, passwordc } = values;
+		if (!fullname || !email || !phone || !password || !passwordc) {
+			toast.error('Please fill out all fields');
+      		return;
+		};
+		if (password !== passwordc) {
+			toast.error('Confirm password not match');
+      		return;
+		}
+		dispatch(registerUser(
+		{
+			fullname: fullname,
+			email: email, 
+			phone: phone,
+			password: password,
+			typeUser: 'sender'
+		}));
 	}
+
+	useEffect(() => {
+		if (user) {
+		setTimeout(() => {
+			navigate('/');
+		}, 2000);
+		}
+	}, [user]);
 
 	return (
 		<OuterTemplate>

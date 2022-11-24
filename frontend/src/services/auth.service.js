@@ -1,15 +1,35 @@
 import customFetch from "./axios"
 
-const login = (data) => {
-    return customFetch.post('/user/login', data)
+const login = ({ email, password }) => {
+    return customFetch.post(
+        '/user/login', 
+        {
+            email: email,
+            password: password
+        }
+    )
 }
 
-const register = (data) => {
-    return customFetch.post('/user/register', data)
+const register = ({ fullname, email, phone, password, typeUser }) => {
+    return customFetch.post(
+        '/user/register', 
+        {
+            fullname: fullname,
+            email: email,
+            phone: phone,
+            password: password,
+            typeUser: typeUser
+        }
+    )
 }
 
-const getNewToken = (data) => {
-    return customFetch.post('/user/token', data)
+const getNewToken = ({ refresh_token }) => {
+    return customFetch.post(
+        '/user/token', 
+        {
+            refresh_token: refresh_token
+        }
+    )
 }
 
 const test = () => {
