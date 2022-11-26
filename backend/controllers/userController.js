@@ -19,9 +19,23 @@ const userRegister = async (req, res, next) => {
         let newUser = new User(body)
         try {
             newUser = await newUser.save()
-            return res.json({
-                msg: "Register successfully"
-            })
+            const token = generateToken({ email: body.email })
+            const refresh_token = jwt.sign({ email: body.email }, 
+                process.env.SECRET_REFRESH, { expiresIn: process.env.SECRET_REFRESH_LIFE }) 
+            // Data tra ve
+            const data = {
+                id: newUser._id,
+                fullname: newUser.fullname,
+                email: newUser.email,
+                phone: newUser.phone,
+                typeUser: newUser.typeUser,
+                sender_address: newUser.sender_address,
+                working_days: newUser.working_days,
+                token, refresh_token 
+            }
+            
+            return res.json(data)
+
         } catch (error) {
             next(error)
         }
