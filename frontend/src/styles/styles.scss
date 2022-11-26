@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+@import './normalize.css';
+@import './variables.scss';
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 16px;
+    font-family: var(--primary-font);
+    text-rendering: optimizeSpeed;
+}
+
+ul, h1, h2, h3, h4, h5 {
+    padding: 0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--primary-font), sans-serif;
+    font-weight: 800;
+    color: var(--header-text-color);
+}
+
+a {
+    text-decoration: none;
+    display: inline-block;
+}
+
+li {
+    list-style: none;
+}
+
+img {
+    display: block;
+    width: 100%;
+}
+
+button {
+    border: 0;
+    outline: none;
+    font-family: var(--secondary-font), sans-serif;
+}
+
+input,
+input::placeholder {
+    font-family: var(--secondary-font), sans-serif;
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: vả(--placeholder-input-color);
+}
+
+.btn {
+    display: inline-block;
+    background-color: #38A3A5;
+    color: #fff;
+    border-radius: 100px;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 24px;
+    font-size: 18px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    border-color: var(--primary-color);
+}
+

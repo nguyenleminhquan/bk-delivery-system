@@ -4,8 +4,6 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import generateToken from '../middlewares/generateToken.js'
 
-let storage_refresh_token = {}
-
 const userRegister = async (req, res, next) => {
     const body = req.body
     // Tim tai khoan ton tai voi email
@@ -41,8 +39,8 @@ const userLogin = async (req, res, next) => {
         // Neu mat khau match
         if (match) {
             // Tao token va refresh_token
-            const token = generateToken({ email: exist.email, password: exist.password })
-            const refresh_token = jwt.sign({ email: exist.email, password: exist.password }, 
+            const token = generateToken({ email: exist.email })
+            const refresh_token = jwt.sign({ email: exist.email }, 
                 process.env.SECRET_REFRESH, { expiresIn: process.env.SECRET_REFRESH_LIFE }) 
             // Data tra ve
             const data = {
@@ -56,7 +54,6 @@ const userLogin = async (req, res, next) => {
                 token, refresh_token 
             }
             
-            storage_refresh_token[refresh_token] = data
             return res.json(data)
         } else {
             return next(createError(400, "Password doesn't match"))
@@ -68,14 +65,10 @@ const userLogin = async (req, res, next) => {
 }
 
 // Refresh access token
-const refreshToken = async (req, res, next) => {
+const refreshToken = async (req, res) => {
     const body = req.body
-    if (storage_refresh_token[body.refresh_token]) {
-        const token = generateToken({ email: body.email, password: body.password })
-        return res.json({ token })
-    } else {
-        return next(createError(400))
-    }
+    const token = generateToken({ email: body.email })
+    return res.json({ token })
 }
 
 export {

@@ -1,0 +1,26 @@
+.register {
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    place-self: center;
+    h2 {
+        font-size: 36px;
+        margin-bottom: 60px;
+    }
+    .login-btn {
+        margin-top: 32px;
+        width: 100%;
+    }
+    a {
+        color: #38A3A5;
+        font-weight: 500;
+    }
+    .clue {
+        margin-top: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #BFBAB7;
+    }
+}

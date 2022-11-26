@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import errorHander from './middlewares/errorHandler.js'
 import APINotFoundHandler from './middlewares/APINotFoundHandler.js'
 import connectDB from './config/db/connectDB.js'
@@ -11,6 +12,8 @@ dotenv.config()
 
 const port = 5000
 const app = express() 
+// Fix cors error
+app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
