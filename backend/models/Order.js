@@ -12,7 +12,11 @@ const orderSchema = mongoose.Schema({
   items: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item'
-  }]
-})
+  }],
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, { timestamps: true })
 
 export default mongoose.model('Order', orderSchema)
