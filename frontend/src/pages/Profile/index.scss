@@ -1,0 +1,90 @@
+.profile {
+    padding: 30px;
+}
+
+.profile-container {
+    box-shadow: var(--shadow);
+    position: relative;
+}
+
+.profile .card {
+    height: 100px;
+    background-color: #1A3E4F;
+    color: #fff;
+    font-size: 24px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding-left: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    .avatar {
+        width: 60px;
+        height: 60px;
+        background-color: #D9D9D9;
+        border-radius: 50%;
+    }
+}
+
+.profile .tabs {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    position: relative;
+    &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 3px;
+        background-color: #B4B4B4;
+    }
+    .tab {
+        padding: 8px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        &.active,
+        &:hover {
+            color: #fff;
+            background-color: #55BAD2;
+        }
+        &:hover {
+            transition: var(--transition);
+        }
+    }
+}
+
+
+.profile .tab-item {
+    max-width: 480px;
+    width: 90%;
+    margin: 0 auto;
+    padding-bottom: 100px;
+    padding-top: 30px;
+    .title {
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .form-input,
+    .form-iselect {
+        margin-bottom: 24px;
+    }
+}
+
+.profile .illus-img {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+}
+
+.profile .btn {
+    margin-top: 10px;
+}

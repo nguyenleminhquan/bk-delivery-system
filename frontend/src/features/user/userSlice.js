@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { clearStoreThunk, loginUserThunk, registerUserThunk } from "./userThunk";
+import { clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
@@ -24,12 +24,12 @@ export const loginUser = createAsyncThunk(
     }
 )
 
-// export const updateUser = createAsyncThunk(
-//     'user/updateUser',
-//     async(user, thunkAPI) => {
-//         return updateUserThunk(user, thunkAPI);
-//     }
-// )
+export const updateUser = createAsyncThunk(
+    'user/updateUser',
+    async(user, thunkAPI) => {
+        return updateUserThunk(user, thunkAPI);
+    }
+)
 
 export const clearStore = createAsyncThunk('user/clearStore', clearStoreThunk);
 
@@ -88,18 +88,18 @@ const userSlice = createSlice({
             state.isLoading = false;
             toast.error(payload);
         },
-        // [updateUser.pending]: (state) => {
-        //     state.isLoading = true;
-        // },
-        // [updateUser.fulfilled]: (state, { payload }) => {
-        //     const { user } = payload;
-        //     state.isLoading = false;
-        //     state.user = user;
-        //     addUserToLocalStorage(user);
-        // },
-        // [updateUser.rejected]: (state) => {
-        //     state.isLoading = false;
-        // },
+        [updateUser.pending]: (state) => {
+            state.isLoading = true;
+        },
+        [updateUser.fulfilled]: (state, { payload }) => {
+            const { user } = payload;
+            state.isLoading = false;
+            state.user = user;
+            addUserToLocalStorage(user);
+        },
+        [updateUser.rejected]: (state) => {
+            state.isLoading = false;
+        },
         [testJWT.rejected]: (state, { payload }) => {
             toast.error(payload)
         }
