@@ -11,7 +11,6 @@ function FormInput({ name, type, value, handleChange, labelText, placeholderText
         </label>
         }
         <div className='input-box'>
-            {/* <span className='icon'>{icon}</span> */}
             {icon}
             <input
                 type={type}

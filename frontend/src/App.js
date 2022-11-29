@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout } from './pages';
+import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout, Profile } from './pages';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +19,7 @@ function App() {
             } 
           >
             <Route index element={<Sender />}></Route>
+            <Route path='profile' element={<Profile />}></Route>
           </Route>
           <Route path='landing' element={<Landing />} ></Route>
           <Route path='login' element={<Login />} ></Route>
