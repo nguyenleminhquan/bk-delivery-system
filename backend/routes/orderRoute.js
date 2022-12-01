@@ -9,6 +9,8 @@ import verifyRefreshToken from '../middlewares/verifyRefreshToken.js'
 const route = express.Router()
 
 // Get all order
-route.get('/order', verifyRefreshToken, verifyToken, getAllOrder)
+route.get('/', verifyRefreshToken, verifyToken, getAllOrder)
+route.post('/', verifyRefreshToken, verifyToken, createOrder)
+route.get('/:id', verifyRefreshToken, verifyToken, getOrderById)
 
 export default route

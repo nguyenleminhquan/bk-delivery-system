@@ -1,4 +1,7 @@
 import mongoose from 'mongoose'
+import moment from 'moment-timezone'
+
+// const dateVietnam = moment.tz(Date.now(), "Asia/Ho_Chi_Minh")
 
 const orderSchema = mongoose.Schema({
   weight: { type: Number, require: true },
