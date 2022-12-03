@@ -4,6 +4,7 @@ import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout, 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Home from 'pages/Home';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           >
             <Route index element={<Sender />}></Route>
             <Route path='profile' element={<Profile />}></Route>
+            <Route path='home' element={<Home />}></Route>
           </Route>
           <Route path='landing' element={<Landing />} ></Route>
           <Route path='login' element={<Login />} ></Route>

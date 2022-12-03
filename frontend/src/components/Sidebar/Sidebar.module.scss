@@ -1,0 +1,54 @@
+.wrapper {
+    width: 250px;
+    background-color: #fff;
+    min-height: 100vh;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .16);
+    position: relative;
+}
+
+.userName {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.userId {
+    font-size: 12px;
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+.userAvatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.hideSidebar {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10%;
+    right: -15px;
+    background-color: #fff;
+
+    &:hover {
+        cursor: pointer;
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+}
+
+.wrapper.minimizeSidebar {
+    width: 100px;
+    p {
+        display: none;
+    }
+}
