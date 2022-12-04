@@ -30,6 +30,7 @@ const userRegister = async (req, res, next) => {
                 phone: newUser.phone,
                 typeUser: newUser.typeUser,
                 sender_address: newUser.sender_address,
+                bank_account: exist.bank_account,
                 working_days: newUser.working_days,
                 token, refresh_token 
             }
@@ -64,6 +65,7 @@ const userLogin = async (req, res, next) => {
                 phone: exist.phone,
                 typeUser: exist.typeUser,
                 sender_address: exist.sender_address,
+                bank_account: exist.bank_account,
                 working_days: exist.working_days,
                 token, refresh_token 
             }
@@ -85,8 +87,66 @@ const refreshToken = async (req, res) => {
     return res.json({ token })
 }
 
+const updateUserInfo = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        const info = req.body;
+        const data = await User.findByIdAndUpdate(
+            userId,
+            info,
+            { new: true }
+        );
+        return res.json({ 
+            data: {
+                id: data._id,
+                fullname: data.fullname,
+                email: data.email,
+                phone: data.phone,
+                typeUser: data.typeUser,
+                sender_address: data.sender_address,
+                bank_account: data.bank_account,
+                working_days: data.working_days,
+            },
+            msg: "User updated!"
+        });
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+}
+
+const changePassword = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        const { oldPass, newPass } = req.body;
+        const exist = await User.findById(userId)
+
+        if (exist) {
+            const match = await bcrypt.compare(oldPass, exist.password)
+            if (match) {
+                exist.password = newPass;
+                await exist.save();
+                return res.json({ 
+                    data: "",
+                    msg: "Change password successfully!"
+                });
+            } else {
+                return next(createError(400, "Wrong password!"))
+            }
+        } else {
+            return next(createError(400, "No username found"))
+        }
+        
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+}
+
 export {
     userRegister,
     userLogin,
-    refreshToken
+    refreshToken,
+    updateUserInfo,
+    changePassword
 }

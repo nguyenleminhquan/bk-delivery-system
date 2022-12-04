@@ -12,6 +12,11 @@ const userSchema = mongoose.Schema({
     default: 'user'
   },
   sender_address: String,
+  bank_account: {
+    bank_name: String,
+    owner: String,
+    num: String
+  },
   working_days: [{
     year: Number,
     month: Number,
