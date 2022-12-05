@@ -8,9 +8,10 @@ import { updateUser } from 'features/user/userSlice';
 
 function AddressTab() {
 	const { user } = useSelector((state) => state.user);
+	const address = user?.sender_address;
   	const [values, setValues] = useState({
-		province: user?.sender_address.split(',')[0] || '',
-    	district: user?.sender_address.split(',')[1] || ''
+		province: address ? address.split(',')[0] : '',
+    	district: address ? address.split(',')[1] : ''
 	})
   	const [proviceList, setProvinceList] = useState([]);
   	const [districtList, setDistrictList] = useState([]);
