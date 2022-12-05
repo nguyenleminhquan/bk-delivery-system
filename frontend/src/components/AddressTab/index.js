@@ -3,14 +3,18 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { MdLocationOn } from 'react-icons/md'
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from 'features/user/userSlice';
 
 function AddressTab() {
-  const [values, setValues] = useState({
-		province: '',
-    district: ''
+	const { user } = useSelector((state) => state.user);
+  	const [values, setValues] = useState({
+		province: user?.sender_address.split(',')[0] || '',
+    	district: user?.sender_address.split(',')[1] || ''
 	})
-  const [proviceList, setProvinceList] = useState([]);
-  const [districtList, setDistrictList] = useState([]);
+  	const [proviceList, setProvinceList] = useState([]);
+  	const [districtList, setDistrictList] = useState([]);
+	const dispatch = useDispatch();
 
 	const handleChange = (e) => {
 		const name = e.target.name;
@@ -25,14 +29,12 @@ function AddressTab() {
 			toast.error('Please fill out all fields');
 			return;
 		};
-		// dispatch(registerUser(
-		// {
-		// 	fullname: fullname,
-		// 	email: email, 
-		// 	phone: phone,
-		// 	password: password,
-		// 	typeUser: 'sender'
-		// }));
+		dispatch(updateUser({
+			userId: user.id,
+			info: {
+				sender_address: values.province + ',' + values.district
+			}
+		}))
 	}
 
   useEffect(() => {
