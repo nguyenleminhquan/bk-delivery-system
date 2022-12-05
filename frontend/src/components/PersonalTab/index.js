@@ -1,38 +1,42 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { personalTabFields } from 'utils/constants'
 import { toast } from 'react-toastify'
 import FormInput from 'components/FormInput';
+import { updateUser } from 'features/user/userSlice';
 
 function PersonalTab() {
 	const { user } = useSelector((state) => state.user);
-	const [userData, setUserData] = useState({
-		fullname: user?.fullname,
+	const [values, setValues] = useState({
+		fullname: user?.fullname || '',
 		email: user?.email || '',
 		phone: user?.phone || '',
 	})
+	const dispatch = useDispatch();
 
 	const handleChange = (e) => {
 		const name = e.target.name;
 		const value = e.target.value;
-		setUserData({ ...userData, [name]: value });
+		setValues({ ...values, [name]: value });
 	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const { fullname, email, phone } = userData;
+		const { fullname, email, phone } = values;
 		if (!fullname || !email || !phone) {
 			toast.error('Please fill out all fields');
 			return;
 		};
-		// dispatch(registerUser(
-		// {
-		// 	fullname: fullname,
-		// 	email: email, 
-		// 	phone: phone,
-		// 	password: password,
-		// 	typeUser: 'sender'
-		// }));
+		dispatch(updateUser(
+			{
+				userId: user.id,
+				info: {
+					fullname: values.fullname,
+					email: values.email,
+					phone: values.phone
+				}
+			}
+		))
 	}
 
 	return (
@@ -40,7 +44,7 @@ function PersonalTab() {
 			<h4 className='title'>Thông tin cá nhân</h4>
 			<form>
 				{
-					personalTabFields(userData).map((item) =>
+					personalTabFields(values).map((item) =>
 						<FormInput
 							key={item.id}
 							type={item.type}

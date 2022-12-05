@@ -1,14 +1,18 @@
 import FormInput from 'components/FormInput';
+import { changePassword } from 'features/user/userSlice';
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify'
 import { changePassTabFields } from 'utils/constants';
 
 function ChangePassTab() {
+	const { user } = useSelector((state) => state.user);
 	const [values, setValues] = useState({
 		oldPass: '',
 		newPass: '',
 		newPassc: ''
 	})
+	const dispatch = useDispatch();
 
 	const handleChange = (e) => {
 		const name = e.target.name;
@@ -23,14 +27,17 @@ function ChangePassTab() {
 			toast.error('Please fill out all fields');
 			return;
 		};
-		// dispatch(registerUser(
-		// {
-		// 	fullname: fullname,
-		// 	email: email, 
-		// 	phone: phone,
-		// 	password: password,
-		// 	typeUser: 'sender'
-		// }));
+		if (newPass != newPassc) {
+			toast.error('Confirm password not match');
+      		return;
+		}
+		dispatch(changePassword(
+			{
+				userId: user.id,
+				oldPass: oldPass,
+				newPass: newPass
+			}
+		))
 	}
 
 	return (

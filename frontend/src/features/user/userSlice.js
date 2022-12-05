@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
@@ -28,6 +28,13 @@ export const updateUser = createAsyncThunk(
     'user/updateUser',
     async(user, thunkAPI) => {
         return updateUserThunk(user, thunkAPI);
+    }
+)
+
+export const changePassword = createAsyncThunk(
+    'user/changePassword',
+    async(user, thunkAPI) => {
+        return changePasswordThunk(user, thunkAPI)
     }
 )
 
@@ -92,13 +99,26 @@ const userSlice = createSlice({
             state.isLoading = true;
         },
         [updateUser.fulfilled]: (state, { payload }) => {
-            const { user } = payload;
+            const { data } = payload;
             state.isLoading = false;
-            state.user = user;
-            addUserToLocalStorage(user);
+            state.user = data;
+            addUserToLocalStorage(data);
+            toast.success('User Updated!')
         },
-        [updateUser.rejected]: (state) => {
+        [updateUser.rejected]: (state, { payload }) => {
             state.isLoading = false;
+            toast.error(payload);
+        },
+        [changePassword.pending]: (state) => {
+            state.isLoading = true;
+        },
+        [changePassword.fulfilled]: (state) => {
+            state.isLoading = false;
+            toast.success('Change Password Successfully!')
+        },
+        [changePassword.rejected]: (state, { payload }) => {
+            state.isLoading = false;
+            toast.error(payload);
         },
         [testJWT.rejected]: (state, { payload }) => {
             toast.error(payload)

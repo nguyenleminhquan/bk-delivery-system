@@ -89,6 +89,9 @@ const refreshToken = async (req, res) => {
 
 const updateUserInfo = async (req, res, next) => {
     try {
+        const authHeader = req.header('Authorization');
+        const token = authHeader && authHeader.split(' ')[2];
+        const refresh_token = authHeader && authHeader.split(' ')[1];
         const userId = req.params.id;
         const info = req.body;
         const data = await User.findByIdAndUpdate(
@@ -106,6 +109,7 @@ const updateUserInfo = async (req, res, next) => {
                 sender_address: data.sender_address,
                 bank_account: data.bank_account,
                 working_days: data.working_days,
+                token, refresh_token
             },
             msg: "User updated!"
         });

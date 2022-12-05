@@ -1,19 +1,21 @@
 import FormInput from 'components/FormInput';
 import FormSelect from 'components/FormSelect';
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify'
 import { bankList } from 'utils/constants';
 import { AiFillBank } from 'react-icons/ai'
 import { FaAddressCard } from 'react-icons/fa'
+import { updateUser } from 'features/user/userSlice';
 
 function BankAccountTab() {
 	const { user } = useSelector((state) => state.user);
 	const [values, setValues] = useState({
-		bankName: '',
-		owner: '',
-		accNum: '',
+		bankName: user?.bank_account.bank_name || '',
+		owner: user?.bank_account.owner || '',
+		accNum: user?.bank_account.num || '',
 	})
+	const dispatch = useDispatch();
 
 	const handleChange = (e) => {
 		const name = e.target.name;
@@ -28,14 +30,18 @@ function BankAccountTab() {
 			toast.error('Please fill out all fields');
 			return;
 		};
-		// dispatch(registerUser(
-		// {
-		// 	fullname: fullname,
-		// 	email: email, 
-		// 	phone: phone,
-		// 	password: password,
-		// 	typeUser: 'sender'
-		// }));
+		dispatch(updateUser(
+			{
+				userId: user.id,
+				info: {
+					bank_account: {
+						bank_name: values.bankName,
+						owner: values.owner,
+						num: values.accNum
+					}
+				}
+			}
+		))
 	}
 
 	return (
