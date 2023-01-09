@@ -38,7 +38,7 @@ function Profile() {
 								: <ChangePassTab />))
 				}
 				</div>
-				<img className='illus-img' src={require('assests/images/hill-illustration.png')} />
+				{/* <img className='illus-img' src={require('assests/images/hill-illustration.png')} /> */}
 			</div>
 		</div>
 	)
