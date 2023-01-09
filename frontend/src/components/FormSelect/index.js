@@ -19,7 +19,7 @@ function FormSelect({ name, value, handleChange, labelText, list, icon }) {
 					onChange={handleChange}
 					className='select-field'
 				>
-					<option value="" disabled selected>Chọn một tùy chọn</option>
+					<option value="" disabled defaultChecked>Chọn một tùy chọn</option>
 					{list.map((itemValue, index) => {
 						return (
 							<option key={index} value={itemValue}>

@@ -1,6 +1,10 @@
+import Sidebar from 'components/Sidebar';
 import { clearStore, testJWT } from 'features/user/userSlice';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Profile from 'pages/Profile';
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import styles from './Sender.module.scss'
 
 function Sender() {
 	const dispatch = useDispatch();
@@ -10,10 +14,9 @@ function Sender() {
 	}, [])
 
 	return (
-		<>
-		<h1>Sender</h1>
-		<button onClick={() => dispatch(clearStore('Logging out...'))}>Logout</button>
-		</>
+		<div className='wrapper'>
+			
+		</div>
 	)
 }
 
