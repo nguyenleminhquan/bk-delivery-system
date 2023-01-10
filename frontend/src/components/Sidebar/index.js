@@ -9,13 +9,16 @@ import avatar from '../../assests/images/demo-avatar.png'
 // Import for icons
 import {BsThreeDots, BsPersonCircle} from 'react-icons/bs'
 import {AiOutlineHistory, AiOutlineHome} from 'react-icons/ai'
+import {BiLogOut} from 'react-icons/bi'
 import {IoMdNotificationsOutline, IoNotificationsSharp} from 'react-icons/io'
 import {FaAddressCard, FaHome} from 'react-icons/fa'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { testJWT, clearStore } from 'features/user/userSlice'
 
 function Sidebar() {
     const {user} = useSelector(state => state.user)
     const [activeTab, setActiveTab] = useState(1)
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const pathName = window.location.pathname;
@@ -23,6 +26,10 @@ function Sidebar() {
             setActiveTab(3);
         }
     })
+
+    useEffect(() => {
+		dispatch(testJWT())
+	}, [])
 
   return (
     <div className={styles.wrapper}>
@@ -60,6 +67,13 @@ function Sidebar() {
                         <div className={styles.notiCount}>
                             <span>2</span>
                         </div>
+                    </li>
+                    <li className={styles.listItem} onClick={() => dispatch(clearStore('Logging out...'))}>
+                        <a href="" className={styles.menuLink}>
+                            <div className='me-3'>
+                                <BiLogOut />
+                            </div>
+                            Đăng xuất</a>
                     </li>
                 </ul>
             </div>
