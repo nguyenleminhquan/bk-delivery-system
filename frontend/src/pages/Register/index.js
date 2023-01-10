@@ -60,7 +60,7 @@ function Register() {
 	return (
 		<OuterTemplate>
 			<div className='register'>
-				<h2>Tạo tài khoản</h2>
+				<h2 className='mt-5'>Tạo tài khoản</h2>
 				<form>
 					{
 						registerFields(values).map((item) =>
