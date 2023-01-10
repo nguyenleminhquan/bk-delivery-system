@@ -1,0 +1,106 @@
+.profile {
+    margin: 10px 10px 0 calc(var(--sidebar-width) + 30px);
+    background-color: var(--white-color);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 97vh;
+    box-shadow: 1px 0 4px #BEBEBE;
+}
+
+.profile-container {
+    height: 100%;
+    position: relative;
+    overflow-y: auto;
+}
+
+.profile .card {
+    height: 100px;
+    background-color: #1A3E4F;
+    color: var(--white-color);
+    font-size: 2.2rem;
+    padding-left: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    position: fixed;
+    top: 10px;
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+    .avatar {
+        width: 60px;
+        height: 60px;
+        background-color: #D9D9D9;
+        border-radius: 50%;
+    }
+}
+
+.profile .tabs {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    position: fixed;
+    top: calc(10px + 100px);
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+    z-index: 10;
+    background-color: #fff;
+    &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 3px;
+        background-color: #B4B4B4;
+    }
+    .tab {
+        padding: 8px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.6rem;
+        &.active,
+        &:hover {
+            color: #fff;
+            background-color:var(--primary-color);
+        }
+        &:hover {
+            transition: var(--transition);
+        }
+    }
+}
+
+
+.profile .tab-item {
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+    padding-top: 30px;
+    position: relative;
+    top: calc(10px + 100px + 80px);
+    .title {
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .form-input,
+    .form-iselect {
+        margin-bottom: 24px;
+    }
+}
+
+.profile .illus-img {
+    position: fixed;
+    right: 10px;
+    bottom: 0;
+    width: 400px;
+}
+
+.profile .btn {
+    margin-top: 10px;
+}

@@ -1,0 +1,68 @@
+.wrapper {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    height: 100%;
+    width: var(--sidebar-width);
+    box-shadow: 1px 0 4px #BEBEBE;
+    padding: 12px;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: var(--white-color);
+}
+
+.userInfo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+
+    img {
+        max-width: 50px;
+        border-radius: 50%;
+    }
+}
+
+.listItem { 
+    position: relative;
+}
+
+.menuLink {
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    font-size: 1.8rem;
+    padding: 12px;
+    &.active {
+        background-color: var(--secondary-color);
+        color: var(--header-text-color);
+        font-weight: 500;
+        margin-left: -12px;
+        padding-left: 24px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        &:hover {
+            color: var(--white-color);
+        }
+    }
+
+    &:hover {
+        color: var(--primary-color);
+    }
+}
+
+.notiCount {
+    color: var(--header-text-color);
+    background-color: var(--secondary-color);
+    display: inline-block;
+    padding: 2px 10px;
+    position: absolute;
+    right: 0;
+    top: 40%;
+    transform: translateY(-50%);
+    font-weight: bold;
+    border-radius: 10px;
+}   
+
+

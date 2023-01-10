@@ -15,12 +15,6 @@ html {
     font-size: 62.5%;
 }
 
-body {
-    font-size: 16px;
-    font-family: var(--primary-font);
-    text-rendering: optimizeSpeed;
-}
-
 ul, h1, h2, h3, h4, h5 {
     padding: 0;
     margin: 0;
@@ -52,21 +46,23 @@ button {
     font-family: var(--secondary-font), sans-serif;
 }
 
-input,
-input::placeholder {
-    font-family: var(--secondary-font), sans-serif;
-    font-size: 16px;
-}
+input {
+    outline: none;
+    border: none;
 
-input::placeholder {
-    color: vả(--placeholder-input-color);
+    &::placeholder {
+        font-family: var(--secondary-font), sans-serif;
+        font-size: 16px;
+        color: var(--placeholder-input-clor);
+    }
 }
 
 .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     background-color: #38A3A5;
     color: #fff;
-    border-radius: 100px;
+    border-radius: 10px;
     height: 48px;
     line-height: 48px;
     padding: 0 24px;
@@ -76,7 +72,37 @@ input::placeholder {
     transition: var(--transition);
 }
 
+.btn .icon-left {
+    margin-right: 5px;
+}
+
+.btn .icon-right {
+    margin-left: 5px;
+}
+
 .btn:hover {
     border-color: var(--primary-color);
 }
 
+body {
+    font-size: 16px;
+    font-family: var(--primary-font);
+    text-rendering: optimizeSpeed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    // display: flex;
+    // justify-content: center;
+    background-color: #f5f5f5;
+    // align-items: flex-start;
+    overflow: auto;
+    // box-shadow: 2px 8px 2px #BEBEBE;
+
+}

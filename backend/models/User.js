@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const userSchema = mongoose.Schema({
@@ -12,11 +12,22 @@ const userSchema = mongoose.Schema({
     default: 'user'
   },
   sender_address: String,
+  bank_account: {
+    bank_name: String,
+    owner: String,
+    account_number: String
+  },
   working_days: [{
     year: Number,
     month: Number,
     date: [{ type: Date }]
-  }]
+  }],
+  stock_id: String,
+  vehicle: {
+    type: String,
+    license_plate_number: String
+  }
+
 })
 
 userSchema.pre('save', function (next) {
