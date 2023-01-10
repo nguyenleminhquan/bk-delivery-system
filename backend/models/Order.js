@@ -10,8 +10,12 @@ const orderSchema = mongoose.Schema({
   payment_type: { type: String, require: true },
   cod_amount: { type: Number, require: true },
   note: String,
-  status: String,
   shipping_fee: Number,
+  status: {
+    type: String,
+    enum: ['processing', 'delivery', 'resend_waiting', 'success', 'returning', 'return_success', 'damaged'],
+    default: 'processing'
+  },
   items: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item'

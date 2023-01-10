@@ -12,6 +12,8 @@ stages:
     displayName: Build and deploy 
     pool:
       name: VM-CPU12195
+      demands:
+        - agent.name -equals ce-68
     jobs:
       - job: checkVersion
         displayName: Check node and npm version

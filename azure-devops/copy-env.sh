@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp /home/ubuntu18/Documents/.env /home/ubuntu18/myagent/_work/1/s/backend/
+cp /home/quannlm/Documents/.env /home/quannlm/myagent/_work/1/s/backend/
