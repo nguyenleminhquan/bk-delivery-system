@@ -15,13 +15,19 @@ const userSchema = mongoose.Schema({
   bank_account: {
     bank_name: String,
     owner: String,
-    num: String
+    account_number: String
   },
   working_days: [{
     year: Number,
     month: Number,
     date: [{ type: Date }]
-  }]
+  }],
+  stock_id: String,
+  vehicle: {
+    type: String,
+    license_plate_number: String
+  }
+
 })
 
 userSchema.pre('save', function (next) {
