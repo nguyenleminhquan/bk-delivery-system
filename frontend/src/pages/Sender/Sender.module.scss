@@ -1,0 +1,71 @@
+.wrapper {
+    position: fixed;
+    top: 10px;
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+}
+
+.searchBar {
+    background-color: var(--white-color);
+    width: 50%;
+    margin-right: 32px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 1px 0 4px #BEBEBE;
+
+    input::placeholder {
+        color: var(--placeholder-input-color);
+    }
+}
+
+.orderFilter {
+    color: var(--white-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    width: 200px;
+    height: 100px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 1px 0 4px #BEBEBE;
+    color: #000;
+    background-color: var(--white-color);
+    cursor: pointer;
+    &.orderFilterActive,
+    &:hover {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        p:first-child { color: var(--white-color); }
+    }
+    p:first-child {
+        margin: 0;
+        color: #000;
+    }
+}
+
+.orderSubFilter {
+    display: flex;
+    padding: 0 16px;
+    margin: 12px 0;
+    font-weight: bold;
+    font-size: 1.6rem;
+    background-color: var(--white-color);
+    border-radius: 5px;
+
+    li {
+        min-width: 220px;
+        text-align: center;
+        line-height: 5rem;
+        &.active {
+            border-bottom: 2px solid var(--primary-color); 
+        }
+        &:hover  {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+    }
+}
