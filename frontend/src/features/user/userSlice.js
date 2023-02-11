@@ -42,9 +42,14 @@ export const clearStore = createAsyncThunk('user/clearStore', clearStoreThunk);
 
 export const testJWT = createAsyncThunk(
     'user/testJWT',
-    async(_, thunkAPI) => {
+    async(user, thunkAPI) => {
         try {
             const res = await AuthService.test();
+            const role = res.data.role;
+            if (role !== user.typeUser) {
+                thunkAPI.dispatch(clearStore());
+		        return thunkAPI.rejectWithValue('Unauthorized! Logging Out...');
+            }
         } catch(err) {
             console.log(err)
             return checkForUnauthorizedResponse(err, thunkAPI)
