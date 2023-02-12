@@ -50,15 +50,38 @@ const getAllOrder = async (req, res, next) => {
 
 // Get order by id
 const getOrderById = async (req, res, next) => {
-  const data = await Order.find({ _id: req.params.id })
-  if (data) {
-    return res.json(data)
+  try {
+    let data = await Order.find({ _id: req.params.id })
+      return res.json(data)
+  } catch (error) {
+    return next(createError(400))
+  } 
+}
+
+// Delete order by id
+const deleteOrderById = async (req, res, next) => {
+  try {
+    let data = await Order.findByIdAndDelete({ _id: req.params.id })
+    return res.json({ msg: "Delete successfully!"})
+  } catch (error) {
+    return next(createError(400))
   }
-  return next(createError(400))
+}
+
+// Edit order by id 
+const editOrderById = async (req, res, next) => { 
+  try {
+    let data = await Order.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    return res.json(data)
+  } catch (error) {
+    return next(createError(400))
+  }
 }
 
 export {
   createOrder,
   getAllOrder,
-  getOrderById
+  getOrderById,
+  deleteOrderById,
+  editOrderById
 }
