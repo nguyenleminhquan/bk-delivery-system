@@ -125,9 +125,9 @@ const userSlice = createSlice({
             state.isLoading = false;
             toast.error(payload);
         },
-        [testJWT.rejected]: (state, { payload }) => {
-            toast.error(payload)
-        }
+        // [testJWT.rejected]: (state, { payload }) => {
+        //     toast.error(payload)
+        // }
     }
 })
 

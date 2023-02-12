@@ -1,7 +1,7 @@
 import { AiOutlineHistory } from 'react-icons/ai'
 import { BiLogOut } from 'react-icons/bi'
 import { BsPersonCircle } from 'react-icons/bs'
-import { FaAddressCard, FaEnvelope, FaHome, FaLock, FaPhone, FaUser} from 'react-icons/fa'
+import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 
 export const loginFields = (values) => [
@@ -228,14 +228,14 @@ export const driverSidebar = [
     {
         id: 4,
         path: '/',
-        icon: <FaHome />,
+        icon: <FaListUl />,
         text: 'Đơn hàng thực hiện',
         type: 'beneath'
     },
     {
         id: 5,
         path: '/delivery-history',
-        icon: <FaAddressCard />,
+        icon: <FaHistory />,
         text: 'Lịch sử giao nhận',
         type: 'beneath'
     },
@@ -318,7 +318,7 @@ export const adminSidebar = [
     {
         id: 4,
         path: '/',
-        icon: <FaHome />,
+        icon: <FaChartBar />,
         text: 'Thống kê',
         type: 'beneath'
     },
@@ -339,7 +339,7 @@ export const adminSidebar = [
     {
         id: 7,
         path: '/stock-management',
-        icon: <BsPersonCircle />,
+        icon: <FaWarehouse />,
         text: 'Quản lý kho',
         type: 'beneath'
     },
