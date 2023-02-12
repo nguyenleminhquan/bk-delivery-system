@@ -3,6 +3,12 @@
     max-width: 500px;
     text-align: center;
     place-self: center;
+    .error-msg {
+        color: red;
+        font-size: 1.4rem;
+        display: block;
+        margin-bottom: 6px;
+    }
     h2 {
         font-size: 36px;
         margin-bottom: 60px;
