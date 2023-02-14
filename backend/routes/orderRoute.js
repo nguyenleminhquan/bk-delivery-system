@@ -16,6 +16,6 @@ route.get('/', verifyRefreshToken, verifyToken, isSender, getAllOrder)
 route.post('/', verifyRefreshToken, verifyToken, isSender, createOrder)
 route.get('/:id', verifyRefreshToken, verifyToken, isSender, getOrderById)
 route.delete('/:id', verifyRefreshToken, verifyToken, deleteOrderById)
-route.patch('/:id'. verifyRefreshToken, verifyToken, editOrderById)
+route.patch('/:id', verifyRefreshToken, verifyToken, editOrderById)
 
 export default route
