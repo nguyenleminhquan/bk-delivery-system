@@ -78,7 +78,20 @@ const deleteOrderById = async (req, res, next) => {
 // Edit order by id 
 const editOrderById = async (req, res, next) => { 
   try {
+    if (req.body.status) {
+      return next(createError(400, 'User was not allowed to change status of order'))
+    }
     let data = await Order.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    return res.json(data)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+// Edit order status by id 
+const editOrderStatusById = async (req, res, next) => { 
+  try {
+    let data = await Order.findByIdAndUpdate(req.params.id, {status: req.body.status}, {new: true})
     return res.json(data)
   } catch (error) {
     return next(createError(400))
@@ -90,5 +103,6 @@ export {
   getAllOrder,
   getOrderById,
   deleteOrderById,
-  editOrderById
+  editOrderById,
+  editOrderStatusById
 }
