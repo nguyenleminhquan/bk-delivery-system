@@ -7,15 +7,15 @@ import {   createOrder,
 } from '../controllers/orderController.js'
 import verifyToken from '../middlewares/verifyToken.js'
 import verifyRefreshToken from '../middlewares/verifyRefreshToken.js'
-import { isSender } from '../middlewares/verifyRoles.js'
+import verifyRoles from '../middlewares/verifyRoles.js'
 
 const route = express.Router()
 
 // Get all order
-route.get('/', verifyRefreshToken, verifyToken, isSender, getAllOrder)
-route.post('/', verifyRefreshToken, verifyToken, isSender, createOrder)
-route.get('/:id', verifyRefreshToken, verifyToken, isSender, getOrderById)
-route.delete('/:id', verifyRefreshToken, verifyToken, deleteOrderById)
-route.patch('/:id', verifyRefreshToken, verifyToken, editOrderById)
+route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver']), getAllOrder)
+route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['sender']), createOrder)
+route.get('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver']), getOrderById)
+route.delete('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), deleteOrderById)
+route.patch('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), editOrderById)
 
 export default route

@@ -44,7 +44,14 @@ const createOrder = async (req, res, next) => {
 
 // Get all order
 const getAllOrder = async (req, res, next) => {
-  const data = await Order.find({})
+  const status = req.query.status;
+  let data;
+  if (status) {
+    data = await Order.find({status: status})
+  }
+  else {
+    data = await Order.find({})
+  }
   return res.json(data)
 }
 
