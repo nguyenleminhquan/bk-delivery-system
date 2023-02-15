@@ -1,17 +1,12 @@
-import { clearStore, testJWT } from 'features/user/userSlice';
-import {BsSearch} from 'react-icons/bs'
-import {BiPencil} from 'react-icons/bi'
+import { BsSearch } from 'react-icons/bs'
+import { BiPencil } from 'react-icons/bi'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
 import styles from './Sender.module.scss'
 
-function Sender() {
+function SenderHome() {
 	const dispatch = useDispatch();
-
-	useEffect(() => {
-		dispatch(testJWT())
-	}, [])
 
 	return (
 		<div className={styles.wrapper}>
@@ -55,11 +50,11 @@ function Sender() {
 
 				{/* Order block */}
 				<div>
-					
+
 				</div>
 			</div>
 		</div>
 	)
 }
 
-export default Sender
+export default SenderHome
