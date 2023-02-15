@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Error, Landing, Login, ProtectedRoute, Register, SharedLayout } from './pages';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Authorize from 'pages/Authorize';
 
@@ -18,6 +19,7 @@ function App() {
               <ProtectedRoute>
                 <SharedLayout />
                 <Authorize />
+                
               </ProtectedRoute>
             } 
           >

@@ -1,0 +1,168 @@
+.wrapper {
+    position: absolute;
+    top: 10px;
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    .searchBar {
+        background-color: var(--white-color);
+        width: 50%;
+        margin-right: 32px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 1px 0 4px #BEBEBE;
+    
+        input::placeholder {
+            color: var(--placeholder-input-color);
+        }
+    }
+    .createOrderSection {
+        padding-bottom: 24px;
+        transition: var(--transition);
+        & ~ .createOrderSection {
+            border-top: 1px solid var(--border-color);
+            padding: 24px 0;
+        }
+        &.lastSection {
+            text-align: right;
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            border-left: 5px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.6rem;
+            .editBtn {
+                color: #000;
+                cursor: pointer;
+                &:hover {
+                    color: var(--primary-color);
+                }
+            }
+        }
+        .content {
+            margin: 10px;
+            font-size: 1.4rem;
+            .importantLine {
+                color: var(--secondary-color);
+            }
+            .orderItem {
+                width: 100%;
+                border: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                padding: 5px 20px;
+                min-height: 80px;
+                & ~.orderItem {
+                    margin-top: 6px;
+                }
+                .imageUpload {
+                    .button {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        font-size: 1.2rem;
+                        width: 55px;
+                        height: 55px;
+                        background-color: #BEBEBE;
+                        border-radius: 50%;
+                        color: #fff;
+                        cursor: pointer;
+                    }
+                }
+                .info {
+                    display: flex;
+                    margin-left: 8px;
+                    flex: 1;
+                    .mediumInput {
+                        min-width: 200px;
+                    }
+                    .smallInput {
+                        max-width: 50px;
+                    }
+                    input {
+                        border-bottom: 1px solid var(--border-color);
+                        &::placeholder {
+                            font-size: 1.4rem;
+                            color: var(--placeholder-input-color);
+                        }
+                    }
+                    .addItemBtn {
+                        color: var(--secondary-color);
+                        width: 24px;
+                        height: 24px;
+                        display: block;
+                        margin-left: auto;
+                    }
+                }
+            }
+        }
+
+        .optionWrap {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            & ~ .optionWrap {
+                border-top: 1px solid var(--border-color);
+            }
+        }
+    }
+}
+
+
+// Form group section
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.4rem;
+    & ~ .formGroup {
+        margin-top: 12px;
+    }
+    label:not([for]) {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    input, select {
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        border-radius: 5px;
+        &:focus {
+            border-color: var(--secondary-color);
+        }
+    }
+    input {
+        &::placeholder {
+            color: var(--placeholder-input-color);
+            font-size: 1.4rem;
+        }
+    }
+    select {
+        // appearance: none;
+        // -webkit-appearance: none;
+        // -moz-appearance: none;
+        &::after {
+            background-color: red;
+        }
+    }
+}
+
+.button {
+    width: 100%;
+    color: var(--white-color);
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    font-size: 1.6rem;
+    font-weight: 500;
+    transition: var(--transition);
+    &:hover {
+        background-color: var(--primary-hover-color);
+    }
+}
