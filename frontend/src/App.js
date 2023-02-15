@@ -1,25 +1,28 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout, Profile } from './pages';
+import { Error, Landing, Login, ProtectedRoute, Register, SharedLayout } from './pages';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
+import Authorize from 'pages/Authorize';
 
 function App() {
+
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
           <Route 
-            path='/' 
+            path='/*' 
             element={
               <ProtectedRoute>
                 <SharedLayout />
+                <Authorize />
+                
               </ProtectedRoute>
             } 
           >
-            <Route index element={<Sender />}></Route>
-            <Route path='profile' element={<Profile />}></Route>
           </Route>
           <Route path='landing' element={<Landing />} ></Route>
           <Route path='login' element={<Login />} ></Route>

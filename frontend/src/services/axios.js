@@ -5,15 +5,13 @@ import AuthService from "./auth.service";
 
 const customFetch = axios.create({
 	baseURL: 'http://34.124.177.159:2376',
-	// baseURL: 'http://localhost:5000'
+// 	baseURL: 'http://localhost:5000'
 })
 
 customFetch.interceptors.request.use(
 	(config) => {
 		const token = getLocalAccessToken();
 		const refresh_token = getLocalRefreshToken();
-		console.log('token', token)
-		console.log('refresh token', refresh_token)
 		if (token && refresh_token) {
 			config.headers['Authorization'] = `Bearer ${refresh_token} ${token}`;
 		}

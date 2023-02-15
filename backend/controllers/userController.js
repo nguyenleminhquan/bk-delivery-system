@@ -147,10 +147,25 @@ const changePassword = async (req, res, next) => {
     }
 }
 
+const testJWT = async(req, res, next) => {
+    try {
+        const user = await User.findOne({ email: req.email});
+        return res.json({
+            email: user.email,
+            role: user.typeUser,
+            msg: 'Authorized'
+        })
+    } catch(err) {
+        console.log(err);
+        next(err);
+    }
+}
+
 export {
     userRegister,
     userLogin,
     refreshToken,
     updateUserInfo,
-    changePassword
+    changePassword,
+    testJWT
 }

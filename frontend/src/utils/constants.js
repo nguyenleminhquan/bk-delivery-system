@@ -1,4 +1,8 @@
-import { FaEnvelope, FaLock, FaPhone, FaUser} from 'react-icons/fa'
+import { AiOutlineHistory } from 'react-icons/ai'
+import { BiLogOut } from 'react-icons/bi'
+import { BsPersonCircle } from 'react-icons/bs'
+import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
+import { IoMdNotificationsOutline } from 'react-icons/io'
 
 export const loginFields = (values) => [
     {
@@ -151,4 +155,192 @@ export const bankList = [
     'NH Chính sách xã hội (VBSP)',
     'NH Công thương VN (Vietinbank)',
     'NH Nông nghiệp&PT Nông thôn VN-AGribank',
+]
+
+export const senderSidebar = [
+    {
+        id: 1,
+        path: '/request',
+        icon: <AiOutlineHistory />,
+        text: 'Yêu cầu xử lí',
+        type: 'above'
+    },
+    {
+        id: 2,
+        path: '/notification',
+        icon: <IoMdNotificationsOutline />,
+        text: 'Thông báo',
+        type: 'above'
+    },
+    {
+        id: 3,
+        path: '/logout',
+        icon: <BiLogOut />,
+        text: 'Đăng xuất',
+        type: 'above'
+    },
+    {
+        id: 4,
+        path: '/',
+        icon: <FaHome />,
+        text: 'Trang chủ',
+        type: 'beneath'
+    },
+    {
+        id: 5,
+        path: '/cod',
+        icon: <FaAddressCard />,
+        text: 'Đối soát COD',
+        type: 'beneath'
+    },
+    {
+        id: 6,
+        path: '/profile',
+        icon: <BsPersonCircle />,
+        text: 'Thông tin cá nhân',
+        type: 'beneath'
+    },
+];
+
+
+export const driverSidebar = [
+    {
+        id: 1,
+        path: '/request',
+        icon: <AiOutlineHistory />,
+        text: 'Yêu cầu xử lí',
+        type: 'above'
+    },
+    {
+        id: 2,
+        path: '/notification',
+        icon: <IoMdNotificationsOutline />,
+        text: 'Thông báo',
+        type: 'above'
+    },
+    {
+        id: 3,
+        path: '/logout',
+        icon: <BiLogOut />,
+        text: 'Đăng xuất',
+        type: 'above'
+    },
+    {
+        id: 4,
+        path: '/',
+        icon: <FaListUl />,
+        text: 'Đơn hàng thực hiện',
+        type: 'beneath'
+    },
+    {
+        id: 5,
+        path: '/delivery-history',
+        icon: <FaHistory />,
+        text: 'Lịch sử giao nhận',
+        type: 'beneath'
+    },
+    {
+        id: 6,
+        path: '/profile',
+        icon: <BsPersonCircle />,
+        text: 'Thông tin cá nhân',
+        type: 'beneath'
+    },
+]
+
+export const stockerSidebar = [
+    {
+        id: 1,
+        path: '/request',
+        icon: <AiOutlineHistory />,
+        text: 'Yêu cầu xử lí',
+        type: 'above'
+    },
+    {
+        id: 2,
+        path: '/notification',
+        icon: <IoMdNotificationsOutline />,
+        text: 'Thông báo',
+        type: 'above'
+    },
+    {
+        id: 3,
+        path: '/logout',
+        icon: <BiLogOut />,
+        text: 'Đăng xuất',
+        type: 'above'
+    },
+    {
+        id: 4,
+        path: '/',
+        icon: <FaHome />,
+        text: 'Trang chủ',
+        type: 'beneath'
+    },
+    // {
+    //     id: 5,
+    //     path: '/delivery-history',
+    //     icon: <FaAddressCard />,
+    //     text: 'Lịch sử giao nhận',
+    //     type: 'beneath'
+    // },
+    {
+        id: 6,
+        path: '/profile',
+        icon: <BsPersonCircle />,
+        text: 'Thông tin cá nhân',
+        type: 'beneath'
+    },
+]
+
+export const adminSidebar = [
+    {
+        id: 1,
+        path: '/request',
+        icon: <AiOutlineHistory />,
+        text: 'Yêu cầu xử lí',
+        type: 'above'
+    },
+    {
+        id: 2,
+        path: '/notification',
+        icon: <IoMdNotificationsOutline />,
+        text: 'Thông báo',
+        type: 'above'
+    },
+    {
+        id: 3,
+        path: '/logout',
+        icon: <BiLogOut />,
+        text: 'Đăng xuất',
+        type: 'above'
+    },
+    {
+        id: 4,
+        path: '/',
+        icon: <FaChartBar />,
+        text: 'Thống kê',
+        type: 'beneath'
+    },
+    {
+        id: 5,
+        path: '/cod',
+        icon: <FaAddressCard />,
+        text: 'Đối soát COD',
+        type: 'beneath'
+    },
+    {
+        id: 6,
+        path: '/employee-management',
+        icon: <BsPersonCircle />,
+        text: 'Quản lý nhân viên',
+        type: 'beneath'
+    },
+    {
+        id: 7,
+        path: '/stock-management',
+        icon: <FaWarehouse />,
+        text: 'Quản lý kho',
+        type: 'beneath'
+    },
 ]

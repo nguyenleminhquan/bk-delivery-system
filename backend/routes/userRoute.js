@@ -7,6 +7,7 @@ import {
     refreshToken,
     updateUserInfo,
     changePassword,
+    testJWT,
 } from '../controllers/userController.js'
 
 const route = express.Router()
@@ -16,9 +17,7 @@ route.post('/register', userRegister)
 // Lay access token moi
 route.post('/token', verifyRefreshToken, refreshToken)
 // Test JWT 
-route.get('/test-jwt', verifyRefreshToken, verifyToken, (req, res) => {
-    res.json({ email: req.email, msg: "Authenticate successfully!"})
-})
+route.get('/test-jwt', verifyRefreshToken, verifyToken, testJWT)
 route.post('/:id/update', verifyRefreshToken, verifyToken, updateUserInfo);
 route.post('/:id/change-password', verifyRefreshToken, verifyToken, changePassword)
 
