@@ -8,3 +8,4 @@
 | /order/:id | GET | Get order by id | Authorization: Bearer <refresh_token> <access_token> | |
 | /order/:id | DELETE | Delete order by id | Authorization: Bearer <refresh_token> <access_token> | |
 | /order/:id | PATCH | Edit order by id | Authorization: Bearer <refresh_token> <access_token> | Data |
+| /order/:id/update-status | PATCH | Edit order status by id | Authorization: Bearer <refresh_token> <access_token> | status: string |
