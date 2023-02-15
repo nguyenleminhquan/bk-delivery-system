@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout, Profile } from './pages';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Error, Landing, Login, ProtectedRoute, Register, Sender, SharedLayout, Profile, CreateOrder } from './pages';
 import { ToastContainer } from 'react-toastify';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
           >
             <Route index element={<Sender />}></Route>
             <Route path='profile' element={<Profile />}></Route>
+            <Route path='create-order' element={<CreateOrder />}></Route>
           </Route>
           <Route path='landing' element={<Landing />} ></Route>
           <Route path='login' element={<Login />} ></Route>
