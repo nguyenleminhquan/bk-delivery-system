@@ -21,7 +21,7 @@ function ConfirmPopup(props) {
                     <span>{props.title}</span>
                 </div>
                 <div className={styles.body}>
-                    <span>{props.content}</span>
+                    {props.content}
                 </div>
                 <div className={styles.footer}>
                     <button type="button" onClick={props.actionNo}>Cancel</button>
