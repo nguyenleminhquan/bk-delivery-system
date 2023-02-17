@@ -58,6 +58,9 @@
                 align-items: center;
                 padding: 5px 20px;
                 min-height: 80px;
+                &.notComplete {
+                    border-color: red;
+                }
                 & ~.orderItem {
                     margin-top: 6px;
                 }

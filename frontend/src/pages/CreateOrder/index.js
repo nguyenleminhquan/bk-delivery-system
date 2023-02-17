@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom'
 import styles from './CreateOrder.module.scss'
 import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
 import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { createOrder } from 'features/user/orderSlice'
 
 const senderModel = {
     fullname: 'Trần Phước Tài',
@@ -43,6 +45,8 @@ const paymentMethods = [
 ]
 
 function CreateOrder() {
+    const dispatch = useDispatch();
+
     const [editAddress, setEditAddress] = useState(false);
     const [senderInfo, setSenderInfo] = useState(null);
     const [receiverInfo, setReceiverInfo] = useState(receiverModel);
@@ -63,7 +67,6 @@ function CreateOrder() {
     }
 
     const handleChangePaymentMethod = event => {
-        console.log(event.target.value)
         setPaymentMethod(event.target.value)
     }
 
@@ -155,8 +158,15 @@ function CreateOrder() {
         setProductLists(updatedProductList);
     }
 
+    const notCompleteOrder = () => {
+        const lastProduct = productLists[productLists.length - 1];
+        return (!lastProduct.name || !lastProduct.quantity || !lastProduct.weight);
+    }
+
     const handleAddProduct = () => {
-        setProductLists([...productLists, productModel]);
+        if (!notCompleteOrder()) {
+            setProductLists([...productLists, productModel]);
+        }
     }
 
     const handleSubmit = () => {
@@ -165,6 +175,7 @@ function CreateOrder() {
         console.log('productInfo', productLists);
         console.log('paymentOption', paymentOption);
         console.log('paymentMethod', paymentMethod);
+        // dispatch(createOrder({}));
     }
 
     const handleCityClick = (cityCode) => {
@@ -409,7 +420,7 @@ function CreateOrder() {
                                 </div>
                                 <div className={styles.content}>
                                     {productLists.map((item, index) => (
-                                        <div className={styles.orderItem} key={index}>
+                                        <div className={notCompleteOrder() ? `${styles.orderItem} ${styles.notComplete}` : `${styles.orderItem}`} key={index}>
                                             <div className={styles.imageUpload}>
                                                 <label htmlFor='file-input'>
                                                     <span className={styles.button}>Upload ảnh</span>
@@ -482,32 +493,17 @@ function CreateOrder() {
                                 <div className={styles.formGroup}>
                                     <label>Phương thức thanh toán</label>
                                     {paymentMethods.map(method => (
-                                        <div className={styles.optionWrap} key={method.code}>
+                                        <label className={styles.optionWrap} key={method.code}>
                                             <input type="radio" 
                                                 name='payment'
                                                 className='me-3'
-                                                defaultChecked
                                                 value={method.code}
+                                                checked={method.code === paymentMethod}
                                                 onChange={handleChangePaymentMethod}/> 
                                             {method.icon}
-                                            <label htmlFor="payment" className='ms-2'>{method.label}</label>
-                                        </div>
+                                            <span className='ms-2 fw-normal'>{method.label}</span>
+                                        </label>
                                     ))}
-                                    {/* <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3' defaultChecked/> 
-                                        
-                                        <label htmlFor="payment" className='ms-2'>Thanh toán tiền mặt</label>
-                                    </div>
-                                    <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3'/> 
-                                        
-                                        <label htmlFor="payment" className='ms-2'>Momo</label>
-                                    </div>
-                                    <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3'/> 
-                                        <ATMMethodIcon />
-                                        <label htmlFor="payment" className='ms-2'>Thẻ ATM nội địa</label>
-                                    </div> */}
                                 </div>
                             </div>
 
