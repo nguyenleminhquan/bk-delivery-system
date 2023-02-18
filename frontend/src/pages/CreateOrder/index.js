@@ -53,6 +53,7 @@ function CreateOrder() {
     const [productLists, setProductLists] = useState([productModel]);
     const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code)
     const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code)
+    const [totalFee, setTotalFee] = useState(0);
 
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -166,6 +167,7 @@ function CreateOrder() {
     const handleAddProduct = () => {
         if (!notCompleteOrder()) {
             setProductLists([...productLists, productModel]);
+            setTotalFee(calculateFee);
         }
     }
 
@@ -175,7 +177,23 @@ function CreateOrder() {
         console.log('productInfo', productLists);
         console.log('paymentOption', paymentOption);
         console.log('paymentMethod', paymentMethod);
-        // dispatch(createOrder({}));
+        const sender_address = `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`;
+        const receiver_address = `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`;
+        const payload = {
+            sender_address,
+            receiver_address,
+            payment_type: paymentMethod,
+            cod_amount: '',
+            note: '',
+            status: '',
+            shipping_fee: calculateFee(),
+            user_id: '63e7510bdf876e293b81d0f8',
+            items: productLists
+        }
+
+        console.log(payload)
+        console.log(calculateFee());
+        // dispatch(createOrder(payload));
     }
 
     const handleCityClick = (cityCode) => {
@@ -208,8 +226,22 @@ function CreateOrder() {
         });
     } 
 
+    // VD order có tổng weight là 5,6kg -> 5600 gram
+    /**
+     * 1000 -> 40k
+     * 4600 / 500 = 9.2 -> 9.2 * 5000 = 
+     */
     const calculateFee = () => {
-        
+        let totalWeight = 0;
+        if (productLists.length > 0) {
+            totalWeight = productLists.reduce((cur, acc) => cur + acc.quantity * acc.weight, 0);
+        }
+        if (totalWeight <= 1000) {
+            return 40000;
+        } else {
+            const curTotalWeight = totalWeight - 1000;
+            return 40000 + Math.floor(curTotalWeight / 500)*5000 + ((curTotalWeight % 500) && 5000);
+        }
     }
 
     // Set up sender info and get data for city
@@ -291,7 +323,6 @@ function CreateOrder() {
                                             </div>
                                             <div className={styles.formGroup}>
                                                 <label>Quận/Huyện</label>
-                                                {/* Use select */}
                                                 <select
                                                     value={senderInfo?.district}
                                                     onChange={handleSenderDistrictChange}
@@ -488,29 +519,32 @@ function CreateOrder() {
                                     </select>
                                 </div>
                             </div>
-
-                            <div className={styles.createOrderSection}>
-                                <div className={styles.formGroup}>
-                                    <label>Phương thức thanh toán</label>
-                                    {paymentMethods.map(method => (
-                                        <label className={styles.optionWrap} key={method.code}>
-                                            <input type="radio" 
-                                                name='payment'
-                                                className='me-3'
-                                                value={method.code}
-                                                checked={method.code === paymentMethod}
-                                                onChange={handleChangePaymentMethod}/> 
-                                            {method.icon}
-                                            <span className='ms-2 fw-normal'>{method.label}</span>
-                                        </label>
-                                    ))}
+                            
+                            {paymentOption === paymentOptions[0].code && (
+                                <div className={styles.createOrderSection}>
+                                    <div className={styles.formGroup}>
+                                        <label>Phương thức thanh toán</label>
+                                        {paymentMethods.map(method => (
+                                            <label className={styles.optionWrap} key={method.code}>
+                                                <input type="radio" 
+                                                    name='payment'
+                                                    className='me-3'
+                                                    value={method.code}
+                                                    checked={method.code === paymentMethod}
+                                                    onChange={handleChangePaymentMethod}/> 
+                                                {method.icon}
+                                                <span className='ms-2 fw-normal'>{method.label}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            
 
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
-                                    <h1 className={styles.importantLine}>0đ</h1>
+                                    <h1 className={styles.importantLine}>{totalFee}đ</h1>
                                     <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
                                 </div>
                             </div>
