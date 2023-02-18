@@ -9,11 +9,29 @@ const shiftModel = {
   time: '',
 } 
 
+const tabs = [
+  {
+    name: 'Đơn được gán',
+    data: []
+  },
+  {
+    name: 'Đang làm',
+    data: [],
+  },
+  {
+    name: 'Đã xong',
+    data: [],
+  }
+]
+
 function DriverHome() {
   const [togglePopup, setTogglePoup] = useState(false);
-  const [timeShift, setTimeShift] = useState('');
+
+  // Work check-in only
   const [today, setToday] = useState('');
   const [shift, setShift] = useState(shiftModel);
+  
+  const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
   const formatToday = () => {
     const date = new Date();
@@ -28,17 +46,15 @@ function DriverHome() {
     const now = new Date();
     const currentHour = now.getHours();
 
+    console.log(currentHour)
+
     if (currentHour < 12) {
+      console.log(true)
       setShift({label: 'Sáng', time: '7h-11h'});
     } else {
+      console.log(false)
       setShift({label: 'Chiều', time: '13h-18h'});
     }
-  }
-
-  const getTimeSheet = () => {
-    const currentTime =  new Date().toLocaleTimeString('en-US', { hour12: false, 
-      hour: "numeric", 
-      minute: "numeric"});
   }
 
   const handleTracking = () => {
@@ -65,7 +81,6 @@ function DriverHome() {
   }
 
   useEffect(() => {
-    getTimeSheet();
     formatToday();
     getShift();
   }, [])
@@ -85,6 +100,17 @@ function DriverHome() {
           okLabel="Check-in"
       />
       )}
+      <h2 className='pb-3 fs-1'>Đơn hàng thực hiện</h2>
+      
+      <ul className={styles.tabHeader}>
+        {tabs.map(tab => (
+          <li key={tab.name} 
+            className={selectedTab.name === tab.name ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
+            onClick={() => setSelectedTab(tab)}
+          >{tab.name}</li>
+        ))}
+      </ul>
+
     </div>
   )
 }
