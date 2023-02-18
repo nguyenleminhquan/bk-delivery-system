@@ -70,6 +70,13 @@ input {
     border: 2px solid transparent;
     cursor: pointer;
     transition: var(--transition);
+    &.btn-medium {
+        height: 36px;
+        font-size: 1.6rem;
+    }
+    &.btn-small {
+        height: 24px;
+    }
 }
 
 .btn .icon-left {
@@ -104,5 +111,25 @@ body {
     // align-items: flex-start;
     overflow: auto;
     // box-shadow: 2px 8px 2px #BEBEBE;
+}
 
+// Check in button for driver, stocker
+.checkinBtn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white-color);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    &:hover {
+        background-color: var(--primary-hover-color);
+    }
 }

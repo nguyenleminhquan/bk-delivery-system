@@ -1,14 +1,12 @@
 .wrapper {
-    position: fixed;
+    position: sticky;
     top: 10px;
-    left: 10px;
     bottom: 10px;
     height: 100%;
     width: var(--sidebar-width);
     box-shadow: 1px 0 4px #BEBEBE;
     padding: 12px;
     border-radius: 10px;
-    z-index: 10;
     background-color: var(--white-color);
 }
 
