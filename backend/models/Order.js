@@ -8,7 +8,7 @@ const orderSchema = mongoose.Schema({
   sender_address: { type: String, require: true },
   receiver_address: { type: String, require: true },
   payment_type: { type: String, require: true },
-  cod_amount: { type: Number, require: true },
+  cod_amount: { type: Number },
   note: String,
   shipping_fee: Number,
   status: {

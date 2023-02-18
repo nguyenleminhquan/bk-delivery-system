@@ -161,11 +161,38 @@ const testJWT = async(req, res, next) => {
     }
 }
 
+// Role: Admin
+const getWorkingDay = async (req, res, next) => {
+    try {
+        let user = await User.findOne({ email: req.email })
+        if (user.typeUser === "admin") {
+            let wd_stockers_drivers = await User.find({ typeUser: { $in: ['driver', 'stocker']}})
+            return res.json(wd_stockers_drivers)
+        } else {
+            return res.json({working_days: user.working_days})
+        }
+    } catch (error) {
+        return next(createError(404))
+    }
+}
+
+// Role: Nhan vien kho, tai xe
+const getWorkingDayById = async (req, res, next) => {
+    try {
+        let user = await User.findOne({ email: req.email })
+        return res.json(user.working_days)
+    } catch (error) {
+        return next(createError(400))
+    }
+}
+
 export {
     userRegister,
     userLogin,
     refreshToken,
     updateUserInfo,
     changePassword,
-    testJWT
+    testJWT,
+    getWorkingDay,
+    getWorkingDayById 
 }
