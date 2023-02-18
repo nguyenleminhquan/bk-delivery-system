@@ -4,8 +4,8 @@ import { getLocalAccessToken, getLocalRefreshToken, getUserFromLocalStorage, upd
 import AuthService from "./auth.service";
 
 const customFetch = axios.create({
-	baseURL: 'http://34.124.177.159:2376',
-// 	baseURL: 'http://localhost:5000'
+	// baseURL: 'http://34.124.177.159:2376',
+	baseURL: 'http://localhost:5000'
 })
 
 customFetch.interceptors.request.use(

@@ -3,23 +3,19 @@
     top: 10px;
     left: calc(var(--sidebar-width) + 30px);
     right: 10px;
-    .checkinBtn {
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        width: 50px;
-        height: 50px;
-        background-color: var(--primary-color);
-        border-radius: 50%;
-        font-size: 3rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: var(--white-color);
-        box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        &:hover {
-            background-color: var(--primary-hover-color);
+    
+}
+
+.workCheckInModel {
+    display: flex;
+    flex-direction: column;
+    .illustration {
+        width: 70%;
+        margin: auto;
+        border-radius: 5px;
+        overflow: hidden;
+        img {
+            max-width: 100%;
         }
     }
 }
