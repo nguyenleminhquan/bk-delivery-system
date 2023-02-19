@@ -1,5 +1,5 @@
 import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
-import { useState, useEffect, useLayoutEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { BiPencil } from 'react-icons/bi'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
@@ -18,12 +18,12 @@ const infoModel = {
     address: '',
 }
 
-const productModel = {
-    name: '',
-    weight: '',
-    quantity: '',
-    imgUrl: '',
-}
+// const productModel = {
+//     name: '',
+//     weight: '',
+//     quantity: '',
+//     imgUrl: '',
+// }
 const paymentOptions = [
     {code: 'sender', label: 'Người gửi thanh toán'},
     {code: 'receiver', label: 'Người nhận thanh toán'}
@@ -35,16 +35,16 @@ const paymentMethods = [
     {code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon />},
 ]
 
-const addressAPI = 'https://provinces.open-api.vn/api/';
-
 function CreateOrder() {
     const dispatch = useDispatch();
     const [senderInfo, setSenderInfo] = useState(infoModel);
     const [receiverInfo, setReceiverInfo] = useState(infoModel)
     
     // address information
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
+    const [senderDistricts, setSenderDistricts] = useState([]);
+    const [receiverDistricts, setReceiverDistricts] = useState([]);
+    const [senderWards, setSenderWards] = useState([]);
+    const [receiverWards, setReceiverWards] = useState([]);
     const [address, setAddress] = useState([]);
 
 
@@ -59,45 +59,77 @@ function CreateOrder() {
             .catch(error => console.log(error))
     }
 
-    const handleChangeCity = (e, setState) => {
-        findDistricts(e.target.value);
-        setState(prev => ({
+    // For sender only
+    const findSenderDistricts = city => {
+        const result = address.find(item => item.name === city);
+        setSenderDistricts(result.districts);
+    }
+
+    const findSenderWards = district => {
+        const result = senderDistricts.find(item => item.name === district);
+        setSenderWards(result.wards);
+    }
+
+    const handleChangeSenderCity = e => {
+        findSenderDistricts(e.target.value);
+        setSenderInfo(prev => ({
             ...prev, 
             city: e.target.value,
             district: '',
             ward: ''
-        }));
+        }))
     }
 
-    const handleChangeDistrict = (e, setState) => {
-        findWards(e.target.value);
-        setState(prev => ({
-            ...prev, 
+    const handleChangeSenderDistrict = e => {
+        findSenderWards(e.target.value);
+        setSenderInfo(prev => ({
+            ...prev,
             district: e.target.value,
+            ward: '',
+        }))
+    }
+
+    const handleChangeSenderWard = e => {
+        setSenderInfo(prev => ({...prev, ward: e.target.value }))
+    }
+
+    // For receiver only
+    const findReceiverDistricts = city => {
+        const result = address.find(item => item.name === city);
+        setReceiverDistricts(result.districts);
+    }
+
+    const findReceiverWards = district => {
+        const result = receiverDistricts.find(item => item.name === district);
+        setReceiverWards(result.wards);
+    }
+
+    const handleChangeReceiverCity = e => {
+        findReceiverDistricts(e.target.value);
+        setReceiverInfo(prev => ({
+            ...prev, 
+            city: e.target.value,
+            district: '',
             ward: ''
         }))
     }
 
-    const handleChangeWard = (e, setState) => {
-        setState(prev => ({
-            ...prev, 
-            ward: e.target.value
+    const handleChangeReceiverDistrict = e => {
+        findReceiverWards(e.target.value);
+        setReceiverInfo(prev => ({
+            ...prev,
+            district: e.target.value,
+            ward: '',
         }))
     }
 
-    const findDistricts = city => {
-        const result = address.find(item => item.name === city);
-        setDistricts(result.districts);
-    }
-
-    const findWards = district => {
-        const result = districts.find(item => item.name === district);
-        setWards(result.wards);
+    const handleChangeReceiverWard = e => {
+        setReceiverInfo(prev => ({...prev, ward: e.target.value }))
     }
 
     const handleSubmit = () => {
         // Check empty field
-        const emptySenderInfo = Object.values(senderInfo).some(x => x === '');
+        // const emptySenderInfo = Object.values(senderInfo).some(x => x === '');
         
     }
 
@@ -156,13 +188,13 @@ function CreateOrder() {
                                             <label>Tỉnh/Thành phố</label>
                                             <select
                                                 value={senderInfo?.city ? senderInfo.city : ''}
-                                                onChange={e => handleChangeCity(e, setSenderInfo)}
+                                                onChange={handleChangeSenderCity}
                                             >
                                                 {senderInfo?.city
                                                     ? <option value={senderInfo.city}>{senderInfo.city}</option>
                                                     : <option value="">--Chọn tỉnh/thành phố--</option>}
                                                 {address.map(item => (
-                                                    <option key={item.code}>{item.name}</option>
+                                                    <option key={item.code} value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -170,12 +202,12 @@ function CreateOrder() {
                                             <label>Quận/Huyện</label>
                                             <select
                                                 value={senderInfo?.district ? senderInfo.district : ''}
-                                                onChange={e => handleChangeDistrict(e, setSenderInfo)}>
+                                                onChange={handleChangeSenderDistrict}>
                                                 {senderInfo.district
                                                     ? <option value={senderInfo.district}>{senderInfo.district}</option>
                                                     : <option value="">--Chọn quận/huyện</option>}
-                                                {districts.map(item => (
-                                                    <option key={item.code}>{item.name}</option>
+                                                {senderDistricts.map(item => (
+                                                    <option key={item.code} value={item.name}>{item.name}</option>
                                                 ))} 
                                             </select>
                                         </div>
@@ -184,12 +216,12 @@ function CreateOrder() {
                                             <label>Phường/Xã</label>
                                             <select
                                                 value={senderInfo?.ward ? senderInfo.ward : ''}
-                                                onChange={e => handleChangeWard(e, setSenderInfo)}>
+                                                onChange={handleChangeSenderWard}>
                                                 {senderInfo.ward
                                                     ? <option value={senderInfo.ward}>{senderInfo.ward}</option>
                                                     : <option value="">--Chọn phường/xã</option>}
-                                                {wards.map(item => (
-                                                    <option key={item.code}>{item.name}</option>
+                                                {senderWards.map(item => (
+                                                    <option key={item.code} value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -231,24 +263,24 @@ function CreateOrder() {
                                         <div className={styles.formGroup}>
                                             <label>Tỉnh/Thành phố</label>
                                             <select value={receiverInfo?.city ? receiverInfo.city : ""}
-                                                onChange={e => handleChangeCity(e, setReceiverInfo)}>
+                                                onChange={handleChangeReceiverCity}>
                                                 {receiverInfo?.city
                                                     ? <option value={receiverInfo.city}>{receiverInfo.city}</option>
                                                     : <option value="">-- Chọn tỉnh/thành phố --</option>}
                                                 {address.map(item => (
-                                                    <option key={item.name}>{item.name}</option>
+                                                    <option key={item.name} value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className={styles.formGroup}>
                                             <label>Quận/Huyện</label>
                                             <select value={receiverInfo?.district ? receiverInfo.district : ""}
-                                                onChange={e => handleChangeDistrict(e, setReceiverInfo)}>
+                                                onChange={handleChangeReceiverDistrict}>
                                                 {receiverInfo?.district
                                                     ? <option value={receiverInfo.district}>{receiverInfo.district}</option>
                                                     : <option value="">-- Chọn quận/huyện --</option>}
-                                                {districts.map(item => (
-                                                    <option value={item.name}>{item.name}</option>
+                                                {receiverDistricts.map(item => (
+                                                    <option key={item.code} value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -256,12 +288,12 @@ function CreateOrder() {
                                         <div className={styles.formGroup}>
                                             <label>Phường/Xã</label>
                                             <select value={receiverInfo?.ward ? receiverInfo.ward : ""}
-                                                onChange={e => handleChangeWard(e, setReceiverInfo)}>
+                                                onChange={handleChangeReceiverWard}>
                                                 {receiverInfo?.ward
                                                     ? <option key={receiverInfo.ward}>{receiverInfo.ward}</option>
                                                     : <option value="">-- Chọn phường/xã --</option>}
-                                                {wards.map(item => (
-                                                    <option value={item.name}>{item.name}</option>
+                                                {receiverWards.map(item => (
+                                                    <option key={item.code} value={item.name}>{item.name}</option>
                                                 ))}
                                             </select>
                                         </div>
