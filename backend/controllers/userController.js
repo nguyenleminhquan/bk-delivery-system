@@ -161,7 +161,6 @@ const testJWT = async(req, res, next) => {
     }
 }
 
-// Role: Admin
 const getWorkingDay = async (req, res, next) => {
     try {
         let user = await User.findOne({ email: req.email })
@@ -176,16 +175,89 @@ const getWorkingDay = async (req, res, next) => {
     }
 }
 
-// Role: Nhan vien kho, tai xe
-const getWorkingDayById = async (req, res, next) => {
+const updateWorkingDays = async (req, res, next) => {
     try {
+        const checkin = new Date(parseInt(req.body.time))
+        const year = checkin.getFullYear()
+        const month = checkin.getMonth()
+        const date = checkin.getDate()
+
         let user = await User.findOne({ email: req.email })
-        return res.json(user.working_days)
+        // If no data about working_days in database
+        if (user.working_days.length == 0) {
+            user.working_days.push({
+                year: year,
+                months: [{
+                    month: month + 1,
+                    days: [date]
+                }]
+            })
+        } else {
+            let yearIsExist = false
+            let countYear = 0
+            for (; countYear < user.working_days.length; countYear++) {
+                if (user.working_days[countYear].year == year) {
+                    yearIsExist = true
+                    break
+                }
+            }
+
+            // If has year
+            if (yearIsExist) {
+                let monthIsExist = false
+                let countMonth = 0
+                for (; countMonth < user.working_days[countYear].months.length; countMonth++) {
+                    if (user.working_days[countYear].months[countMonth].month == (month + 1)) {
+                        monthIsExist = true
+                        break
+                    }
+                }
+
+                // If has month
+                if (monthIsExist) {
+                    // Check duplicate date
+                    let dayIsExist = false
+                    let lengthDays = user.working_days[countYear].months[countMonth].days.length
+                    for (let count = 0; count < lengthDays; count++) {
+                        if (user.working_days[countYear].months[countMonth].days[count] == date) {
+                            dayIsExist = true
+                            break
+                        }
+                    }
+
+                    if (dayIsExist) {
+                        return next(createError(400, "You already checkin"))
+                    }
+                    user.working_days[countYear].months[countMonth].days.push(date)
+                } else {
+                    user.working_days[countYear].months.push({
+                        month: month + 1,
+                        days: [date]
+                    })
+                }
+            } else {
+                user.working_days.push({
+                    year,
+                    months: [{
+                        month: month + 1,
+                        days: [date]
+                    }]
+                })
+            }
+
+        }
+
+        user = await user.save()
+
+        return res.json({
+            working_days: user.working_days,
+            msg: "Successful"
+        })
+
     } catch (error) {
-        return next(createError(400))
+        return next(createError(404, "Can not update working day"))
     }
 }
-
 export {
     userRegister,
     userLogin,
@@ -194,5 +266,5 @@ export {
     changePassword,
     testJWT,
     getWorkingDay,
-    getWorkingDayById 
+    updateWorkingDays
 }
