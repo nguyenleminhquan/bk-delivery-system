@@ -18,9 +18,13 @@ const userSchema = mongoose.Schema({
     account_number: String
   },
   working_days: [{
+    _id: false,
     year: Number,
-    month: Number,
-    date: [{ type: Date }]
+    months: [{
+      _id: false,
+      month: Number,
+      days: [Number]
+    }]
   }],
   stock_id: String,
   vehicle: {
