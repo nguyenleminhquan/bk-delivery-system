@@ -15,7 +15,10 @@ const userRegister = async (req, res, next) => {
     // Neu tai khoan ton tai
     if (exist != "" && exist) {
         return next(createError(400, "Email is exist"))
-    } else {
+    } else if (body.typeUser == "admin") {
+        return next(createError(404, "Can not register account with admin role"))
+    } 
+    else {
         let newUser = new User(body)
         try {
             newUser = await newUser.save()

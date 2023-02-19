@@ -7,7 +7,7 @@ const createOrder = async (req, res, next) => {
   // body:
   // user_id
   // list items: name, quantity, type, weight
-  const bodyObj = JSON.parse(req.body)
+  const bodyObj = req.body
 
   let newOrder = new Order({
     weight: 0,
