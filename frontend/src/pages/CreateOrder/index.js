@@ -8,6 +8,7 @@ import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { createOrder } from 'features/user/orderSlice'
+import AddressForm from 'components/AddressForm'
 
 const infoModel = {
     fullname: '',
@@ -47,90 +48,15 @@ function CreateOrder() {
     const [receiverWards, setReceiverWards] = useState([]);
     const [address, setAddress] = useState([]);
 
-
-    const handleChangeInfo = (event, setState, field) => {
-        const value = event.target.value;
-        setState(prev => ({...prev, [field]: value}));
-    }
-
     const getAddress = () => {
         axios.get('https://provinces.open-api.vn/api/?depth=3')
             .then(res => setAddress(res.data))
             .catch(error => console.log(error))
     }
 
-    // For sender only
-    const findSenderDistricts = city => {
-        const result = address.find(item => item.name === city);
-        setSenderDistricts(result.districts);
-    }
-
-    const findSenderWards = district => {
-        const result = senderDistricts.find(item => item.name === district);
-        setSenderWards(result.wards);
-    }
-
-    const handleChangeSenderCity = e => {
-        findSenderDistricts(e.target.value);
-        setSenderInfo(prev => ({
-            ...prev, 
-            city: e.target.value,
-            district: '',
-            ward: ''
-        }))
-    }
-
-    const handleChangeSenderDistrict = e => {
-        findSenderWards(e.target.value);
-        setSenderInfo(prev => ({
-            ...prev,
-            district: e.target.value,
-            ward: '',
-        }))
-    }
-
-    const handleChangeSenderWard = e => {
-        setSenderInfo(prev => ({...prev, ward: e.target.value }))
-    }
-
-    // For receiver only
-    const findReceiverDistricts = city => {
-        const result = address.find(item => item.name === city);
-        setReceiverDistricts(result.districts);
-    }
-
-    const findReceiverWards = district => {
-        const result = receiverDistricts.find(item => item.name === district);
-        setReceiverWards(result.wards);
-    }
-
-    const handleChangeReceiverCity = e => {
-        findReceiverDistricts(e.target.value);
-        setReceiverInfo(prev => ({
-            ...prev, 
-            city: e.target.value,
-            district: '',
-            ward: ''
-        }))
-    }
-
-    const handleChangeReceiverDistrict = e => {
-        findReceiverWards(e.target.value);
-        setReceiverInfo(prev => ({
-            ...prev,
-            district: e.target.value,
-            ward: '',
-        }))
-    }
-
-    const handleChangeReceiverWard = e => {
-        setReceiverInfo(prev => ({...prev, ward: e.target.value }))
-    }
-
     const handleSubmit = () => {
         // Check empty field
         // const emptySenderInfo = Object.values(senderInfo).some(x => x === '');
-        
     }
 
     useEffect(() => {
@@ -163,149 +89,29 @@ function CreateOrder() {
                                     <button className={styles.editBtn}>
                                         {/* {editAddress ? <BsCheckSquare /> : <BsPencilSquare />} */}
                                     </button>
-                                    
                                 </div>
-                                <form className='row m-1'>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Họ tên</label>
-                                            <input type="text"
-                                                placeholder='Nhập họ tên'
-                                                value={senderInfo?.fullname}
-                                                onChange={e => handleChangeInfo(e, setSenderInfo, 'fullname')}/>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Số điện thoại</label>
-                                            <input type="text" 
-                                                placeholder='Nhập số điện thoại'
-                                                value={senderInfo?.phone}
-                                                onChange={e => handleChangeInfo(e, setSenderInfo, 'phone')}/>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Tỉnh/Thành phố</label>
-                                            <select
-                                                value={senderInfo?.city ? senderInfo.city : ''}
-                                                onChange={handleChangeSenderCity}
-                                            >
-                                                {senderInfo?.city
-                                                    ? <option value={senderInfo.city}>{senderInfo.city}</option>
-                                                    : <option value="">--Chọn tỉnh/thành phố--</option>}
-                                                {address.map(item => (
-                                                    <option key={item.code} value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>Quận/Huyện</label>
-                                            <select
-                                                value={senderInfo?.district ? senderInfo.district : ''}
-                                                onChange={handleChangeSenderDistrict}>
-                                                {senderInfo.district
-                                                    ? <option value={senderInfo.district}>{senderInfo.district}</option>
-                                                    : <option value="">--Chọn quận/huyện</option>}
-                                                {senderDistricts.map(item => (
-                                                    <option key={item.code} value={item.name}>{item.name}</option>
-                                                ))} 
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Phường/Xã</label>
-                                            <select
-                                                value={senderInfo?.ward ? senderInfo.ward : ''}
-                                                onChange={handleChangeSenderWard}>
-                                                {senderInfo.ward
-                                                    ? <option value={senderInfo.ward}>{senderInfo.ward}</option>
-                                                    : <option value="">--Chọn phường/xã</option>}
-                                                {senderWards.map(item => (
-                                                    <option key={item.code} value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Địa chỉ</label>
-                                            <input type="text"
-                                                placeholder='Nhập địa chỉ'
-                                                value={senderInfo?.address}
-                                                onChange={e => handleChangeInfo(e, setSenderInfo, 'address')}/>
-                                        </div>
-                                    </div>
-                                </form>
+                                <AddressForm 
+                                    stateInfo={senderInfo}
+                                    setStateInfo={setSenderInfo}
+                                    cities={address}
+                                    districts={senderDistricts}
+                                    setDistricts={setSenderDistricts}
+                                    wards={senderWards}
+                                    setWards={setSenderWards}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên nhận</span>
                                 </div>
-                                <form className='row m-1'>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Họ tên</label>
-                                            <input type="text"
-                                                placeholder='Nhập họ tên'
-                                                value={receiverInfo?.fullname}
-                                                onChange={e => handleChangeInfo(e, setReceiverInfo, 'fullname')}/>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Số điện thoại</label>
-                                            <input type="text" 
-                                                placeholder='Nhập số điện thoại'
-                                                value={receiverInfo?.phone}
-                                                onChange={e => handleChangeInfo(e, setReceiverInfo, 'phone')}/>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Tỉnh/Thành phố</label>
-                                            <select value={receiverInfo?.city ? receiverInfo.city : ""}
-                                                onChange={handleChangeReceiverCity}>
-                                                {receiverInfo?.city
-                                                    ? <option value={receiverInfo.city}>{receiverInfo.city}</option>
-                                                    : <option value="">-- Chọn tỉnh/thành phố --</option>}
-                                                {address.map(item => (
-                                                    <option key={item.name} value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>Quận/Huyện</label>
-                                            <select value={receiverInfo?.district ? receiverInfo.district : ""}
-                                                onChange={handleChangeReceiverDistrict}>
-                                                {receiverInfo?.district
-                                                    ? <option value={receiverInfo.district}>{receiverInfo.district}</option>
-                                                    : <option value="">-- Chọn quận/huyện --</option>}
-                                                {receiverDistricts.map(item => (
-                                                    <option key={item.code} value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Phường/Xã</label>
-                                            <select value={receiverInfo?.ward ? receiverInfo.ward : ""}
-                                                onChange={handleChangeReceiverWard}>
-                                                {receiverInfo?.ward
-                                                    ? <option key={receiverInfo.ward}>{receiverInfo.ward}</option>
-                                                    : <option value="">-- Chọn phường/xã --</option>}
-                                                {receiverWards.map(item => (
-                                                    <option key={item.code} value={item.name}>{item.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Địa chỉ</label>
-                                            <input type="text" placeholder='Nhập địa chỉ' 
-                                                value={receiverInfo?.address}
-                                                onChange={e => handleChangeInfo(e, setReceiverInfo, 'address')}/>
-                                        </div>
-                                    </div>
-                                </form>
+                                <AddressForm 
+                                    stateInfo={receiverInfo}
+                                    setStateInfo={setReceiverInfo}
+                                    cities={address}
+                                    districts={receiverDistricts}
+                                    setDistricts={setReceiverDistricts}
+                                    wards={receiverWards}
+                                    setWards={setReceiverWards}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
