@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import styles from './CreateOrder.module.scss'
 import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
 import axios from 'axios'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from 'features/user/orderSlice'
 import AddressForm from 'components/AddressForm'
 
@@ -24,7 +24,7 @@ const productModel = {
     weight: '',
     quantity: '',
     imgUrl: '',
-    cod: '',
+    type: '',
 }
 
 const paymentOptions = [
@@ -38,8 +38,18 @@ const paymentMethods = [
     {code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon />},
 ]
 
+const orderTypes = [
+    {code: 'electronic', label: 'Điện tử'},
+    {code: 'fragile', label: 'Dễ vỡ'},
+    {code: 'food', label: 'Thức ăn'},
+    {code: 'cloth', label: 'Quần áo'},
+    {code: 'others', label: 'Còn lại'}
+];
+
 function CreateOrder() {
     const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
+
     const [senderInfo, setSenderInfo] = useState(infoModel);
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
     
@@ -52,8 +62,13 @@ function CreateOrder() {
 
     const [products, setProducts] = useState([productModel]);
 
+    const [note, setNote] = useState('');
+    const [cod, setCod] = useState(0);
+
     const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code);
     const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
+
+    const [totalFee, setTotalFee] = useState(0);
 
     const getAddress = () => {
         axios.get('https://provinces.open-api.vn/api/?depth=3')
@@ -83,11 +98,36 @@ function CreateOrder() {
     }
 
     const handleSubmit = () => {
-        console.log('Sender info: ', senderInfo);
-        console.log('Receiver Info: ', receiverInfo);
-        console.log('Product info: ', products);
-        console.log('Payment option: ', paymentOption);
-        console.log('Payment method: ', paymentMethod);
+        const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
+        const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
+        const isEmptyProduct = products.forEach(product => {
+            if (Object.values(product).some(value => value === '')) {
+                return true;
+            }
+        });
+        console.log('empty sender info: ', isEmptySenderInfo);
+        console.log('empty receiver info: ', isEmptyReceiverInfo);
+        if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
+            alert('Chưa điền đầy đủ thông tin!');
+        } else {
+            const payload = {
+                sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
+                payment_type: paymentMethod,
+                cod_amount: cod,
+                note,
+                status: 'WAITING',
+                shipping_fee: calculateTotalFee(),
+                user_id: user.id,
+                items: products.map(product => ({
+                    name: product.name,
+                    quantity: product.quantity,
+                    type: product.type,
+                    weight: product.weight,
+                }))
+            }
+            dispatch(createOrder(payload));
+        }
     }
 
     const handleChangePaymentOption = e => {
@@ -96,6 +136,30 @@ function CreateOrder() {
             setPaymentMethod('cod');
         }
     }
+
+
+    const calculateTotalFee = () => {
+        let totalWeight = 0;
+        // get total weight
+        if (products.length > 0) {
+            totalWeight = products.reduce((cur, acc) => cur + acc.quantity * acc.weight, 0);
+        }
+        if (totalWeight <= 3000) {
+            return 40000;
+        } else {
+            const curTotalWeight = totalWeight - 1000;
+            return 40000 + Math.floor(curTotalWeight / 500)*5000 + ((curTotalWeight % 500) && 5000);
+        }
+    }
+
+    useEffect(() => {
+        if (products.at(-1).weight && products.at(-1).quantity) {
+            const updated = calculateTotalFee() + parseInt(cod);
+            setTotalFee(updated);
+        } else {
+            setTotalFee(parseInt(cod) || 0);
+        }
+    }, [cod, products])
 
     useEffect(() => {
         // Get sender info from user profile
@@ -193,12 +257,17 @@ function CreateOrder() {
                                                         onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
                                                 </div>
                                                 <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>COD</label>
-                                                    <input type="text" 
-                                                        placeholder='0'
-                                                        className={styles.smallInput}
-                                                        value={product.cod}
-                                                        onChange={e => handleUpdateProduct(e, index, 'cod')}/>
+                                                    <label className='fw-semibold me-2'>Loại</label>
+                                                    <select value={product.type}
+                                                        onChange={e => handleUpdateProduct(e, index, 'type')}>
+                                                        {product?.type 
+                                                            ? <option value={product.value}>{product.value}</option>
+                                                            : <option value="">--Loại--</option>
+                                                        }
+                                                        {orderTypes.map(item => (
+                                                            <option key={item.code} value={item.code}>{item.label}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                                 <button className='flex-fill bg-white' onClick={handleAddProduct}>
                                                     <AiOutlinePlusCircle className={styles.addItemBtn}/>
@@ -213,8 +282,11 @@ function CreateOrder() {
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
                                     <label>Ghi chú</label>
-                                    <textarea cols="30" rows="5" placeholder='Ghi chú cho đơn vị vận chuyển'></textarea>
-                                    {/* <input type="text" placeholder=''/> */}
+                                    <textarea cols="30"
+                                        rows="5"
+                                        value={note}
+                                        onChange={e => setNote(e.target.value)}
+                                        placeholder='Ghi chú cho đơn vị vận chuyển'></textarea>
                                 </div>
                             </div>
 
@@ -229,6 +301,15 @@ function CreateOrder() {
                                     </select>
                                 </div>
                             </div>
+                            
+                            {paymentOption === 'receiver' && (
+                                <div className={styles.createOrderSection}>
+                                    <div className={styles.formGroup}>
+                                        <label>Tổng tiền thu hộ COD</label>
+                                        <input type="text" placeholder='0' value={cod} onChange={e => setCod(e.target.value)}/>
+                                    </div>
+                                </div>
+                            )}
                             
                             {paymentOption === 'sender' && (
                                 <div className={styles.createOrderSection}>
@@ -250,11 +331,10 @@ function CreateOrder() {
                                 </div>
                             )}
                             
-
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
-                                    <h1 className={styles.importantLine}>0đ</h1>
+                                    <h1 className={styles.importantLine}>{totalFee}đ</h1>
                                     <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
                                 </div>
                             </div>

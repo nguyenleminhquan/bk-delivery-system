@@ -81,7 +81,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         onChange={handleChangeDistrict}>
                         {stateInfo.district
                             ? <option value={stateInfo.district}>{stateInfo.district}</option>
-                            : <option value="">--Chọn quận/huyện</option>}
+                            : <option value="">--Chọn quận/huyện--</option>}
                         {districts.map(item => (
                             <option key={item.code} value={item.name}>{item.name}</option>
                         ))} 
@@ -95,7 +95,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         onChange={handleChangeWard}>
                         {stateInfo.ward
                             ? <option value={stateInfo.ward}>{stateInfo.ward}</option>
-                            : <option value="">--Chọn phường/xã</option>}
+                            : <option value="">--Chọn phường/xã--</option>}
                         {wards.map(item => (
                             <option key={item.code} value={item.name}>{item.name}</option>
                         ))}

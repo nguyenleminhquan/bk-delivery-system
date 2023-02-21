@@ -23,6 +23,13 @@
     .createOrderSection {
         padding-bottom: 24px;
         transition: var(--transition);
+        textarea {
+            padding: 6px;
+            font-size: 1.4rem;
+            outline: none;
+            border-color: var(--border-color);
+            border-radius: 5px;
+        }
         & ~ .createOrderSection {
             border-top: 1px solid var(--border-color);
             padding: 24px 0;
@@ -84,11 +91,10 @@
                     margin-left: 8px;
                     flex: 1;
                     .mediumInput {
-                        min-width: 130px;
-                        max-width: 150px;
+                        max-width: 140px;
                     }
                     .smallInput {
-                        max-width: 50px;
+                        max-width: 40px;
                     }
                     .extraSmallInput {
                         max-width: 20px;
@@ -150,9 +156,6 @@
         }
     }
     select {
-        // appearance: none;
-        // -webkit-appearance: none;
-        // -moz-appearance: none;
         &::after {
             background-color: red;
         }
