@@ -36,7 +36,7 @@
             border-left: 5px solid var(--primary-color);
             color: var(--primary-color);
             font-weight: 600;
-            font-size: 1.6rem;
+            font-size: 16px;
             .editBtn {
                 color: #000;
                 cursor: pointer;
@@ -47,7 +47,7 @@
         }
         .content {
             margin: 10px;
-            font-size: 1.4rem;
+            font-size: 14px;
             .importantLine {
                 color: var(--secondary-color);
             }
@@ -67,7 +67,7 @@
                         align-items: center;
                         justify-content: center;
                         text-align: center;
-                        font-size: 1.2rem;
+                        font-size: 12px;
                         width: 55px;
                         height: 55px;
                         background-color: #BEBEBE;
@@ -89,7 +89,7 @@
                     input {
                         border-bottom: 1px solid var(--border-color);
                         &::placeholder {
-                            font-size: 1.4rem;
+                            font-size: 14px;
                             color: var(--placeholder-input-color);
                         }
                     }
@@ -120,7 +120,7 @@
 .formGroup {
     display: flex;
     flex-direction: column;
-    font-size: 1.4rem;
+    font-size: 14px;
     & ~ .formGroup {
         margin-top: 12px;
     }
@@ -139,7 +139,7 @@
     input {
         &::placeholder {
             color: var(--placeholder-input-color);
-            font-size: 1.4rem;
+            font-size: 14px;
         }
     }
     select {
@@ -159,7 +159,7 @@
     padding: 10px;
     border-radius: 5px;
     background-color: var(--primary-color);
-    font-size: 1.6rem;
+    font-size: 16px;
     font-weight: 500;
     transition: var(--transition);
     &:hover {

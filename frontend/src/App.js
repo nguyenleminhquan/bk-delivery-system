@@ -18,8 +18,9 @@ function App() {
             element={
               <ProtectedRoute>
                 <SharedLayout />
-                <Authorize />
-                
+                <div className='routes'>
+                  <Authorize />
+                </div>
               </ProtectedRoute>
             } 
           >

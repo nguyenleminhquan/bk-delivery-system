@@ -14,7 +14,11 @@ function ProtectedRoute({ children }) {
 	if (!user) {
 		return <Navigate to='/landing' />
 	}
-  	return children
+  	return (
+		<div className='protected-route'>
+			{children}
+		</div>
+	)
 }
 
 export default ProtectedRoute
