@@ -6,6 +6,20 @@ const deliverySchema = mongoose.Schema({
   },
   driver_id: {
     type: mongoose.Schema.Types.ObjectId
+  },
+  status: {
+    type: String,
+    enum: ['waiting', 'accepted', 'picked', 'deliveried'],
+    default: 'waiting'
+  },
+  area_code: {
+    type: Number
+  },
+  from: {
+    type: String
+  },
+  to: {
+    type: String
   }
 }, { timestamps: true })
 

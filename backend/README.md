@@ -11,3 +11,8 @@
 | /order/:id | DELETE | Delete order by id | Authorization: Bearer <refresh_token> <access_token> | |
 | /order/:id | PATCH | Edit order by id | Authorization: Bearer <refresh_token> <access_token> | Data |
 | /order/:id/update-status | PATCH | Edit order status by id | Authorization: Bearer <refresh_token> <access_token> | status: string |
+| /delivery?status=...&area_code=... | GET | Get delivery by status and area code | Authorization: Bearer <refresh_token> <access_token> | |
+| /delivery | POST | Create new delivery | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> driver_id: string (optional) <br /> status: string <br /> area_code: number <br /> from: string <br /> to: string |
+| /delivery/history/:driverId | GET | Get delivery history | Authorization: Bearer <refresh_token> <access_token> | |
+| /delivery/:id/update-status | PATCH | Change the status of delivery | Authorization: Bearer <refresh_token> <access_token> | status: string |
+| /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
