@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema({
     default: 'user'
   },
   sender_address: String,
+  address: String,
   bank_account: {
     bank_name: String,
     owner: String,
@@ -26,12 +27,17 @@ const userSchema = mongoose.Schema({
       days: [Number]
     }]
   }],
-  stock_id: String,
+  stock_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock'
+  },
   vehicle: {
     type: String,
     license_plate_number: String
+  },
+  area_code: {
+    type: Number
   }
-
 })
 
 userSchema.pre('save', function (next) {

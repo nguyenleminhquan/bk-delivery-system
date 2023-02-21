@@ -33,8 +33,10 @@ const userRegister = async (req, res, next) => {
                 phone: newUser.phone,
                 typeUser: newUser.typeUser,
                 sender_address: newUser.sender_address,
+                address: newUser.address,
                 bank_account: exist.bank_account,
                 working_days: newUser.working_days,
+                area_code: newUser.area_code,
                 token, refresh_token 
             }
             
@@ -68,8 +70,10 @@ const userLogin = async (req, res, next) => {
                 phone: exist.phone,
                 typeUser: exist.typeUser,
                 sender_address: exist.sender_address,
+                address: exist.address,
                 bank_account: exist.bank_account,
                 working_days: exist.working_days,
+                area_code: exist.area_code,
                 token, refresh_token 
             }
             
@@ -110,8 +114,10 @@ const updateUserInfo = async (req, res, next) => {
                 phone: data.phone,
                 typeUser: data.typeUser,
                 sender_address: data.sender_address,
+                address: data.address,
                 bank_account: data.bank_account,
                 working_days: data.working_days,
+                area_code: data.area_code,
                 token, refresh_token
             },
             msg: "User updated!"
