@@ -163,8 +163,11 @@ function CreateOrder() {
 
     useEffect(() => {
         // Get sender info from user profile
-        // Todo..
-
+        setSenderInfo(prev => ({
+            ...prev,
+            fullname: user.fullname,
+            phone: user.phone,
+        }))
         getAddress();
     }, [])
 
