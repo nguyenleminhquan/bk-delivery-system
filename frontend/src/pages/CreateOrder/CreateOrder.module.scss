@@ -84,10 +84,14 @@
                     margin-left: 8px;
                     flex: 1;
                     .mediumInput {
-                        min-width: 200px;
+                        min-width: 130px;
+                        max-width: 150px;
                     }
                     .smallInput {
                         max-width: 50px;
+                    }
+                    .extraSmallInput {
+                        max-width: 20px;
                     }
                     input {
                         border-bottom: 1px solid var(--border-color);

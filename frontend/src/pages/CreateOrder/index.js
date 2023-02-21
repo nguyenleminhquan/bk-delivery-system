@@ -19,12 +19,14 @@ const infoModel = {
     address: '',
 }
 
-// const productModel = {
-//     name: '',
-//     weight: '',
-//     quantity: '',
-//     imgUrl: '',
-// }
+const productModel = {
+    name: '',
+    weight: '',
+    quantity: '',
+    imgUrl: '',
+    cod: '',
+}
+
 const paymentOptions = [
     {code: 'sender', label: 'Người gửi thanh toán'},
     {code: 'receiver', label: 'Người nhận thanh toán'}
@@ -39,7 +41,7 @@ const paymentMethods = [
 function CreateOrder() {
     const dispatch = useDispatch();
     const [senderInfo, setSenderInfo] = useState(infoModel);
-    const [receiverInfo, setReceiverInfo] = useState(infoModel)
+    const [receiverInfo, setReceiverInfo] = useState(infoModel);
     
     // address information
     const [senderDistricts, setSenderDistricts] = useState([]);
@@ -48,15 +50,51 @@ function CreateOrder() {
     const [receiverWards, setReceiverWards] = useState([]);
     const [address, setAddress] = useState([]);
 
+    const [products, setProducts] = useState([productModel]);
+
+    const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code);
+    const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
+
     const getAddress = () => {
         axios.get('https://provinces.open-api.vn/api/?depth=3')
             .then(res => setAddress(res.data))
             .catch(error => console.log(error))
     }
 
+    const handleUpdateProduct = (e, index, field) => {
+        const value = e.target.value;
+        setProducts(products.map((product, idx) => {
+            if (index === idx) {
+                return {...product, [field]: value};
+            }
+            return product;
+        }));
+    }
+
+    const handleAddProduct = () => {
+        const lastProduct = products.at(-1);
+        if (!checkEmptyProductInfo(lastProduct)) {
+            setProducts(prev => [...prev, productModel])
+        }
+    }
+
+    const checkEmptyProductInfo = (product) => {
+        return product.name === '' || product.weight === '' || product.quantity === '';
+    }
+
     const handleSubmit = () => {
-        // Check empty field
-        // const emptySenderInfo = Object.values(senderInfo).some(x => x === '');
+        console.log('Sender info: ', senderInfo);
+        console.log('Receiver Info: ', receiverInfo);
+        console.log('Product info: ', products);
+        console.log('Payment option: ', paymentOption);
+        console.log('Payment method: ', paymentMethod);
+    }
+
+    const handleChangePaymentOption = e => {
+        setPaymentOption(e.target.value);
+        if (e.target.value === 'receiver') {
+            setPaymentMethod('cod');
+        }
     }
 
     useEffect(() => {
@@ -119,55 +157,72 @@ function CreateOrder() {
                                     <span className='ms-2 me-3'>Hàng hóa</span>
                                 </div>
                                 <div className={styles.content}>
-                                    <div className={styles.orderItem}>
-                                        <div className={styles.imageUpload}>
-                                            <label htmlFor='file-input'>
-                                                <span className={styles.button}>Upload ảnh</span>
-                                            </label>
-                                            <input id="file-input" type="file" style={{display: 'none'}} />
-                                        </div>
+                                    {products.map((product, index) => (
+                                        <div key={index} className={styles.orderItem}>
+                                            <div className={styles.imageUpload}>
+                                                <label htmlFor='file-input'>
+                                                    <span className={styles.button}>Upload ảnh</span>
+                                                </label>
+                                                <input id="file-input" type="file" style={{display: 'none'}} />
+                                            </div>
 
-                                        <div className={styles.info}>
-                                            <span className='fw-semibold'>1. </span>
-                                            <div className='d-flex ms-3'>
-                                                <label className='fw-semibold me-2'>Tên</label>
-                                                <input type="text"
-                                                    placeholder='Nhập tên sản phẩm'
-                                                    className={styles.mediumInput}/>
+                                            <div className={styles.info}>
+                                                <span className='fw-semibold'>{index+1}. </span>
+                                                <div className='d-flex ms-3'>
+                                                    <label className='fw-semibold me-2'>Tên</label>
+                                                    <input type="text"
+                                                        placeholder='Nhập tên sản phẩm'
+                                                        className={styles.mediumInput}
+                                                        value={product.name}
+                                                        onChange={e => handleUpdateProduct(e, index, 'name')}/>
+                                                </div>
+                                                <div className='d-flex ms-3'>
+                                                    <label className='fw-semibold me-2'>KL(gram)</label>
+                                                    <input type="text" 
+                                                        placeholder='0' 
+                                                        className={styles.smallInput}
+                                                        value={product.weight}
+                                                        onChange={e => handleUpdateProduct(e, index, 'weight')}/>
+                                                </div>
+                                                <div className='d-flex ms-3'>
+                                                    <label className='fw-semibold me-2'>SL</label>
+                                                    <input type="text" 
+                                                        placeholder='0'
+                                                        className={styles.extraSmallInput}
+                                                        value={product.quantity}
+                                                        onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
+                                                </div>
+                                                <div className='d-flex ms-3'>
+                                                    <label className='fw-semibold me-2'>COD</label>
+                                                    <input type="text" 
+                                                        placeholder='0'
+                                                        className={styles.smallInput}
+                                                        value={product.cod}
+                                                        onChange={e => handleUpdateProduct(e, index, 'cod')}/>
+                                                </div>
+                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
+                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
+                                                </button>
                                             </div>
-                                            <div className='d-flex ms-3'>
-                                                <label className='fw-semibold me-2'>KL(gram)</label>
-                                                <input type="text" 
-                                                    placeholder='0' 
-                                                    className={styles.smallInput} />
-                                            </div>
-                                            <div className='d-flex ms-3'>
-                                                <label className='fw-semibold me-2'>SL</label>
-                                                <input type="text" 
-                                                    placeholder='0' 
-                                                    className={styles.smallInput}/>
-                                            </div>
-                                            <button className='flex-fill bg-white'>
-                                                <AiOutlinePlusCircle className={styles.addItemBtn}/>
-                                            </button>
-                                        </div>
-                                    </div> 
+                                        </div> 
+                                    ))}
                                 </div>  
                             </div>
                         </div>
                         <div className="col-4">
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
-                                    <label>Mã giảm giá</label>
-                                    <input type="text" placeholder='Nhập mã giảm giá'/>
+                                    <label>Ghi chú</label>
+                                    <textarea cols="30" rows="5" placeholder='Ghi chú cho đơn vị vận chuyển'></textarea>
+                                    {/* <input type="text" placeholder=''/> */}
                                 </div>
-                                <button className={styles.button}>Áp dụng</button>
                             </div>
 
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
                                     <label>Tùy chọn thanh toán</label>
-                                    <select>
+                                    <select value={paymentOption}
+                                        onChange={handleChangePaymentOption}>
                                         {paymentOptions.map(option => (
                                             <option value={option.code} key={option.code}>{option.label}</option>
                                         ))}
@@ -175,21 +230,25 @@ function CreateOrder() {
                                 </div>
                             </div>
                             
-                            <div className={styles.createOrderSection}>
-                                <div className={styles.formGroup}>
-                                    <label>Phương thức thanh toán</label>
-                                    {paymentMethods.map(method => (
-                                        <label className={styles.optionWrap} key={method.code}>
+                            {paymentOption === 'sender' && (
+                                <div className={styles.createOrderSection}>
+                                    <div className={styles.formGroup}>
+                                        <label>Phương thức thanh toán</label>
+                                        {paymentMethods.map(method => (
+                                        <div className={styles.optionWrap} key={method.code}>
                                             <input type="radio" 
                                                 name='payment'
                                                 className='me-3'
-                                                value={method.code}/> 
+                                                checked={method.code === paymentMethod}
+                                                value={method.code}
+                                                onChange={e => setPaymentMethod(e.target.value)}/> 
                                             {method.icon}
-                                            <span className='ms-2 fw-normal'>{method.label}</span>
-                                        </label>
+                                            <label htmlFor="payment" className='ms-2' onClick={() =>setPaymentMethod(method.code)}>{method.label}</label>
+                                        </div>
                                     ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             
 
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
