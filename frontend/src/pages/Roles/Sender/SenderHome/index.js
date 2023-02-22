@@ -4,26 +4,27 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
 import styles from './Sender.module.scss'
+import Table from 'components/Table';
 
 function SenderHome() {
 	const dispatch = useDispatch();
 
 	return (
-		<div className={styles.wrapper}>
+		<div>
 			{/* Header bar */}
 			<div className='d-flex'>
 				<div className={styles.searchBar}>
 					<BsSearch />
 					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-5' />
 				</div>
-				<Link className='btn fs-4' to="/create-order">
+				<Link className='btn fs-6' to="/create-order">
 					<BiPencil className='me-3'/> Tạo đơn hàng
 				</Link>
 			</div>
 
 			{/* General */}
 			<div>
-				<h2 className='pt-5 pb-3 fs-1'>Tổng quan</h2>
+				<h2 className='pt-5 pb-3 fs-3'>Tổng quan</h2>
 				{/* Đã lấy hàng filter */}
 				<div className="filter d-flex align-items-center">
 					<div className={`${styles.orderFilter} ${styles.orderFilterActive}`}>
@@ -50,7 +51,7 @@ function SenderHome() {
 
 				{/* Order block */}
 				<div>
-
+					<Table />
 				</div>
 			</div>
 		</div>

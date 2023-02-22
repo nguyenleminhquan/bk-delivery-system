@@ -179,11 +179,11 @@ function CreateOrder() {
                     <BsSearch />
                     <input type="text" className='form-control ms-5' placeholder='Nhập mã đơn hàng' />
                 </div>
-                <Link className='btn fs-4' to="/create-order">
+                <Link className='btn fs-6' to="/create-order">
                     <BiPencil className='me-3'/> Tạo đơn hàng
                 </Link>
             </div>
-            <h2 className='pt-5 pb-3 fs-1'>Tạo đơn hàng mới</h2>
+            <h2 className='pt-5 pb-3 fs-3'>Tạo đơn hàng mới</h2>
             <div className='flex-fill mx-100 overflow-auto'>
                 <div className="container-fluid bg-white p-5">
                     <div className="row">
