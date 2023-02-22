@@ -1,22 +1,16 @@
 import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
-import { useState, useEffect, useLayoutEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { BiPencil } from 'react-icons/bi'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
 import styles from './CreateOrder.module.scss'
 import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { createOrder } from 'features/user/orderSlice'
+import AddressForm from 'components/AddressForm'
 
-const senderModel = {
-    fullname: 'Trần Phước Tài',
-    phone: '0388284790',
-    city: 'Thành phố Hồ Chí Minh',
-    district: 'Thành phố Thủ Đức',
-    ward: 'Phường Linh Trung',
-    address: 'KTX khu A, ĐHQG Tp.HCM',
-}
-
-const receiverModel = {
+const infoModel = {
     fullname: '',
     phone: '',
     city: '',
@@ -30,7 +24,9 @@ const productModel = {
     weight: '',
     quantity: '',
     imgUrl: '',
+    type: '',
 }
+
 const paymentOptions = [
     {code: 'sender', label: 'Người gửi thanh toán'},
     {code: 'receiver', label: 'Người nhận thanh toán'}
@@ -42,174 +38,139 @@ const paymentMethods = [
     {code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon />},
 ]
 
+const orderTypes = [
+    {code: 'electronic', label: 'Điện tử'},
+    {code: 'fragile', label: 'Dễ vỡ'},
+    {code: 'food', label: 'Thức ăn'},
+    {code: 'cloth', label: 'Quần áo'},
+    {code: 'others', label: 'Còn lại'}
+];
+
 function CreateOrder() {
-    const [editAddress, setEditAddress] = useState(false);
-    const [senderInfo, setSenderInfo] = useState(null);
-    const [receiverInfo, setReceiverInfo] = useState(receiverModel);
-    const [productLists, setProductLists] = useState([productModel]);
-    const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code)
-    const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code)
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
 
-    const [cities, setCities] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
+    const [senderInfo, setSenderInfo] = useState(infoModel);
+    const [receiverInfo, setReceiverInfo] = useState(infoModel);
+    
+    // address information
+    const [senderDistricts, setSenderDistricts] = useState([]);
+    const [receiverDistricts, setReceiverDistricts] = useState([]);
+    const [senderWards, setSenderWards] = useState([]);
+    const [receiverWards, setReceiverWards] = useState([]);
+    const [address, setAddress] = useState([]);
 
-    const _setSenderInfo = (field, event) => {
-        setSenderInfo(prev => ({...prev, [field]: event.target.value}));
+    const [products, setProducts] = useState([productModel]);
+
+    const [note, setNote] = useState('');
+    const [cod, setCod] = useState(0);
+
+    const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code);
+    const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
+
+    const [totalFee, setTotalFee] = useState(0);
+
+    const getAddress = () => {
+        axios.get('https://provinces.open-api.vn/api/?depth=3')
+            .then(res => setAddress(res.data))
+            .catch(error => console.log(error))
     }
 
-    const handleChangePaymentOption = event => {
-        setPaymentOption(event.target.value);
-    }
-
-    const handleChangePaymentMethod = event => {
-        console.log(event.target.value)
-        setPaymentMethod(event.target.value)
-    }
-
-    const handleSenderCityChange = event => {
-        const selectedCity = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const cityName = event.target.options[selectedIndex].getAttribute('data-value');
-        handleCityClick(selectedCity)
-        setSenderInfo({
-            ...senderInfo,
-            city: selectedCity,
-            district: '',
-            ward: '',
-        })
-    }
-
-    const handleSenderDistrictChange = event => {
-        const selectedDistrict = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const districtName = event.target.options[selectedIndex].getAttribute('data-value');
-        setSenderInfo({
-            ...senderInfo,
-            district: selectedDistrict,
-            ward: '',
-        });
-        handleDistrictClick(selectedDistrict);
-    }
-
-    const handleSenderWardChange = event => {
-        const selectedWard = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const wardName = event.target.options[selectedIndex].getAttribute('data-value');
-        setSenderInfo({
-            ...senderInfo,
-            ward: selectedWard,
-        });
-    }
-
-    const handleReceiverCityChange = event => {
-        const selectedCity = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const cityName = event.target.options[selectedIndex].getAttribute('data-value');
-        setReceiverInfo({
-            ...receiverInfo,
-            city: selectedCity,
-            district: '',
-            ward: '',
-        })
-        handleCityClick(selectedCity)
-    }
-
-    const handleReceiverDistrictChange = event => {
-        const selectedDistrict = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const districtName = event.target.options[selectedIndex].getAttribute('data-value');
-        setReceiverInfo({
-            ...receiverInfo,
-            district: selectedDistrict,
-            ward: '',
-        });
-        handleDistrictClick(selectedDistrict);
-    }
-
-    const handleReceiverWardChange = event => {
-        const selectedWard = event.target.value;
-        const selectedIndex = event.target.options.selectedIndex;
-        const wardName = event.target.options[selectedIndex].getAttribute('data-value');
-        setReceiverInfo({
-            ...receiverInfo,
-            ward: selectedWard,
-        });
-    }
-
-    const _setReceiverInfo = (field, event) => {
-        setReceiverInfo(prev => ({...prev, [field]: event.target.value}));
-    }
-
-    const _setProduct = (attribute, e) => {
-        const updatedProductList = productLists.map((product, index) => {
-        if (index === parseInt(e.target.id)) {
-            return {
-                ...product,
-                [attribute]: e.target.value
-            };
-          }
-          return product;
-        });
-
-        setProductLists(updatedProductList);
+    const handleUpdateProduct = (e, index, field) => {
+        const value = e.target.value;
+        setProducts(products.map((product, idx) => {
+            if (index === idx) {
+                return {...product, [field]: value};
+            }
+            return product;
+        }));
     }
 
     const handleAddProduct = () => {
-        setProductLists([...productLists, productModel]);
+        const lastProduct = products.at(-1);
+        if (!checkEmptyProductInfo(lastProduct)) {
+            setProducts(prev => [...prev, productModel])
+        }
+    }
+
+    const checkEmptyProductInfo = (product) => {
+        return product.name === '' || product.weight === '' || product.quantity === '';
     }
 
     const handleSubmit = () => {
-        console.log('senderInfo', senderInfo);
-        console.log('receiverInfo', receiverInfo);
-        console.log('productInfo', productLists);
-        console.log('paymentOption', paymentOption);
-        console.log('paymentMethod', paymentMethod);
-    }
-
-    const handleCityClick = (cityCode) => {
-        axios.get(`https://provinces.open-api.vn/api/p/${cityCode}/?depth=2`)
-        .then((res) => {
-            console.log(res)
-            setDistricts(res.data.districts);
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-    };
-
-    const handleDistrictClick = (districtCode) => {
-        axios.get(`https://provinces.open-api.vn/api/d/${districtCode}/?depth=2`)
-        .then(res => {
-            console.log(res);
-            setWards(res.data.wards);
-        })
-        .catch(err => console.log(err))
-    }
-
-    const getCityData = () => {
-        axios.get('https://provinces.open-api.vn/api/p/')
-        .then(response => {
-            setCities(response.data);
-        })
-        .catch(error => {
-        console.log(error);
+        const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
+        const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
+        const isEmptyProduct = products.forEach(product => {
+            if (Object.values(product).some(value => value === '')) {
+                return true;
+            }
         });
-    } 
-
-    const calculateFee = () => {
-        
+        console.log('empty sender info: ', isEmptySenderInfo);
+        console.log('empty receiver info: ', isEmptyReceiverInfo);
+        if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
+            alert('Chưa điền đầy đủ thông tin!');
+        } else {
+            const payload = {
+                sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
+                payment_type: paymentMethod,
+                cod_amount: cod,
+                note,
+                status: 'WAITING',
+                shipping_fee: calculateTotalFee(),
+                user_id: user.id,
+                items: products.map(product => ({
+                    name: product.name,
+                    quantity: product.quantity,
+                    type: product.type,
+                    weight: product.weight,
+                }))
+            }
+            dispatch(createOrder(payload));
+        }
     }
 
-    // Set up sender info and get data for city
-    useLayoutEffect(() => {
-        setSenderInfo(senderModel);
-        // if response = null -> setEdit(true)
-        if (!senderInfo) {
-            setEditAddress(true);
+    const handleChangePaymentOption = e => {
+        setPaymentOption(e.target.value);
+        if (e.target.value === 'receiver') {
+            setPaymentMethod('cod');
         }
-        getCityData();
+    }
+
+
+    const calculateTotalFee = () => {
+        let totalWeight = 0;
+        // get total weight
+        if (products.length > 0) {
+            totalWeight = products.reduce((cur, acc) => cur + acc.quantity * acc.weight, 0);
+        }
+        if (totalWeight <= 3000) {
+            return 40000;
+        } else {
+            const curTotalWeight = totalWeight - 1000;
+            return 40000 + Math.floor(curTotalWeight / 500)*5000 + ((curTotalWeight % 500) && 5000);
+        }
+    }
+
+    useEffect(() => {
+        if (products.at(-1).weight && products.at(-1).quantity) {
+            const updated = calculateTotalFee() + parseInt(cod);
+            setTotalFee(updated);
+        } else {
+            setTotalFee(parseInt(cod) || 0);
+        }
+    }, [cod, products])
+
+    useEffect(() => {
+        // Get sender info from user profile
+        setSenderInfo(prev => ({
+            ...prev,
+            fullname: user.fullname,
+            phone: user.phone,
+        }))
+        getAddress();
     }, [])
+
     return (
         <div className={styles.wrapper}>
             {/* Header bar */}
@@ -230,177 +191,32 @@ function CreateOrder() {
                             <div className={styles.createOrderSection}>
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên gửi</span>
-                                    <button className={styles.editBtn} onClick={() => setEditAddress(!editAddress)}>
-                                        {editAddress ? <BsCheckSquare /> : <BsPencilSquare />}
+                                    <button className={styles.editBtn}>
+                                        {/* {editAddress ? <BsCheckSquare /> : <BsPencilSquare />} */}
                                     </button>
-                                    
                                 </div>
-                                {(!editAddress) ? (
-                                    <div className={styles.content}>
-                                        <div className={styles.importantLine}>
-                                            <span>{senderInfo?.fullname}</span> - <span>{senderInfo?.phone}</span>
-                                        </div>
-                                        <div className={styles.line}><span>{senderInfo?.address}</span></div>
-                                    </div>
-                                ) : (
-                                    <form className='row m-1'>
-                                        <div className="col-6">
-                                            <div className={styles.formGroup}>
-                                                <label>Họ tên</label>
-                                                <input type="text" 
-                                                    placeholder='Nhập họ tên' 
-                                                    value={senderInfo?.fullname} 
-                                                    onChange={e => _setSenderInfo('fullname', e)} />
-                                            </div>
-
-                                            <div className={styles.formGroup}>
-                                                <label>Số điện thoại</label>
-                                                <input type="text" 
-                                                    placeholder='Nhập số điện thoại'
-                                                    value={senderInfo?.phone}
-                                                    onChange={e => _setSenderInfo('phone', e)} />
-                                            </div>
-                                        </div>
-                                        <div className="col-6">
-                                            <div className={styles.formGroup}>
-                                                <label>Tỉnh/Thành phố</label>
-                                                {/* Use select */}
-                                                <select
-                                                    value={senderInfo?.city}
-                                                    onChange={handleSenderCityChange}
-                                                >
-                                                    <option value="">-- Chọn thành phố --</option>
-                                                    {cities.map(city => (
-                                                        <option value={city.code} 
-                                                            key={city.code}
-                                                            data-value={city.name}
-                                                        >{city.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className={styles.formGroup}>
-                                                <label>Quận/Huyện</label>
-                                                {/* Use select */}
-                                                <select
-                                                    value={senderInfo?.district}
-                                                    onChange={handleSenderDistrictChange}
-                                                >
-                                                    <option value="">-- Chọn quận/huyện --</option>
-                                                    {districts.map(district => (
-                                                        <option value={district.code}
-                                                            key={district.code}
-                                                            data-value={district.name}
-                                                        >{district.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div className={styles.formGroup}>
-                                                <label>Phường/Xã</label>
-                                                {/* Use select */}
-                                                <select
-                                                    value={senderInfo?.ward}
-                                                    onChange={handleSenderWardChange}
-                                                >
-                                                    <option value="">-- Chọn phường/xã --</option>
-                                                    {wards.map(ward => (
-                                                        <option value={ward.code}
-                                                            key={ward.code}
-                                                            data-value={ward.name}
-                                                        >{ward.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div className={styles.formGroup}>
-                                                <label>Địa chỉ</label>
-                                                <input type="text" 
-                                                    placeholder='Nhập địa chỉ'
-                                                    value={senderInfo?.address}
-                                                    onChange={e => _setSenderInfo('address', e)}/>
-                                            </div>
-                                        </div>
-                                    </form>
-                                )}
-                                
+                                <AddressForm 
+                                    stateInfo={senderInfo}
+                                    setStateInfo={setSenderInfo}
+                                    cities={address}
+                                    districts={senderDistricts}
+                                    setDistricts={setSenderDistricts}
+                                    wards={senderWards}
+                                    setWards={setSenderWards}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên nhận</span>
                                 </div>
-                                <form className='row m-1'>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Họ tên</label>
-                                            <input type="text" 
-                                                placeholder='Nhập họ tên'
-                                                value={receiverInfo?.fullname}
-                                                onChange={e => _setReceiverInfo('fullname', e)}/>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Số điện thoại</label>
-                                            <input type="text" 
-                                                placeholder='Nhập số điện thoại' 
-                                                value={receiverInfo?.phone}
-                                                onChange={e => _setReceiverInfo('phone', e)}/>
-                                        </div>
-                                    </div>
-                                    <div className="col-6">
-                                        <div className={styles.formGroup}>
-                                            <label>Tỉnh/Thành phố</label>
-                                            <select 
-                                                value={receiverInfo?.city}
-                                                onChange={handleReceiverCityChange}
-                                            >
-                                                <option value="">-- Chọn tỉnh/thành phố --</option>
-                                                {cities.map(city => (
-                                                    <option value={city.code} 
-                                                        key={city.code}
-                                                        data-value={city.name}
-                                                    >{city.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>Quận/Huyện</label>
-                                            <select 
-                                                value={receiverInfo?.district}
-                                                onChange={handleReceiverDistrictChange}
-                                            >
-                                                <option value="">-- Chọn quận/huyện --</option>
-                                                {districts.map(district => (
-                                                    <option value={district.code} 
-                                                        key={district.code}
-                                                        data-value={district.name}
-                                                    >{district.name}</option>
-                                                ))} 
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Phường/Xã</label>
-                                            <select 
-                                                value={receiverInfo?.ward}
-                                                onChange={handleReceiverWardChange}
-                                            >
-                                                <option value="">-- Chọn phường/xã --</option>
-                                                {wards.map(ward => (
-                                                    <option value={ward.code} 
-                                                        key={ward.code}
-                                                        data-value={ward.name}
-                                                    >{ward.name}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className={styles.formGroup}>
-                                            <label>Địa chỉ</label>
-                                            <input type="text" placeholder='Nhập địa chỉ' />
-                                        </div>
-                                    </div>
-                                </form>
+                                <AddressForm 
+                                    stateInfo={receiverInfo}
+                                    setStateInfo={setReceiverInfo}
+                                    cities={address}
+                                    districts={receiverDistricts}
+                                    setDistricts={setReceiverDistricts}
+                                    wards={receiverWards}
+                                    setWards={setReceiverWards}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -408,8 +224,8 @@ function CreateOrder() {
                                     <span className='ms-2 me-3'>Hàng hóa</span>
                                 </div>
                                 <div className={styles.content}>
-                                    {productLists.map((item, index) => (
-                                        <div className={styles.orderItem} key={index}>
+                                    {products.map((product, index) => (
+                                        <div key={index} className={styles.orderItem}>
                                             <div className={styles.imageUpload}>
                                                 <label htmlFor='file-input'>
                                                     <span className={styles.button}>Upload ảnh</span>
@@ -418,33 +234,43 @@ function CreateOrder() {
                                             </div>
 
                                             <div className={styles.info}>
-                                                <span className='fw-semibold'>{index + 1}. </span>
+                                                <span className='fw-semibold'>{index+1}. </span>
                                                 <div className='d-flex ms-3'>
                                                     <label className='fw-semibold me-2'>Tên</label>
                                                     <input type="text"
                                                         placeholder='Nhập tên sản phẩm'
                                                         className={styles.mediumInput}
-                                                        value={item.name}
-                                                        onChange={e => _setProduct('name', e)}
-                                                        id={index}/>
+                                                        value={product.name}
+                                                        onChange={e => handleUpdateProduct(e, index, 'name')}/>
                                                 </div>
                                                 <div className='d-flex ms-3'>
                                                     <label className='fw-semibold me-2'>KL(gram)</label>
                                                     <input type="text" 
                                                         placeholder='0' 
                                                         className={styles.smallInput}
-                                                        value={item?.weight}
-                                                        id={index}
-                                                        onChange={e => _setProduct('weight', e)} />
+                                                        value={product.weight}
+                                                        onChange={e => handleUpdateProduct(e, index, 'weight')}/>
                                                 </div>
                                                 <div className='d-flex ms-3'>
                                                     <label className='fw-semibold me-2'>SL</label>
                                                     <input type="text" 
-                                                        placeholder='0' 
-                                                        className={styles.smallInput} 
-                                                        value={item?.quantity}
-                                                        id={index}
-                                                        onChange={e => _setProduct('quantity', e)} />
+                                                        placeholder='0'
+                                                        className={styles.extraSmallInput}
+                                                        value={product.quantity}
+                                                        onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
+                                                </div>
+                                                <div className='d-flex ms-3'>
+                                                    <label className='fw-semibold me-2'>Loại</label>
+                                                    <select value={product.type}
+                                                        onChange={e => handleUpdateProduct(e, index, 'type')}>
+                                                        {product?.type 
+                                                            ? <option value={product.value}>{product.value}</option>
+                                                            : <option value="">--Loại--</option>
+                                                        }
+                                                        {orderTypes.map(item => (
+                                                            <option key={item.code} value={item.code}>{item.label}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                                 <button className='flex-fill bg-white' onClick={handleAddProduct}>
                                                     <AiOutlinePlusCircle className={styles.addItemBtn}/>
@@ -458,63 +284,60 @@ function CreateOrder() {
                         <div className="col-4">
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
-                                    <label>Mã giảm giá</label>
-                                    <input type="text" placeholder='Nhập mã giảm giá'/>
+                                    <label>Ghi chú</label>
+                                    <textarea cols="30"
+                                        rows="5"
+                                        value={note}
+                                        onChange={e => setNote(e.target.value)}
+                                        placeholder='Ghi chú cho đơn vị vận chuyển'></textarea>
                                 </div>
-                                <button className={styles.button}>Áp dụng</button>
                             </div>
 
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
                                     <label>Tùy chọn thanh toán</label>
-                                    <select
-                                        value={paymentOption[0].code}
-                                        onChange={handleChangePaymentOption}
-                                    >
+                                    <select value={paymentOption}
+                                        onChange={handleChangePaymentOption}>
                                         {paymentOptions.map(option => (
                                             <option value={option.code} key={option.code}>{option.label}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
-
-                            <div className={styles.createOrderSection}>
-                                <div className={styles.formGroup}>
-                                    <label>Phương thức thanh toán</label>
-                                    {paymentMethods.map(method => (
+                            
+                            {paymentOption === 'receiver' && (
+                                <div className={styles.createOrderSection}>
+                                    <div className={styles.formGroup}>
+                                        <label>Tổng tiền thu hộ COD</label>
+                                        <input type="text" placeholder='0' value={cod} onChange={e => setCod(e.target.value)}/>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {paymentOption === 'sender' && (
+                                <div className={styles.createOrderSection}>
+                                    <div className={styles.formGroup}>
+                                        <label>Phương thức thanh toán</label>
+                                        {paymentMethods.map(method => (
                                         <div className={styles.optionWrap} key={method.code}>
                                             <input type="radio" 
                                                 name='payment'
                                                 className='me-3'
-                                                defaultChecked
+                                                checked={method.code === paymentMethod}
                                                 value={method.code}
-                                                onChange={handleChangePaymentMethod}/> 
+                                                onChange={e => setPaymentMethod(e.target.value)}/> 
                                             {method.icon}
-                                            <label htmlFor="payment" className='ms-2'>{method.label}</label>
+                                            <label htmlFor="payment" className='ms-2' onClick={() =>setPaymentMethod(method.code)}>{method.label}</label>
                                         </div>
                                     ))}
-                                    {/* <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3' defaultChecked/> 
-                                        
-                                        <label htmlFor="payment" className='ms-2'>Thanh toán tiền mặt</label>
                                     </div>
-                                    <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3'/> 
-                                        
-                                        <label htmlFor="payment" className='ms-2'>Momo</label>
-                                    </div>
-                                    <div className={styles.optionWrap}>
-                                        <input type="radio" name='payment' className='me-3'/> 
-                                        <ATMMethodIcon />
-                                        <label htmlFor="payment" className='ms-2'>Thẻ ATM nội địa</label>
-                                    </div> */}
                                 </div>
-                            </div>
-
+                            )}
+                            
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
-                                    <h1 className={styles.importantLine}>0đ</h1>
+                                    <h1 className={styles.importantLine}>{totalFee}đ</h1>
                                     <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
                                 </div>
                             </div>
