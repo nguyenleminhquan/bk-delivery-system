@@ -7,12 +7,18 @@
 .userInfo {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 12px;
     margin-bottom: 16px;
 
     img {
-        max-width: 50px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
+    }
+
+    p {
+        margin-bottom: 0;
     }
 }
 

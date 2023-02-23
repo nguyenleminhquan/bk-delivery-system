@@ -1,11 +1,13 @@
 import mongoose from 'mongoose'
 
 const deliverySchema = mongoose.Schema({
-  order_id: {
+  order: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order'
   },
-  driver_id: {
-    type: mongoose.Schema.Types.ObjectId
+  driver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   status: {
     type: String,
@@ -23,4 +25,4 @@ const deliverySchema = mongoose.Schema({
   }
 }, { timestamps: true })
 
-export default mongoose.model('delivery', deliverySchema)
+export default mongoose.model('Delivery', deliverySchema)

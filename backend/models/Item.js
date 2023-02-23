@@ -10,4 +10,4 @@ const itemSchema = mongoose.Schema({
   }
 }, { timestamps: true })
 
-export default mongoose.model('item', itemSchema)
+export default mongoose.model('Item', itemSchema)
