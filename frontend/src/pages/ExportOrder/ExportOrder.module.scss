@@ -1,0 +1,47 @@
+.wrapper {
+    position: fixed;
+    top: 10px;
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+
+    .customBtn {
+        font-size: 1.6rem;
+        background-color: var(--white-color);
+        color: var(--header-color);
+        border-color: var(--primary-color);
+        & ~ .customBtn {
+            margin-left: 12px;
+        }
+        &.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+        &:hover {
+            background-color: var(--primary-hover-color);
+            color: var(--white-color);
+        }
+    }
+
+    .selectFilter {
+        label {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+        select {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            border-radius: 5px;
+            &:focus {
+                border-color: var(--secondary-color);
+            }
+        }
+    }
+    .blockItem {
+        border-radius: 5px;
+        background-color: var(--white-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        font-size: 1.4rem;
+    }
+
+}
