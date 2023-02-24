@@ -1,0 +1,13 @@
+.stocker-header {
+    .btn {
+        background-color: #fff;
+        border: 1px solid var(--primary-color);
+        color: var(--header-text-color);
+        text-transform: none;
+        font-weight: bold;
+        &:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+    }
+}
