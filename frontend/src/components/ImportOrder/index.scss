@@ -1,0 +1,28 @@
+.import-order {
+    .order-info {
+        height: 50px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        align-content: center;
+        margin-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-color: rgb(198, 147, 1, 0.08);
+        border-radius: 5px;
+    }
+    .import-btn {
+        color: #fff;
+        width: 25px;
+        height: 25px;
+        background-color: var(--primary-color);
+        text-align: center;
+        line-height: 25px;
+        border-radius: 50%;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
