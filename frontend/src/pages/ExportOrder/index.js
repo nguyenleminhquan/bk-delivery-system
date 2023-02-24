@@ -83,6 +83,14 @@ function ExportOrder() {
         } else return '#ff0000';
     }
 
+    const handleSetStatus = (percent) => {
+        if (percent < 0.5) {
+            return styles.goodStatus;
+        } else if (percent >= 0.5 && percent < 0.8) {
+            return styles.normalStatus;
+        } else return styles.dangerStatus;
+    }
+
     useEffect(() => {
         // call api get truck route by route -> set state for truck route
         setTruckRoutes(() => {
@@ -149,7 +157,7 @@ function ExportOrder() {
                                         <span>Tài xế: <span className='fw-semibold'>{route.driver}</span></span>
                                     </div>
                                     <div className="d-flex flex-column align-items-end flex-fill">
-                                        <h1 className='text-primary fw-semibold'>{((route.net - route.availability) / route.net)*100}%</h1>
+                                        <h1 className={handleSetStatus((route.net - route.availability) / route.net)}>{((route.net - route.availability) / route.net)*100}%</h1>
                                         {/* Truck image */}
                                         <TruckIcon 
                                             width="120" 

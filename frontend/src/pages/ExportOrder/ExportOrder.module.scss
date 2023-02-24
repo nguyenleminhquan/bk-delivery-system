@@ -42,6 +42,15 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         padding: 16px;
         font-size: 1.4rem;
+        .goodStatus {
+            color: #008000;
+        }
+        .normalStatus {
+            color: #ffa500;
+        }
+        .dangerStatus {
+            color: #ff0000;
+        }
     }
 }
 
