@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi'
 import { TbFileExport } from 'react-icons/tb'
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { TruckIcon } from 'components/Icons';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -40,7 +41,7 @@ const truckRoutesModels = [
         label: 'HCM - Sóc Trăng',
         net: 1000,
         driver: 'Nguyễn Văn A',
-        availability: 800,
+        availability: 100,
     },
     {
         id: 'SGST2',
@@ -49,7 +50,7 @@ const truckRoutesModels = [
         label: 'HCM - Sóc Trăng',
         net: 1000,
         driver: 'Nguyễn Văn B',
-        availability: 1000,
+        availability: 500,
     },
     {
         id: 'SGTG1',
@@ -58,15 +59,29 @@ const truckRoutesModels = [
         label: 'HCM - Tiền Giang',
         net: 1000,
         driver: 'Trần Văn A',
-        availability: 1000,
+        availability: 700,
     }
 ]
+
+/** Truck info:
+ * 0 <= available < 50% -> #008000 (Green)
+ * 50% <= available < 80% -> #ffa500 (Yellow)
+ * 80% <= available < 100% -> #ff0000 (Red)
+ */
 
 function ExportOrder() {
     // const { user } = useSelector(state => state.user);
     const [truckRoutes, setTruckRoutes] = useState(truckRoutesModels);
     const [routeFilters,  setRouteFilters] = useState(routeModels);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
+
+    const handleChooseColor = (percent) => {
+        if (percent < 0.5) {
+            return '#008000';
+        } else if (percent >= 0.5 && percent < 0.8) {
+            return '#ffa500';
+        } else return '#ff0000';
+    }
 
     useEffect(() => {
         // call api get truck route by route -> set state for truck route
@@ -136,6 +151,11 @@ function ExportOrder() {
                                     <div className="d-flex flex-column align-items-end flex-fill">
                                         <h1 className='text-primary fw-semibold'>{((route.net - route.availability) / route.net)*100}%</h1>
                                         {/* Truck image */}
+                                        <TruckIcon 
+                                            width="120" 
+                                            height="100"
+                                            availability={(route.net - route.availability) / route.net}
+                                            color={handleChooseColor((route.net - route.availability)/ route.net)} />
                                     </div>
                                 </div>
                             </div>
