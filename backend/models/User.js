@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   typeUser: {
     type: String,
-    enum: ['user', ,'sender', 'driver', 'stocker', 'admin'],
+    enum: ['user', ,'sender', 'driver_inner', 'driver_inter', 'stocker', 'admin'],
     default: 'user'
   },
   sender_address: String,

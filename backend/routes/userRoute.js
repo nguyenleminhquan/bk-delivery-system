@@ -23,7 +23,7 @@ route.post('/token', verifyRefreshToken, refreshToken)
 route.get('/test-jwt', verifyRefreshToken, verifyToken, testJWT)
 route.post('/:id/update', verifyRefreshToken, verifyToken, updateUserInfo);
 route.post('/:id/change-password', verifyRefreshToken, verifyToken, changePassword)
-route.get('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker', 'driver']), getWorkingDay)
-route.post('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['stocker', 'driver']), updateWorkingDays)
+route.get('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker', 'driver_inner', 'driver_inter']), getWorkingDay)
+route.post('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['stocker', 'driver_inner', 'driver_inter']), updateWorkingDays)
 
 export default route

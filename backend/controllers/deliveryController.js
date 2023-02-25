@@ -6,7 +6,15 @@ const getDeliveryByStatus = async (req, res, next) => {
     try {
         const status = req.query.status;
         const area_code = req.query.area_code;
-        const data = await Delivery.find({ status: status, area_code: area_code });
+        const type = req.query.type;
+        const data = await Delivery.
+        find({ status: status, area_code: area_code, type: type })
+        .populate({
+            path: 'order',
+            populate: {
+                path: 'items',
+            }
+        });;
         return res.json(data);
     } catch (err) {
         console.log(err)
@@ -16,7 +24,7 @@ const getDeliveryByStatus = async (req, res, next) => {
 
 const createDelivery = async (req, res, next) => {
     try {
-        let { order_id, driver_id, status, area_code, from, to } = req.body;
+        let { order_id, driver_id, status, area_code, from, to, type } = req.body;
         if (from.includes('stock_')) {
             let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
             from = stock.name + '&'  + stock.address
@@ -31,7 +39,8 @@ const createDelivery = async (req, res, next) => {
             status: status,
             area_code: area_code,
             from: from,
-            to: to
+            to: to,
+            type: type
         })
         await newDelivery.save();
         return res.json(newDelivery);
