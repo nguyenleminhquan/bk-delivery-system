@@ -149,19 +149,19 @@ function ExportOrder() {
                         <div className="col-4 mb-4" key={route.id}>
                             <div className={styles.blockItem}>
                                 <div className="d-flex">
-                                    <div className="d-flex flex-column">
+                                    <div className="d-flex flex-column w-50">
                                         <h3>{route.label}</h3>
-                                        <span>Khả dụng, Kg:</span>
+                                        <span className='mt-2'>Khả dụng, Kg:</span>
                                         <span className='fw-light fs-1'><span className='fw-semibold'>{route.availability}</span>/{route.net}</span>
                                         <span>Mã xe: <span className='fw-semibold'>{route.id}</span></span>
                                         <span>Tài xế: <span className='fw-semibold'>{route.driver}</span></span>
                                     </div>
-                                    <div className="d-flex flex-column align-items-end flex-fill">
+                                    <div className="d-flex flex-column align-items-end w-50">
                                         <h1 className={handleSetStatus((route.net - route.availability) / route.net)}>{((route.net - route.availability) / route.net)*100}%</h1>
                                         {/* Truck image */}
                                         <TruckIcon 
-                                            width="120" 
-                                            height="100"
+                                            width="95%" 
+                                            height=""
                                             availability={(route.net - route.availability) / route.net}
                                             color={handleChooseColor((route.net - route.availability)/ route.net)} />
                                     </div>
