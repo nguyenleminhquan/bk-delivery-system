@@ -22,6 +22,10 @@ const deliverySchema = mongoose.Schema({
   },
   to: {
     type: String
+  },
+  type: {
+    type: String,
+    enum: ['inner', 'inter']
   }
 }, { timestamps: true })
 

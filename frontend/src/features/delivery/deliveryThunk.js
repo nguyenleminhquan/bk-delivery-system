@@ -10,3 +10,13 @@ export const getDeliveryHistoryThunk = async(deliveryId, thunkAPI) => {
         return checkForUnauthorizedResponse(error, thunkAPI);
     }
 }
+
+export const getOrderDeliveryThunk = async(delivery, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getDeliveryByStatus(delivery)
+        return res.data
+    } catch(error) {
+        console.log(error);
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
