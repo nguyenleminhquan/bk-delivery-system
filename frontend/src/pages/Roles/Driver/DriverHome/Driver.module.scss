@@ -3,6 +3,25 @@
     top: 10px;
     left: calc(var(--sidebar-width) + 30px);
     right: 10px;
+
+    .tabHeader {
+        display: flex;
+        justify-content: center;
+        .tabHeaderItem {
+            min-width: 150px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            & ~ .tabHeaderItem {
+                margin-left: 12px;
+            }
+
+            &.active {
+                border-bottom: 2px solid var(--primary-color);
+                color: var(--primary-color);
+            }
+        }
+    }
     
 }
 
