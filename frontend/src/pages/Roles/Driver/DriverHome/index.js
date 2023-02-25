@@ -4,6 +4,8 @@ import styles from './Driver.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrderDelivery } from 'features/delivery/deliverySlice';
 
 const tabs = [
   {
@@ -24,7 +26,11 @@ const tabs = [
 function DriverHome() {
   const [togglePopup, setTogglePoup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
-  const [deliveries, setDeliveries] = useState([]);
+  // const [deliveries, setDeliveries] = useState([]);
+  const { deliveries } = useSelector((state) => state.delivery)
+  const { user } = useSelector((state) => state.user)
+  const [ configDeliveries, setConfigDeliveries ] = useState([])
+  const dispatch = useDispatch();
   
   const handleTracking = () => {
     console.log('Chúc mừng bạn đã điểm danh thành công');
@@ -63,49 +69,32 @@ function DriverHome() {
   }
 
   useEffect(() => {
-    const { accept, viewOrder, picked, deliveried } = btns;
+    let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
     if (selectedTab.field === 'waiting') {
-      setDeliveries([
-        {
-          from: 'Dien may xanh&Số 130 Trần Quang Khải, P. Tân Định, Quận 1, Tp. Hồ Chí Minh',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [accept(), viewOrder()]
-        },
-        {
-          from: 'Dien may xanh&Số 130 Trần Quang Khải, P. Tân Định, Quận 1, Tp. Hồ Chí Minh',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [accept(), viewOrder()]
-        },
-        {
-          from: 'Dien may xanh&Số 130 Trần Quang Khải, P. Tân Định, Quận 1, Tp. Hồ Chí Minh',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [accept(), viewOrder()]
-        },
-        {
-          from: 'Dien may xanh&Số 130 Trần Quang Khải, P. Tân Định, Quận 1, Tp. Hồ Chí Minh',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [accept(), viewOrder()]
-        },
-        {
-          from: 'Dien may xanh&Số 130 Trần Quang Khải, P. Tân Định, Quận 1, Tp. Hồ Chí Minh',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [accept(), viewOrder()]
-        },
-      ])
+      dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
     }
     if (selectedTab.field === 'accepted') {
-      setDeliveries([
-        {
-          from: 'Nguyen Minh Hien&Kí túc xá khu B, Đông Hòa, Dĩ An, Bình Dương',
-          to: 'Kho TP.HCM&Nguyen Thi Minh Khai, Q1, TP.HCM',
-          btns: [picked(), viewOrder()]
-        }
-      ])
+      dispatch(getOrderDelivery({ status: 'accepted', area_code: user.area_code, type: deliveryType }))
     }
     if (selectedTab.field === 'picked') {
-      setDeliveries([])
+      dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
     }
   }, [selectedTab])
+
+  useEffect(() => {
+    const { accept, viewOrder, picked, deliveried } = btns;
+    let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
+    if (selectedTab.field === 'waiting') {
+      tempDeliveries.forEach((item) => { item.btns = [accept(), viewOrder()] })
+    }
+    if (selectedTab.field === 'accepted') {
+      tempDeliveries.forEach((item) => { item.btns = [picked(), viewOrder()] })
+    }
+    if (selectedTab.field === 'deliveried') {
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(), viewOrder()] })
+    }
+    setConfigDeliveries(tempDeliveries)
+  }, [deliveries])
 
   return (
     <div className={styles.wrapper}>
@@ -134,7 +123,7 @@ function DriverHome() {
       </ul>
 
       <div className={styles.deliveryList}>
-        {deliveries.map((delivery) => (
+        {configDeliveries.map((delivery) => (
           <DeliveryOrder
             key={delivery._id}
             delivery={delivery}

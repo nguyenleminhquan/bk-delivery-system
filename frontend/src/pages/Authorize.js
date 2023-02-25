@@ -22,7 +22,7 @@ function Authorize() {
 		)
 	}
 
-	if (user.typeUser === 'driver') {
+	if (user.typeUser.includes('driver')) {
 		return (
 			<Routes>
 				<Route index element={<DriverHome />}></Route>
