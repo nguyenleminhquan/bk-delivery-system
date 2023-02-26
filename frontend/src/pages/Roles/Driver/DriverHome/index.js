@@ -2,73 +2,99 @@ import {useState, useEffect} from 'react';
 import {MdOutlineDonutSmall} from 'react-icons/md'
 import styles from './Driver.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
-import checkinImg from '../../../../assests/images/checkin.png'
+import WorkCheckIn from 'components/WorkCheckIn';
+import DeliveryOrder from 'components/DeliveryOrder';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrderDelivery } from 'features/delivery/deliverySlice';
 
-const shiftModel = {
-  label: '',
-  time: '',
-} 
+const tabs = [
+  {
+    field: 'waiting',
+    name: 'Đơn được gán',
+  },
+  {
+    field: 'accepted',
+    name: 'Đã nhận đơn',
+  },
+  {
+    field: 'picked',
+    name: 'Đã lấy hàng',
+  }
+]
+
 
 function DriverHome() {
   const [togglePopup, setTogglePoup] = useState(false);
-  const [timeShift, setTimeShift] = useState('');
-  const [today, setToday] = useState('');
-  const [shift, setShift] = useState(shiftModel);
-
-  const formatToday = () => {
-    const date = new Date();
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString();
-
-    setToday(`${day}/${month}/${year}`);
-  }
-
-  const getShift = () => {
-    const now = new Date();
-    const currentHour = now.getHours();
-
-    if (currentHour < 12) {
-      setShift({label: 'Sáng', time: '7h-11h'});
-    } else {
-      setShift({label: 'Chiều', time: '13h-18h'});
-    }
-  }
-
-  const getTimeSheet = () => {
-    const currentTime =  new Date().toLocaleTimeString('en-US', { hour12: false, 
-      hour: "numeric", 
-      minute: "numeric"});
-  }
-
+  const [selectedTab, setSelectedTab] = useState(tabs[0]);
+  // const [deliveries, setDeliveries] = useState([]);
+  const { deliveries } = useSelector((state) => state.delivery)
+  const { user } = useSelector((state) => state.user)
+  const [ configDeliveries, setConfigDeliveries ] = useState([])
+  const dispatch = useDispatch();
+  
   const handleTracking = () => {
     console.log('Chúc mừng bạn đã điểm danh thành công');
     // Cakk api for work-tracking...
-
   }
 
-  const WorkCheckIn = () => {
-    return (
-      <div className={styles.workCheckInModel}>
-        <div className='d-flex justify-content-between'>
-          <span>Ngày: {today}</span>
-          <div className="d-flex flex-column align-items-end text-right">
-            <span>Ca làm việc: {shift.label}</span>
-            <span>Thời gian làm việc: {shift.time}</span>
-          </div>
-        </div>
-        <div className={styles.illustration}>
-          <img src={checkinImg} alt="" />
-        </div>
-      </div>
-    )
+  const btns = {
+    accept: () => {
+      return {
+        id: 'accept',
+        text: 'Nhận đơn',
+        action: () => alert('Đã nhận đơn')
+      }
+    },
+    viewOrder: () => {
+      return {
+        id: 'viewOrder',
+        text: 'Xem đơn hàng',
+        action: () => alert('Xem đơn')
+      }
+    },
+    picked: () => {
+      return {
+        id: 'picked',
+        text: 'Đã lấy hàng',
+        action: () => alert('Đã lấy hàng')
+      }
+    },
+    deliveried: () => {
+      return {
+        id: 'deliveried',
+        text: 'Đã giao xong',
+        action: () => alert('Đã giao')
+      }
+    }
   }
 
   useEffect(() => {
-    getTimeSheet();
-    formatToday();
-    getShift();
-  }, [])
+    let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
+    if (selectedTab.field === 'waiting') {
+      dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
+    }
+    if (selectedTab.field === 'accepted') {
+      dispatch(getOrderDelivery({ status: 'accepted', area_code: user.area_code, type: deliveryType }))
+    }
+    if (selectedTab.field === 'picked') {
+      dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
+    }
+  }, [selectedTab])
+
+  useEffect(() => {
+    const { accept, viewOrder, picked, deliveried } = btns;
+    let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
+    if (selectedTab.field === 'waiting') {
+      tempDeliveries.forEach((item) => { item.btns = [accept(), viewOrder()] })
+    }
+    if (selectedTab.field === 'accepted') {
+      tempDeliveries.forEach((item) => { item.btns = [picked(), viewOrder()] })
+    }
+    if (selectedTab.field === 'deliveried') {
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(), viewOrder()] })
+    }
+    setConfigDeliveries(tempDeliveries)
+  }, [deliveries])
 
   return (
     <div className={styles.wrapper}>
@@ -85,6 +111,26 @@ function DriverHome() {
           okLabel="Check-in"
       />
       )}
+      <h2 className='pb-3 fs-3'>Đơn hàng thực hiện</h2>
+      
+      <ul className={styles.tabHeader}>
+        {tabs.map(tab => (
+          <li key={tab.name} 
+            className={selectedTab.field === tab.field ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
+            onClick={() => setSelectedTab(tab)}
+          >{tab.name}</li>
+        ))}
+      </ul>
+
+      <div className={styles.deliveryList}>
+        {configDeliveries.map((delivery) => (
+          <DeliveryOrder
+            key={delivery._id}
+            delivery={delivery}
+          />
+        ))}
+      </div>
+
     </div>
   )
 }

@@ -10,7 +10,7 @@ function SharedLayout() {
   if (user.typeUser === 'sender') {
     sidebarItems = senderSidebar;
   }
-  if (user.typeUser === 'driver') {
+  if (user.typeUser.includes('driver')) {
     sidebarItems = driverSidebar;
   }
   if (user.typeUser === 'stocker') {
