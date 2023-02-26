@@ -24,7 +24,7 @@ function Sidebar({ sidebarItems }) {
 	// })
 
 	return (
-		<div className={styles.wrapper}>
+		<div className={styles.sidebar}>
 			<div className={styles.logo}>
 				<img src={logo} alt="BK Delivery" />
 			</div>

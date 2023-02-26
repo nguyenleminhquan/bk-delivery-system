@@ -8,13 +8,15 @@ const orderSchema = mongoose.Schema({
   sender_address: { type: String, require: true },
   receiver_address: { type: String, require: true },
   payment_type: { type: String, require: true },
-  cod_amount: { type: Number, require: true },
+  cod_amount: { type: Number },
   note: String,
   shipping_fee: Number,
   status: {
     type: String,
-    enum: ['processing', 'delivery', 'resend_waiting', 'success', 'returning', 'return_success', 'damaged'],
-    default: 'processing'
+    enum: ['waiting', 'picking', 'picking_success', 'import', 'classify', 
+    'transshipment', 'delivery', 'delivery_success', 'delivery_failed',
+    'resending_waiting', 'damaged', 'delivery_back', 'contact_waiting'],
+    default: 'waiting'
   },
   items: [{
     type: mongoose.Schema.Types.ObjectId,

@@ -13,11 +13,11 @@ import verifyRoles from '../middlewares/verifyRoles.js'
 const route = express.Router()
 
 // Get all order
-route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver']), getAllOrder)
+route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver_inner', 'driver_inter']), getAllOrder)
 route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['sender']), createOrder)
-route.get('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver']), getOrderById)
+route.get('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver_inner', 'driver_inter']), getOrderById)
 route.delete('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), deleteOrderById)
 route.patch('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), editOrderById)
-route.patch('/:id/update-status', verifyRefreshToken, verifyToken, verifyRoles(['driver']), editOrderStatusById)
+route.patch('/:id/update-status', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), editOrderStatusById)
 
 export default route

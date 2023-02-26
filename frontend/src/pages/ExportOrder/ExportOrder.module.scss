@@ -3,7 +3,11 @@
     top: 10px;
     left: calc(var(--sidebar-width) + 30px);
     right: 10px;
-
+    .action {
+        a {
+            font-size: 16px;
+        }
+    }
     .customBtn {
         font-size: 1.6rem;
         background-color: var(--white-color);
@@ -41,7 +45,15 @@
         background-color: var(--white-color);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         padding: 18px;
-        font-size: 1.4rem;
+        font-size: 14px;
+        cursor: pointer;
+        .label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .status {
+            font-size: 24px;
+        }
         .goodStatus {
             color: #008000;
         }
@@ -51,7 +63,8 @@
         .dangerStatus {
             color: #ff0000;
         }
+        &:hover {
+            background-color: #f8f8f8;
+        }
     }
 }
-
-// Truck load info

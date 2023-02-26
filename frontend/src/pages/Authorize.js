@@ -8,6 +8,7 @@ import SenderHome from './Roles/Sender/SenderHome';
 import StockerHome from './Roles/Stocker/StockerHome';
 import CreateOrder from './CreateOrder';
 import ExportOrder from './ExportOrder';
+import DriverHistory from './Roles/Driver/DriverHistory';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -22,10 +23,11 @@ function Authorize() {
 		)
 	}
 
-	if (user.typeUser === 'driver') {
+	if (user.typeUser.includes('driver')) {
 		return (
 			<Routes>
 				<Route index element={<DriverHome />}></Route>
+				<Route path='/delivery-history' element={<DriverHistory />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
 			</Routes>
 		)

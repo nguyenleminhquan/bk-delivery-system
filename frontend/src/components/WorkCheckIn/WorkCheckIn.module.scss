@@ -1,0 +1,13 @@
+.workCheckInModel {
+    display: flex;
+    flex-direction: column;
+    .illustration {
+        width: 70%;
+        margin: auto;
+        border-radius: 5px;
+        overflow: hidden;
+        img {
+            max-width: 100%;
+        }
+    }
+}

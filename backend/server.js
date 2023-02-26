@@ -7,6 +7,7 @@ import connectDB from './config/db/connectDB.js'
 
 import userRoutes from './routes/userRoute.js'
 import orderRoutes from './routes/orderRoute.js'
+import deliveryRoutes from './routes/deliveryRoutes.js'
 
 connectDB()
 dotenv.config()
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/user', userRoutes)
 app.use('/order', orderRoutes)
+app.use('/delivery', deliveryRoutes)
 
 app.get('/', (req, res, next) => {
     res.send('API is running!')

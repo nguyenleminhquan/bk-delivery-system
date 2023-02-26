@@ -111,7 +111,7 @@ function ExportOrder() {
             <div className="container">
                 <div className="row">
                     <header className='d-flex justify-content-between align-items-center'>
-                        <h2 className='fs-1'>Xuất kho</h2>
+                        <h2 className='fs-4'>Xuất kho</h2>
                         <div className={styles.action}>
                             <Link className={`btn ${styles.customBtn}`} to="/">
                                 <TbFileExport className='me-3'/> Xuất Excel
@@ -131,9 +131,9 @@ function ExportOrder() {
                 <div className="row mt-5">
                     <div className="col-12">
                         <div className="d-flex align-items-center justify-content-between">
-                            <h2 className='fs-2'>Chọn xe tải</h2>
+                            <span className='fs-5 fw-semibold'>Chọn xe tải</span>
                             <div className={styles.selectFilter}>
-                                <label className='me-3'>Tuyến</label>
+                                <label className='fs-6 me-3'>Tuyến</label>
                                 <select value={selectedRouteFilter}
                                     onChange={e => setSelectedRouteFilter(e.target.value)}>
                                     {routeFilters.map((route, index) => (
@@ -149,19 +149,19 @@ function ExportOrder() {
                         <div className="col-4 mb-4" key={route.id}>
                             <div className={styles.blockItem}>
                                 <div className="d-flex">
-                                    <div className="d-flex flex-column w-50">
-                                        <h3>{route.label}</h3>
+                                    <div className="d-flex flex-column">
+                                        <span className={styles.label}>{route.label}</span>
                                         <span className='mt-2'>Khả dụng, Kg:</span>
-                                        <span className='fw-light fs-1'><span className='fw-semibold'>{route.availability}</span>/{route.net}</span>
+                                        <span className={styles.status}><span className='fw-semibold'>{route.availability}</span>/{route.net}</span>
                                         <span>Mã xe: <span className='fw-semibold'>{route.id}</span></span>
                                         <span>Tài xế: <span className='fw-semibold'>{route.driver}</span></span>
                                     </div>
-                                    <div className="d-flex flex-column align-items-end w-50">
+                                    <div className="d-flex flex-column align-items-end">
                                         <h1 className={handleSetStatus((route.net - route.availability) / route.net)}>{((route.net - route.availability) / route.net)*100}%</h1>
                                         {/* Truck image */}
                                         <TruckIcon 
                                             width="95%" 
-                                            height=""
+                                            height="100%"
                                             availability={(route.net - route.availability) / route.net}
                                             color={handleChooseColor((route.net - route.availability)/ route.net)} />
                                     </div>

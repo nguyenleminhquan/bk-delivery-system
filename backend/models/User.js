@@ -8,26 +8,36 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   typeUser: {
     type: String,
-    enum: ['user', ,'sender', 'driver', 'stocker', 'admin'],
+    enum: ['user', ,'sender', 'driver_inner', 'driver_inter', 'stocker', 'admin'],
     default: 'user'
   },
   sender_address: String,
+  address: String,
   bank_account: {
     bank_name: String,
     owner: String,
     account_number: String
   },
   working_days: [{
+    _id: false,
     year: Number,
-    month: Number,
-    date: [{ type: Date }]
+    months: [{
+      _id: false,
+      month: Number,
+      days: [Number]
+    }]
   }],
-  stock_id: String,
+  stock_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock'
+  },
   vehicle: {
     type: String,
     license_plate_number: String
+  },
+  area_code: {
+    type: Number
   }
-
 })
 
 userSchema.pre('save', function (next) {

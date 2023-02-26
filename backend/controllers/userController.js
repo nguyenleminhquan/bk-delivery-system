@@ -15,7 +15,10 @@ const userRegister = async (req, res, next) => {
     // Neu tai khoan ton tai
     if (exist != "" && exist) {
         return next(createError(400, "Email is exist"))
-    } else {
+    } else if (body.typeUser == "admin") {
+        return next(createError(404, "Can not register account with admin role"))
+    } 
+    else {
         let newUser = new User(body)
         try {
             newUser = await newUser.save()
@@ -30,8 +33,10 @@ const userRegister = async (req, res, next) => {
                 phone: newUser.phone,
                 typeUser: newUser.typeUser,
                 sender_address: newUser.sender_address,
+                address: newUser.address,
                 bank_account: exist.bank_account,
                 working_days: newUser.working_days,
+                area_code: newUser.area_code,
                 token, refresh_token 
             }
             
@@ -65,8 +70,10 @@ const userLogin = async (req, res, next) => {
                 phone: exist.phone,
                 typeUser: exist.typeUser,
                 sender_address: exist.sender_address,
+                address: exist.address,
                 bank_account: exist.bank_account,
                 working_days: exist.working_days,
+                area_code: exist.area_code,
                 token, refresh_token 
             }
             
@@ -107,8 +114,10 @@ const updateUserInfo = async (req, res, next) => {
                 phone: data.phone,
                 typeUser: data.typeUser,
                 sender_address: data.sender_address,
+                address: data.address,
                 bank_account: data.bank_account,
                 working_days: data.working_days,
+                area_code: data.area_code,
                 token, refresh_token
             },
             msg: "User updated!"
@@ -161,11 +170,110 @@ const testJWT = async(req, res, next) => {
     }
 }
 
+const getWorkingDay = async (req, res, next) => {
+    try {
+        let user = await User.findOne({ email: req.email })
+        if (user.typeUser === "admin") {
+            let wd_stockers_drivers = await User.find({ typeUser: { $in: ['driver', 'stocker']}})
+            return res.json(wd_stockers_drivers)
+        } else {
+            return res.json({working_days: user.working_days})
+        }
+    } catch (error) {
+        return next(createError(404))
+    }
+}
+
+const updateWorkingDays = async (req, res, next) => {
+    try {
+        const checkin = new Date(parseInt(req.body.time))
+        const year = checkin.getFullYear()
+        const month = checkin.getMonth()
+        const date = checkin.getDate()
+
+        let user = await User.findOne({ email: req.email })
+        // If no data about working_days in database
+        if (user.working_days.length == 0) {
+            user.working_days.push({
+                year: year,
+                months: [{
+                    month: month + 1,
+                    days: [date]
+                }]
+            })
+        } else {
+            let yearIsExist = false
+            let countYear = 0
+            for (; countYear < user.working_days.length; countYear++) {
+                if (user.working_days[countYear].year == year) {
+                    yearIsExist = true
+                    break
+                }
+            }
+
+            // If has year
+            if (yearIsExist) {
+                let monthIsExist = false
+                let countMonth = 0
+                for (; countMonth < user.working_days[countYear].months.length; countMonth++) {
+                    if (user.working_days[countYear].months[countMonth].month == (month + 1)) {
+                        monthIsExist = true
+                        break
+                    }
+                }
+
+                // If has month
+                if (monthIsExist) {
+                    // Check duplicate date
+                    let dayIsExist = false
+                    let lengthDays = user.working_days[countYear].months[countMonth].days.length
+                    for (let count = 0; count < lengthDays; count++) {
+                        if (user.working_days[countYear].months[countMonth].days[count] == date) {
+                            dayIsExist = true
+                            break
+                        }
+                    }
+
+                    if (dayIsExist) {
+                        return next(createError(400, "You already checkin"))
+                    }
+                    user.working_days[countYear].months[countMonth].days.push(date)
+                } else {
+                    user.working_days[countYear].months.push({
+                        month: month + 1,
+                        days: [date]
+                    })
+                }
+            } else {
+                user.working_days.push({
+                    year,
+                    months: [{
+                        month: month + 1,
+                        days: [date]
+                    }]
+                })
+            }
+
+        }
+
+        user = await user.save()
+
+        return res.json({
+            working_days: user.working_days,
+            msg: "Successful"
+        })
+
+    } catch (error) {
+        return next(createError(404, "Can not update working day"))
+    }
+}
 export {
     userRegister,
     userLogin,
     refreshToken,
     updateUserInfo,
     changePassword,
-    testJWT
+    testJWT,
+    getWorkingDay,
+    updateWorkingDays
 }

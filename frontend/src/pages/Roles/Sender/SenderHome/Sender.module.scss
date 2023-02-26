@@ -1,10 +1,3 @@
-.wrapper {
-    position: fixed;
-    top: 10px;
-    left: calc(var(--sidebar-width) + 30px);
-    right: 10px;
-}
-
 .searchBar {
     background-color: var(--white-color);
     width: 50%;
@@ -52,14 +45,14 @@
     padding: 0 16px;
     margin: 12px 0;
     font-weight: bold;
-    font-size: 1.6rem;
+    font-size: 16px;
     background-color: var(--white-color);
     border-radius: 5px;
 
     li {
         min-width: 220px;
         text-align: center;
-        line-height: 5rem;
+        line-height: 50px;
         &.active {
             border-bottom: 2px solid var(--primary-color); 
         }
