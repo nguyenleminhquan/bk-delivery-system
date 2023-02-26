@@ -2,4 +2,7 @@
     background-color: #fff;
     padding: 20px;
     box-shadow: var(--shadow);
+    tr td:last-child {
+        text-align: center;
+    }
 }
