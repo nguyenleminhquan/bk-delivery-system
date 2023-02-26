@@ -20,3 +20,23 @@ export const getOrderDeliveryThunk = async(delivery, thunkAPI) => {
         return checkForUnauthorizedResponse(error, thunkAPI);
     }
 }
+
+export const acceptDeliveryThunk = async(delivery, thunkAPI) => {
+    try {
+        const res = await DeliveryService.acceptDelivery(delivery)
+        return res.data
+    } catch(error) {
+        console.log(error);
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const updateDeliveryStatusThunk = async(delivery, thunkAPI) => {
+    try {
+        const res = await DeliveryService.updateDeliveryStatus(delivery)
+        return res.data
+    } catch(error) {
+        console.log(error);
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
