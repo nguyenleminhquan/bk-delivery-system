@@ -7,6 +7,7 @@ import DriverHome from './Roles/Driver/DriverHome';
 import SenderHome from './Roles/Sender/SenderHome';
 import StockerHome from './Roles/Stocker/StockerHome';
 import CreateOrder from './CreateOrder';
+import ExportOrder from './ExportOrder';
 import DriverHistory from './Roles/Driver/DriverHistory';
 
 function Authorize() {
@@ -37,6 +38,7 @@ function Authorize() {
 			<Routes>
 				<Route index element={<StockerHome />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
+				<Route path='/export-order' element={<ExportOrder />}></Route>
 			</Routes>
 		)
 	}

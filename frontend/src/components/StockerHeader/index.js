@@ -11,7 +11,7 @@ function StockerHeader({ title, openImportPopup }) {
             <button className='btn fs-6'>
               <BiExport className='me-3' /> Xuất excel
             </button>
-            <Link className='btn fs-6' to="/export">
+            <Link className='btn fs-6' to="/export-order">
               <BiPencil className='me-3' /> Xuất kho
             </Link>
             <button className='btn fs-6' onClick={openImportPopup}>
