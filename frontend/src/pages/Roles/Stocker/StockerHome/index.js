@@ -5,8 +5,12 @@ import Table from 'components/Table';
 import React, { useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import styles from './Stocker.module.scss'
+import { Link } from 'react-router-dom';
+import { BiPencil } from 'react-icons/bi';
+import { TbFileExport } from 'react-icons/tb'
 
 function StockerHome() {
+
   const [toggleImportPopup, setToggleImportPoup] = useState(false);
 
   const data = {
