@@ -1,5 +1,5 @@
 import styles from './ExportOrder.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BiPencil } from 'react-icons/bi'
 import { TbFileExport } from 'react-icons/tb'
 import { useSelector } from 'react-redux';
@@ -71,6 +71,7 @@ const truckRoutesModels = [
 
 function ExportOrder() {
     // const { user } = useSelector(state => state.user);
+    const navigate = useNavigate();
     const [truckRoutes, setTruckRoutes] = useState(truckRoutesModels);
     const [routeFilters,  setRouteFilters] = useState(routeModels);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
@@ -89,6 +90,10 @@ function ExportOrder() {
         } else if (percent >= 0.5 && percent < 0.8) {
             return styles.normalStatus;
         } else return styles.dangerStatus;
+    }
+
+    const handleChooseTruck = (truckInfo) => {
+        navigate('/load-order', {state: {truckInfo}});
     }
 
     useEffect(() => {
@@ -146,7 +151,7 @@ function ExportOrder() {
                 </div>
                 <div className="row mt-3">
                     {truckRoutes.map(route => (
-                        <div className="col-4 mb-4" key={route.id}>
+                        <div className="col-4 mb-4" key={route.id} onClick={() => handleChooseTruck(route)}>
                             <div className={styles.blockItem}>
                                 <div className="d-flex">
                                     <div className="d-flex flex-column">

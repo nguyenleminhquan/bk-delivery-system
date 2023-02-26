@@ -9,6 +9,7 @@ import StockerHome from './Roles/Stocker/StockerHome';
 import CreateOrder from './CreateOrder';
 import ExportOrder from './ExportOrder';
 import DriverHistory from './Roles/Driver/DriverHistory';
+import LoadOrderToTruck from './LoadOrderToTruck';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -39,6 +40,7 @@ function Authorize() {
 				<Route index element={<StockerHome />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
 				<Route path='/export-order' element={<ExportOrder />}></Route>
+				<Route path='/load-order' element={<LoadOrderToTruck />}></Route>
 			</Routes>
 		)
 	}
