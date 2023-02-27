@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { getDeliveryHistoryThunk, getOrderDeliveryThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
+    toggleAction: true,
     isLoading: false,
     error: null,
 };
@@ -19,6 +20,20 @@ export const getOrderDelivery = createAsyncThunk(
     'delivery/getOrderDelivery',
     async(delivery, thunkAPI) => {
         return getOrderDeliveryThunk(delivery, thunkAPI);
+    }
+)
+
+export const acceptDelivery = createAsyncThunk(
+    'delivery/acceptDelivery',
+    async(delivery, thunkAPI) => {
+        return acceptDeliveryThunk(delivery, thunkAPI);
+    }
+)
+
+export const updateDeliveryStatus = createAsyncThunk(
+    'delivery/updateDeliveryStatus',
+    async(delivery, thunkAPI) => {
+        return updateDeliveryStatusThunk(delivery, thunkAPI);
     }
 )
 
@@ -57,6 +72,20 @@ const deliverySlice = createSlice({
             console.log(payload);
             state.isLoading = false;
             toast.error(payload);
+        },
+        [acceptDelivery.fulfilled]: (state, { payload }) => {
+            state.toggleAction = !state.toggleAction;
+            toast.success('Order accepted!')
+        },
+        [acceptDelivery.rejected]: (state, { payload }) => {
+            toast.error(payload)
+        },
+        [updateDeliveryStatus.fulfilled]: (state, { payload }) => {
+            state.toggleAction = !state.toggleAction;
+            toast.success('Status updated!')
+        },
+        [updateDeliveryStatus.rejected]: (state, { payload }) => {
+            toast.error(payload)
         },
     }
 })

@@ -5,7 +5,7 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrderDelivery } from 'features/delivery/deliverySlice';
+import { acceptDelivery, getOrderDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
 
 const tabs = [
   {
@@ -27,8 +27,9 @@ function DriverHome() {
   const [togglePopup, setTogglePoup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
   // const [deliveries, setDeliveries] = useState([]);
-  const { deliveries } = useSelector((state) => state.delivery)
+  const { deliveries, toggleAction } = useSelector((state) => state.delivery)
   const { user } = useSelector((state) => state.user)
+  let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
   const [ configDeliveries, setConfigDeliveries ] = useState([])
   const dispatch = useDispatch();
   
@@ -38,11 +39,17 @@ function DriverHome() {
   }
 
   const btns = {
-    accept: () => {
+    accept: (id) => {
       return {
         id: 'accept',
         text: 'Nhận đơn',
-        action: () => alert('Đã nhận đơn')
+        action: () => {
+          dispatch(acceptDelivery({ driver_id: user.id, delivery_id: id }))
+          // console.log('there1')
+          // dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
+          // console.log('there2')
+          // alert('Đã nhận đơn')
+        }
       }
     },
     viewOrder: () => {
@@ -52,24 +59,31 @@ function DriverHome() {
         action: () => alert('Xem đơn')
       }
     },
-    picked: () => {
+    picked: (id) => {
       return {
         id: 'picked',
         text: 'Đã lấy hàng',
-        action: () => alert('Đã lấy hàng')
+        action: () => {
+          dispatch(updateDeliveryStatus({ delivery_id: id, status: 'picked' }))
+          // dispatch(getOrderDelivery({ status: 'accepted', area_code: user.area_code, type: deliveryType }))
+          // alert('Đã lấy hàng')
+        }
       }
     },
-    deliveried: () => {
+    deliveried: (id) => {
       return {
         id: 'deliveried',
         text: 'Đã giao xong',
-        action: () => alert('Đã giao')
+        action: () => {
+          dispatch(updateDeliveryStatus({ delivery_id: id, status: 'deliveried' }))
+          // dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
+          // alert('Đã giao')
+        }
       }
     }
   }
 
   useEffect(() => {
-    let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
     if (selectedTab.field === 'waiting') {
       dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
     }
@@ -79,19 +93,19 @@ function DriverHome() {
     if (selectedTab.field === 'picked') {
       dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
     }
-  }, [selectedTab])
+  }, [selectedTab, toggleAction])
 
   useEffect(() => {
     const { accept, viewOrder, picked, deliveried } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(), viewOrder()] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item._id), viewOrder()] })
     }
     if (selectedTab.field === 'accepted') {
-      tempDeliveries.forEach((item) => { item.btns = [picked(), viewOrder()] })
+      tempDeliveries.forEach((item) => { item.btns = [picked(item._id), viewOrder()] })
     }
-    if (selectedTab.field === 'deliveried') {
-      tempDeliveries.forEach((item) => { item.btns = [deliveried(), viewOrder()] })
+    if (selectedTab.field === 'picked') {
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(item._id), viewOrder()] })
     }
     setConfigDeliveries(tempDeliveries)
   }, [deliveries])
