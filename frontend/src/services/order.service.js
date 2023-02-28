@@ -8,9 +8,14 @@ const get = () => {
     return customFetch.get('/order')
 }
 
+const getOrdersByUserId = (userId) => {
+    return customFetch.get(`/order/user/${userId}`)
+}
+
 const OrderService = {
     create,
-    get
+    get,
+    getOrdersByUserId
 }
 
 export default OrderService

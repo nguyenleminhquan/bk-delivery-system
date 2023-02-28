@@ -4,7 +4,8 @@ import {   createOrder,
   editOrderById,
   editOrderStatusById,
   getAllOrder,
-  getOrderById
+  getOrderById,
+  getOrdersByUserId
 } from '../controllers/orderController.js'
 import verifyToken from '../middlewares/verifyToken.js'
 import verifyRefreshToken from '../middlewares/verifyRefreshToken.js'
@@ -15,6 +16,7 @@ const route = express.Router()
 // Get all order
 route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver_inner', 'driver_inter']), getAllOrder)
 route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['sender']), createOrder)
+route.get('/user/:userId', verifyRefreshToken, verifyToken, verifyRoles(['sender']), getOrdersByUserId)
 route.get('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver_inner', 'driver_inter']), getOrderById)
 route.delete('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), deleteOrderById)
 route.patch('/:id', verifyRefreshToken, verifyToken, verifyRoles(['sender']), editOrderById)

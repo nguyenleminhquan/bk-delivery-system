@@ -344,3 +344,10 @@ export const adminSidebar = [
         type: 'beneath'
     },
 ]
+
+export const orderStatusList = {
+    "waiting": 'Đang xử lý',
+    "picking": 'Đang lấy hàng',
+    "picking_success": "Đã lấy hàng",
+    "import": "Đã nhập kho"
+}

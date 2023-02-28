@@ -65,6 +65,16 @@ const getOrderById = async (req, res, next) => {
   } 
 }
 
+// Get order by id
+const getOrdersByUserId = async (req, res, next) => {
+  try {
+    let data = await Order.find({ user_id: req.params.userId })
+    return res.json(data)
+  } catch (error) {
+    return next(createError(400))
+  } 
+}
+
 // Delete order by id
 const deleteOrderById = async (req, res, next) => {
   try {
@@ -102,6 +112,7 @@ export {
   createOrder,
   getAllOrder,
   getOrderById,
+  getOrdersByUserId,
   deleteOrderById,
   editOrderById,
   editOrderStatusById
