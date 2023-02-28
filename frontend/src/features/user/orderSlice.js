@@ -4,6 +4,7 @@ import { createOrderThunk, getOrderThunk } from "./orderThunk";
 
 const initialState = {
     orders: [],
+    newOrder: '',
     total: 0,
     isLoading: false,
     error: null,
@@ -27,7 +28,7 @@ const orderSlice = createSlice({
     name: 'order',
     initialState,
     reducers: {
-
+        
     },
     extraReducers: {
         [createOrder.pending]: (state) => {
@@ -36,6 +37,7 @@ const orderSlice = createSlice({
         [createOrder.fulfilled]: (state, {payload}) => {
             console.log(payload);
             state.orders = payload;
+            state.newOrder = payload
             state.isLoading = false;
             toast.success('Create order successfully');
         },
