@@ -1,11 +1,13 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {MdOutlineDonutSmall} from 'react-icons/md'
 import styles from './Driver.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptDelivery, getOrderDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
+import { acceptDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
+import { SocketContext } from 'index';
+import { toast } from 'react-toastify';
 
 const tabs = [
   {
@@ -26,11 +28,12 @@ const tabs = [
 function DriverHome() {
   const [togglePopup, setTogglePoup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
-  // const [deliveries, setDeliveries] = useState([]);
-  const { deliveries, toggleAction } = useSelector((state) => state.delivery)
+  const [ allDeliveries, setAllDeliveries ] = useState([]);
+  const [ deliveries, setDeliveries ] = useState([]);
+  const [ configDeliveries, setConfigDeliveries ] = useState([])
   const { user } = useSelector((state) => state.user)
   let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
-  const [ configDeliveries, setConfigDeliveries ] = useState([])
+  const socket = useContext(SocketContext);
   const dispatch = useDispatch();
   
   const handleTracking = () => {
@@ -44,11 +47,11 @@ function DriverHome() {
         id: 'accept',
         text: 'Nhận đơn',
         action: () => {
-          dispatch(acceptDelivery({ driver_id: user.id, delivery_id: id }))
-          // console.log('there1')
-          // dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
-          // console.log('there2')
-          // alert('Đã nhận đơn')
+          socket.emit('acceptDelivery', {
+            driver_id: user.id,
+            delivery_id: id
+          })
+          // dispatch(acceptDelivery({ driver_id: user.id, delivery_id: id }))
         }
       }
     },
@@ -64,9 +67,11 @@ function DriverHome() {
         id: 'picked',
         text: 'Đã lấy hàng',
         action: () => {
-          dispatch(updateDeliveryStatus({ delivery_id: id, status: 'picked' }))
-          // dispatch(getOrderDelivery({ status: 'accepted', area_code: user.area_code, type: deliveryType }))
-          // alert('Đã lấy hàng')
+          socket.emit('updateDeliveryStatus', {
+            delivery_id: id,
+            status: 'picked'
+          })
+          // dispatch(updateDeliveryStatus({ delivery_id: id, status: 'picked' }))
         }
       }
     },
@@ -75,25 +80,52 @@ function DriverHome() {
         id: 'deliveried',
         text: 'Đã giao xong',
         action: () => {
-          dispatch(updateDeliveryStatus({ delivery_id: id, status: 'deliveried' }))
-          // dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
-          // alert('Đã giao')
+          socket.emit('updateDeliveryStatus', {
+            delivery_id: id,
+            status: 'deliveried'
+          })
+          // dispatch(updateDeliveryStatus({ delivery_id: id, status: 'deliveried' }))
         }
       }
     }
   }
 
   useEffect(() => {
+    socket.emit('allDeliveries', {
+      area_code: user.area_code,
+      type: deliveryType
+    })
+  }, [])
+
+  useEffect(() => {
+    socket.on('allDeliveries', (data) => {
+      setAllDeliveries(data);
+    })
+    socket.on('newDelivery', (data) => {
+      setAllDeliveries([...allDeliveries, data])
+    })
+    socket.on('updatedDelivery', (data) => {
+      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      tempDeliveries.forEach((item) => {
+        if (item._id === data._id) {
+          item.status = data.status
+        }
+      })
+      setAllDeliveries(tempDeliveries);
+    })
+  }, [socket, allDeliveries])
+
+  useEffect(() => {
     if (selectedTab.field === 'waiting') {
-      dispatch(getOrderDelivery({ status: 'waiting', area_code: user.area_code, type: deliveryType }))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'waiting' && item.area_code === user.area_code && item.type === deliveryType))
     }
     if (selectedTab.field === 'accepted') {
-      dispatch(getOrderDelivery({ status: 'accepted', area_code: user.area_code, type: deliveryType }))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'accepted' && item.area_code === user.area_code && item.type === deliveryType))
     }
     if (selectedTab.field === 'picked') {
-      dispatch(getOrderDelivery({ status: 'picked', area_code: user.area_code, type: deliveryType }))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'picked' && item.area_code === user.area_code && item.type === deliveryType))
     }
-  }, [selectedTab, toggleAction])
+  }, [selectedTab, allDeliveries])
 
   useEffect(() => {
     const { accept, viewOrder, picked, deliveried } = btns;

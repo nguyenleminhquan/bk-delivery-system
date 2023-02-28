@@ -4,6 +4,7 @@ import cors from 'cors'
 import errorHander from './middlewares/errorHandler.js'
 import APINotFoundHandler from './middlewares/APINotFoundHandler.js'
 import connectDB from './config/db/connectDB.js'
+import { Server } from 'socket.io';
 
 import userRoutes from './routes/userRoute.js'
 import orderRoutes from './routes/orderRoute.js'
@@ -32,8 +33,16 @@ app.get('/', (req, res, next) => {
 app.use(APINotFoundHandler)
 app.use(errorHander)
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`)
 })
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+});
+import { socketDelivery } from './controllers/deliveryController.js'
+socketDelivery(io)
 
 

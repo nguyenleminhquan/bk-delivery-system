@@ -1,5 +1,5 @@
 import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { BiPencil } from 'react-icons/bi'
 import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,7 @@ import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from 'features/user/orderSlice'
 import AddressForm from 'components/AddressForm'
+import { SocketContext } from 'index'
 
 const infoModel = {
     fullname: '',
@@ -49,6 +50,7 @@ const orderTypes = [
 function CreateOrder() {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
+    const { newOrder } = useSelector((state) => state.order);
 
     const [senderInfo, setSenderInfo] = useState(infoModel);
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
@@ -69,6 +71,8 @@ function CreateOrder() {
     const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
 
     const [totalFee, setTotalFee] = useState(0);
+
+    const socket = useContext(SocketContext);
 
     const getAddress = () => {
         axios.get('https://provinces.open-api.vn/api/?depth=3')
@@ -97,7 +101,7 @@ function CreateOrder() {
         return product.name === '' || product.weight === '' || product.quantity === '';
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
         const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
         const isEmptyProduct = products.forEach(product => {
@@ -116,7 +120,7 @@ function CreateOrder() {
                 payment_type: paymentMethod,
                 cod_amount: cod,
                 note,
-                status: 'WAITING',
+                status: 'waiting',
                 shipping_fee: calculateTotalFee(),
                 user_id: user.id,
                 items: products.map(product => ({
@@ -126,7 +130,15 @@ function CreateOrder() {
                     weight: product.weight,
                 }))
             }
-            dispatch(createOrder(payload));
+            await dispatch(createOrder(payload));
+            socket.emit('newDelivery', {
+                status: 'waiting',
+                area_code: user.area_code,
+                order_id: newOrder._id,
+                type: 'inner',
+                from: `${senderInfo.fullname}&${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                to: `stock_${user.area_code}`
+            })
         }
     }
 
