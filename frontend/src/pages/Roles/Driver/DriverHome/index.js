@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { acceptDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
+import ViewOrderInfo from 'components/ViewOrderInfo';
 
 const tabs = [
   {
@@ -26,11 +27,13 @@ const tabs = [
 
 
 function DriverHome() {
-  const [togglePopup, setTogglePoup] = useState(false);
+  const [toggleCheckinPopup, setToggleCheckinPopup] = useState(false);
+  const [toggleViewOrderPopup, setToggleViewOrderPopup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
   const [ allDeliveries, setAllDeliveries ] = useState([]);
   const [ deliveries, setDeliveries ] = useState([]);
   const [ configDeliveries, setConfigDeliveries ] = useState([])
+  const [orderInfo, setOrderInfo] = useState('')
   const { user } = useSelector((state) => state.user)
   let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
   const socket = useContext(SocketContext);
@@ -55,11 +58,23 @@ function DriverHome() {
         }
       }
     },
-    viewOrder: () => {
+    viewOrder: (delivery) => {
+      const { order } = delivery;
+      const { items } = order;
+      const orderPopop = {
+        sender_address: order.sender_address,
+        receiver_address: order.receiver_address,
+        quantity: items.length,
+        weight: order.weight,
+        items: items
+      }
       return {
         id: 'viewOrder',
         text: 'Xem đơn hàng',
-        action: () => alert('Xem đơn')
+        action: () => {
+          setToggleViewOrderPopup(true)
+          setOrderInfo(orderPopop)
+        }
       }
     },
     picked: (id) => {
@@ -99,6 +114,7 @@ function DriverHome() {
 
   useEffect(() => {
     socket.on('allDeliveries', (data) => {
+      console.log('allDeliveries', data)
       setAllDeliveries(data);
     })
     socket.on('newDelivery', (data) => {
@@ -128,30 +144,31 @@ function DriverHome() {
   }, [selectedTab, allDeliveries])
 
   useEffect(() => {
+    console.log('deliveries', deliveries)
     const { accept, viewOrder, picked, deliveried } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item._id), viewOrder()] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item._id), viewOrder(item)] })
     }
     if (selectedTab.field === 'accepted') {
-      tempDeliveries.forEach((item) => { item.btns = [picked(item._id), viewOrder()] })
+      tempDeliveries.forEach((item) => { item.btns = [picked(item._id), viewOrder(item)] })
     }
     if (selectedTab.field === 'picked') {
-      tempDeliveries.forEach((item) => { item.btns = [deliveried(item._id), viewOrder()] })
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(item._id), viewOrder(item)] })
     }
     setConfigDeliveries(tempDeliveries)
   }, [deliveries])
 
   return (
     <div className={styles.wrapper}>
-      <div className='checkinBtn' onClick={() => setTogglePoup(!togglePopup)}>
+      <div className='checkinBtn' onClick={() => setToggleCheckinPopup(true)}>
         <MdOutlineDonutSmall />
       </div>
-      {togglePopup && (
+      {toggleCheckinPopup && (
         <ConfirmPopup 
           title="Check in hôm nay"
           content={<WorkCheckIn />}
-          actionNo={() => setTogglePoup(false)}
+          actionNo={() => setToggleCheckinPopup(false)}
           actionYes={() => handleTracking()}
           cancelLabel="Đóng lại"
           okLabel="Check-in"
@@ -173,9 +190,20 @@ function DriverHome() {
           <DeliveryOrder
             key={delivery._id}
             delivery={delivery}
+            toggleViewOrderPopup={toggleViewOrderPopup}
+            closePopup={() => setToggleViewOrderPopup(false)}
           />
         ))}
       </div>
+
+      {toggleViewOrderPopup && (
+				<ConfirmPopup 
+					title='Thông tin đơn hàng'
+					content={<ViewOrderInfo orderInfo={orderInfo} />}
+					actionNo={() => setToggleViewOrderPopup(false)}
+					cancelLabel="Đóng lại"
+				/>
+			)}	
 
     </div>
   )
