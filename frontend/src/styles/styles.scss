@@ -91,6 +91,25 @@ input {
     border-color: var(--primary-color);
 }
 
+.customBtn {
+    font-size: 16px;
+    background-color: var(--white-color);
+    color: var(--header-color);
+    border-color: var(--primary-color);
+    & ~ .customBtn {
+        margin-left: 12px;
+    }
+    &.active {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border: unset;
+    }
+    &:hover {
+        background-color: var(--primary-hover-color);
+        color: var(--white-color);
+    }
+}
+
 body {
     font-size: 16px;
     font-family: var(--primary-font);
