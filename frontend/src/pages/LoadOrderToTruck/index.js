@@ -1,26 +1,116 @@
 import { useLocation } from 'react-router-dom';
-import styles from './LoadOrderToTruck.module.scss'
 import { Link } from 'react-router-dom';
 import { TbFileExport } from 'react-icons/tb';
 import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { TruckIcon } from 'components/Icons';
 import {useState, useEffect} from 'react';
+import styles from './LoadOrderToTruck.module.scss'
+import ConfirmPopup from 'components/ConfirmPopup';
 
 const orderModels = [
     {
+        id: 781263,
+        weight: 123,
+    },
+    {
+        id: 87123,
+        weight: 234,
+    },
+    {
+        id: 8713145,
+        weight: 283,
+    },
+    {
         id: 123123123,
+        weight: 134,
+    },
+    {
+        id: 182371823,
+        weight: 594,
+    },
+    {
+        id: 19823,
+        weight: 895,
+    },
+    {
+        id: 1343154,
+        weight: 345,
+    },
+    {
+        id: 940123,
+        weight: 857,
+    },
+    {
+        id: 123456,
+        weight: 938,
+    },
+    {
+        id: 654345,
+        weight: 453,
+    },
+    {
+        id: 234234,
         weight: 300,
     },
     {
-        id: 234234234,
-        weight: 300,
-    },
-    {
-        id: 823979879,
-        weight: 300,
+        id: 456765,
+        weight: 847,
     }
 ]
+
+const ConfirmOrderLists = ({orders}) => {
+    const [toggleFilter, setToggleFilter] = useState(false);
+    
+    const handleSortCol = () => {
+        /**
+         * order (true) -> sort asc
+         * order (false) ->  sort desc
+         */
+        if (!toggleFilter) {
+            orders.sort((a, b) => a.weight - b.weight);
+        } else {
+            orders.sort((a, b) => b.weight - a.weight);
+        }
+        setToggleFilter(!toggleFilter);
+    }
+
+    const handleDeleteOrder = () => {
+        
+    }
+
+    return (
+        <div className={styles.customTableWrap}>
+            <div className={styles.customTable}>
+                <div className={`row p-2 ${styles.ordersHeader}`}>
+                    <div className='col-6'>Mã đơn hàng</div>
+                    <div className='col-5'>
+                        <div className="d-flex">
+                            Khối lượng
+                            <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
+                                <span className={styles.leftBar}></span>
+                                <span className={styles.rightBar}></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div className="col-1"></div>
+                </div>
+                <div className={styles.ordersWrap}>
+                    {orders.map(order => (
+                        <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                            <div className="col-6">{order.id}</div>
+                            <div className="col-5">{order.weight}</div>
+                            <div className="col-1">
+                                <div className={styles.deleteBtn} onClick={handleDeleteOrder}><RiDeleteBin6Fill /></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function LoadOrderToTruck() {
     const location = useLocation();
@@ -33,13 +123,18 @@ function LoadOrderToTruck() {
     const [toggleAll, setToggleAll] = useState(false);
     const [truckLoad, setTruckLoad] = useState([]);
 
+    const [toggleFilter, setToggleFilter] = useState(false);
+    const [openPopup, setOpenPopup] = useState(false);
+
     const handleLoadOrder = (order, e) => {
+        const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
         const updated = orders.map(item => {
             if (item.id === order.id) {
                 return {...item, checked: !item.checked}
             } else return item;
         })
-        setOrders(updated);  
+        setOrders(updated);
+        setToggleAll(isAllChecked(updated));
         if (e.target.checked) {
             setTruckLoad(prev => [...prev, order]);
             setSelected(prev => prev + 1);
@@ -76,26 +171,28 @@ function LoadOrderToTruck() {
         const totalWeight = truckAvailable - totalClickedWeight;
         if (totalWeight < 0) {
             alert('Vượt quá khối lượng hiện tại cho phép của xe!');
-            setTruckLoad([]);
+            // setTruckLoad([]);
         } else {
             setTruckAvailable(truckAvailable - totalClickedWeight);
             // Update order list (remove) after load order to truck
             setOrders(updateOrderList());
             setTotalWeight(0);
             setSelected(0);
+
         }
     }
 
     const updateOrderList = () => {
-        const intersection = truckLoad.filter(item => orders.includes(item));
-        return orders.filter(item => !intersection.includes(item));
+        return orders.filter(item => !truckLoad.map(order => order.id).includes(item.id));
     }
 
     const handleOpenTruckOrders = () => {
         console.log(truckLoad);
+        setOpenPopup(true);
     }
 
     const handleToggleAll = e => {
+        setToggleAll(!toggleAll);
         if (e.target.checked) {
             setOrders(prev => prev.map(item => ({...item, checked: true})));
             setTruckLoad(orders);
@@ -107,6 +204,23 @@ function LoadOrderToTruck() {
             setTotalWeight(0);
             setSelected(0);
         }
+    }
+
+    const isAllChecked = orders => {
+        return orders.every(order => order.checked);
+    }
+
+    const handleSortCol = () => {
+        /**
+         * order (true) -> sort asc
+         * order (false) -> sort desc
+         */
+        if (!toggleFilter) {
+            orders.sort((a, b) => a.weight - b.weight);
+        } else {
+            orders.sort((a, b) => b.weight - a.weight);
+        }
+        setToggleFilter(!toggleFilter);
     }
 
     useEffect(() => {
@@ -170,34 +284,50 @@ function LoadOrderToTruck() {
                                 <h5 className='fw-semibold'>Danh sách đơn hàng</h5>
                                 <span>Đã chọn: {selected}, KL(kg): {totalWeight}</span>
                             </div>
+                            <div className={styles.customTableWrap}>
+                                <div className={styles.customTable}>
+                                    <div className={`row p-2 ${styles.ordersHeader}`}>
+                                        <div className='col-1'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
+                                        <div className='col-6'>Mã đơn hàng</div>
+                                        <div className='col-5'>
+                                            <div className="d-flex">
+                                                Khối lượng
+                                                <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
+                                                    <span className={styles.leftBar}></span>
+                                                    <span className={styles.rightBar}></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={styles.ordersWrap}>
+                                        {orders.map(order => (
+                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                                <div className='col-1'><input type="checkbox"
+                                                    checked={order.checked}
+                                                    onChange={e => handleLoadOrder(order, e)}
+                                                /></div>
+                                                <div className="col-6">{order.id}</div>
+                                                <div className="col-5">{order.weight}</div>
+                                            </div>
+                                        ))}
 
-                            <table className='mt-3'>
-                                <thead>
-                                    <tr>
-                                        <th><input type="checkbox" onChange={handleToggleAll}/></th>
-                                        <th>Mã đơn hàng</th>
-                                        <th>Khối lượng</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.map(order => (
-                                        <tr key={order.id}>
-                                            <td><input type="checkbox"
-                                                checked={order.checked}
-                                                onChange={e => handleLoadOrder(order, e)}
-                                            /></td>
-                                            <td>{order.id}</td>
-                                            <td>{order.weight}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </div>
+                                </div>
 
-                            <button className='mt-2 p-3' onClick={handleAddToTruck}>Import to truck</button>
+                            </div>
+                            <button className='mt-2 p-2' onClick={handleAddToTruck}>Import to truck</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {openPopup && (
+                <ConfirmPopup title="Danh sách đơn hàng"
+                    content={<ConfirmOrderLists orders={truckLoad}/>}
+                    okLabel="OK"
+                    actionYes={() => setOpenPopup(false)}
+                />
+            )}                
         </div>
     );
 }
