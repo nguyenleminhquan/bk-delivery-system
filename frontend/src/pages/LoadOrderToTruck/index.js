@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { TbFileExport } from 'react-icons/tb';
+import { TbFileExport, TbLetterCaseUpper } from 'react-icons/tb';
 import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -62,6 +62,7 @@ const orderModels = [
 
 const ConfirmOrderLists = ({orders}) => {
     const [toggleFilter, setToggleFilter] = useState(false);
+    const [currentOrders, setCurrentOrders] = useState(orders);
     
     const handleSortCol = () => {
         /**
@@ -76,8 +77,9 @@ const ConfirmOrderLists = ({orders}) => {
         setToggleFilter(!toggleFilter);
     }
 
-    const handleDeleteOrder = () => {
-        
+    const handleDeleteOrder = order => {
+        // Call api PUT order on truck
+        // Todo...
     }
 
     return (
@@ -97,12 +99,12 @@ const ConfirmOrderLists = ({orders}) => {
                     <div className="col-1"></div>
                 </div>
                 <div className={styles.ordersWrap}>
-                    {orders.map(order => (
+                    {currentOrders.map(order => (
                         <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
                             <div className="col-6">{order.id}</div>
                             <div className="col-5">{order.weight}</div>
                             <div className="col-1">
-                                <div className={styles.deleteBtn} onClick={handleDeleteOrder}><RiDeleteBin6Fill /></div>
+                                <div className={styles.deleteBtn} onClick={() => handleDeleteOrder(order)}><RiDeleteBin6Fill /></div>
                             </div>
                         </div>
                     ))}
@@ -127,7 +129,7 @@ function LoadOrderToTruck() {
     const [openPopup, setOpenPopup] = useState(false);
 
     const handleLoadOrder = (order, e) => {
-        const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
+        // const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
         const updated = orders.map(item => {
             if (item.id === order.id) {
                 return {...item, checked: !item.checked}
@@ -171,7 +173,6 @@ function LoadOrderToTruck() {
         const totalWeight = truckAvailable - totalClickedWeight;
         if (totalWeight < 0) {
             alert('Vượt quá khối lượng hiện tại cho phép của xe!');
-            // setTruckLoad([]);
         } else {
             setTruckAvailable(truckAvailable - totalClickedWeight);
             // Update order list (remove) after load order to truck
@@ -222,6 +223,16 @@ function LoadOrderToTruck() {
         }
         setToggleFilter(!toggleFilter);
     }
+    
+    const handleCloseConfirmOrder = () => {
+        // Call api for refresh order lists (GET api)
+        // TODO...
+        setOpenPopup(false);
+    }
+
+    const calculatePercent = (total, current) => {
+        return Number(((total - current) / total).toFixed(2));
+    }
 
     useEffect(() => {
         console.log(truckLoad);
@@ -257,13 +268,14 @@ function LoadOrderToTruck() {
                     <div className="col-5">
                         <div className={styles.leftCol}>
                             <div className={styles.title}>Truck Load</div>
-                            <div className={handleSetStatus((truckInfo.net - truckAvailable) / truckInfo.net)}>{((truckInfo.net - truckAvailable) / truckInfo.net)*100}%</div>
+                            <div className={handleSetStatus(calculatePercent(truckInfo.net, truckAvailable))}>
+                                {Math.round(calculatePercent(truckInfo.net, truckAvailable) * 100)}%</div>
                             <div className="my-5">
                                 <TruckIcon 
                                     width="80%"
                                     height="100%" 
-                                    availability={(truckInfo.net - truckAvailable) / truckInfo.net}
-                                    color={handleChooseColor((truckInfo.net - truckAvailable)/ truckInfo.net)}
+                                    availability={calculatePercent(truckInfo.net, truckAvailable)}
+                                    color={handleChooseColor(calculatePercent(truckInfo.net, truckAvailable))}
                                 />
                             </div>
                             <div className={styles.action}>
@@ -325,7 +337,7 @@ function LoadOrderToTruck() {
                 <ConfirmPopup title="Danh sách đơn hàng"
                     content={<ConfirmOrderLists orders={truckLoad}/>}
                     okLabel="OK"
-                    actionYes={() => setOpenPopup(false)}
+                    actionYes={() => handleCloseConfirmOrder()}
                 />
             )}                
         </div>
@@ -333,4 +345,3 @@ function LoadOrderToTruck() {
 }
 
 export default LoadOrderToTruck;
-
