@@ -22,10 +22,12 @@ export const getOrdersByUserIdThunk = async(userId, thunkAPI) => {
     }
 }
 
-export const createOrderThunk = async(order, thunkAPI) => {
+export const createOrderThunk = async(payload, thunkAPI) => {
+    const { orderPayload, deliveryPayload, socket } = payload
     try {
-        const res = await OrderService.create(order);
-        console.log(res?.data);
+        const res = await OrderService.create(orderPayload);
+        deliveryPayload.order_id = res.data._id
+        socket.emit('newDelivery', deliveryPayload);
         return res.data
     } catch(error) {
         console.log(error);
