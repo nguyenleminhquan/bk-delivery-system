@@ -19,6 +19,7 @@ import GeneralConfirm from 'components/GeneralConfirm';
 
 // Import scss
 import styles from './AdminEmployeeManagement.module.scss';
+import ConfirmPopup from 'components/ConfirmPopup';
 
 const employeeModels = {
     columns: [
@@ -59,27 +60,8 @@ const employeeModels = {
             width: 200
         }
     ],
-    rows: [
-        {
-            generalInfo: (
-                <div>
-                    <div className='d-flex align-items-center'>
-                        <FaUser className='me-2'/> Nguyễn Văn A</div>
-                    <div className='d-flex align-items-center'>
-                        <HiMail className='me-2'/> a123@gmail.com</div>
-                    <div className='d-flex align-items-center'>
-                        <IoMdCall className='me-2'/> 0123456789</div>
-                </div>
-            ),
-            activeStock: 'Đống Đa, Hà Nội',
-            vehicleInfo: 'Xe máy Honda 63B5-99999',
-            role: 'Tài xế nội thành',
-            edit: <BiEdit className="text-success"/>,
-            delete: <RiDeleteBin6Fill className="text-danger" />
-        }
-    ]
+    rows: []
 }
-
 const roleModels = [
     {
         label: 'Tài xế nội thành',
@@ -100,6 +82,7 @@ function AdminEmployeeManagement() {
     const dispatch = useDispatch();
     const [data, setData] = useState(employeeModels);
     const [openPopup, setOpenPopup] = useState(false);
+    const [deletePopup, setDeletePopup] = useState({flag: false, data: {}}); 
 
     const handleConfirm = (formData) => {
         if (formData.fullname && formData.phone && formData.email && formData.typeUser) {
@@ -107,8 +90,19 @@ function AdminEmployeeManagement() {
             dispatch(registerUser({
                 ...formData,
                 password: '1234567890'
-            }))
+            }));
         } else return toast.error('Thiếu thông tin nhân viên');
+    }
+
+    const handleEdit = () => {
+        // 
+    }
+
+    const handleConfirmDelete = (id) => {
+        // Call api for PUT employee
+        // Todo...
+        console.log('deleted');
+        setDeletePopup(false);
     }
 
     useEffect(() => {
@@ -120,6 +114,30 @@ function AdminEmployeeManagement() {
     //     let employeeArray = JSON.parse(JSON.stringify(employees));
     //     // handle data after call api GET to pass to employeeModels row
     // }, [employees])
+
+    useEffect(() => {
+        const rowData = [
+            {
+                generalInfo: (
+                    <div>
+                        <div className='d-flex align-items-center'>
+                            <FaUser className='me-2'/> Nguyễn Văn A</div>
+                        <div className='d-flex align-items-center'>
+                            <HiMail className='me-2'/> a123@gmail.com</div>
+                        <div className='d-flex align-items-center'>
+                            <IoMdCall className='me-2'/> 0123456789</div>
+                    </div>
+                ),
+                activeStock: 'Đống Đa, Hà Nội',
+                vehicleInfo: 'Xe máy Honda 63B5-99999',
+                role: 'Tài xế nội thành',
+                edit: (<BiEdit className="text-success" role="button" onClick={handleEdit}/>),
+                delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup({flag: true, data: 1})}/>)
+            }
+        ]
+
+        setData({...data, rows: rowData});
+    }, [])
 
     return (
         <div className={styles.wrapper}>
@@ -140,6 +158,8 @@ function AdminEmployeeManagement() {
             {openPopup && (
                 <GeneralConfirm 
                     title="Thêm mới"
+                    cancelText="Đóng lại"
+                    onCancel={() => setOpenPopup(false)}
                     onConfirm={handleConfirm}
                     showForm={true}
                     formFields={[
@@ -149,10 +169,20 @@ function AdminEmployeeManagement() {
                         { name: "typeUser", label: "Quyền", type: "select", models: roleModels },
                     ]}
                     formSubmitText="Thêm mới"
-                    cancelText="Đóng lại"
-                    onCancel={() => setOpenPopup(false)}
                 />
                
+            )}
+
+            {deletePopup.flag && (
+                <GeneralConfirm 
+                    title="Xóa"
+                    message="Bạn có muốn xóa tài khoản này không?"
+                    onCancel={() => setDeletePopup(false)}
+                    cancelText="Đóng lại"
+                    showConfirmButton={true}
+                    confirmText="Xác nhận"
+                    onConfirm={() => handleConfirmDelete(deletePopup.data)}
+                />
             )}
         </div>
     )
