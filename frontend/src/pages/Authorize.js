@@ -10,6 +10,7 @@ import CreateOrder from './CreateOrder';
 import ExportOrder from './ExportOrder';
 import DriverHistory from './Roles/Driver/DriverHistory';
 import LoadOrderToTruck from './LoadOrderToTruck';
+import AdminEmployeeManagement from './Roles/Admin/AdminEmployeeManagement';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -49,6 +50,7 @@ function Authorize() {
 		return (
 			<Routes>
 				<Route index element={<AdminHome />}></Route>
+				<Route path='/employee-management' element={<AdminEmployeeManagement />}></Route>
 				{/* <Route path='/profile' element={<Profile />}></Route> */}
 			</Routes>
 		)

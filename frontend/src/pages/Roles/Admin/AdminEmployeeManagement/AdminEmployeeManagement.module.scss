@@ -1,0 +1,6 @@
+.wrapper {
+    position: fixed;
+    top: 10px;
+    left: calc(var(--sidebar-width) + 30px);
+    right: 10px;
+}
