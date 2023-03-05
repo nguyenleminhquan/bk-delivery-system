@@ -26,8 +26,8 @@ export const getOrdersByUserId = createAsyncThunk(
 
 export const createOrder = createAsyncThunk(
     'order/createOrder',
-    async(order, thunkAPI) => {
-        return createOrderThunk(order, thunkAPI)
+    async(payload, thunkAPI) => {
+        return createOrderThunk(payload, thunkAPI)
     }
 )
 
@@ -42,7 +42,6 @@ const orderSlice = createSlice({
             state.isLoading = true;
         },
         [createOrder.fulfilled]: (state, {payload}) => {
-            console.log(payload);
             state.isLoading = false;
             state.newOrder = payload
             toast.success('Create order successfully');

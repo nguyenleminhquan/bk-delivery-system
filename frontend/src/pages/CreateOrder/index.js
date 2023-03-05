@@ -114,7 +114,7 @@ function CreateOrder() {
         if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
             alert('Chưa điền đầy đủ thông tin!');
         } else {
-            const payload = {
+            const orderPayload = {
                 sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
                 receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
                 payment_type: paymentMethod,
@@ -130,15 +130,14 @@ function CreateOrder() {
                     weight: product.weight,
                 }))
             }
-            await dispatch(createOrder(payload));
-            socket.emit('newDelivery', {
+            const deliveryPayload = {
                 status: 'waiting',
                 area_code: user.area_code,
-                order_id: newOrder._id,
                 type: 'inner',
                 from: `${senderInfo.fullname}&${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
                 to: `stock_${user.area_code}`
-            })
+            }
+            dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         }
     }
 
