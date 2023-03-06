@@ -6,7 +6,11 @@ import moment from 'moment-timezone'
 const orderSchema = mongoose.Schema({
   weight: { type: Number, require: true },
   sender_address: { type: String, require: true },
+  sender_name: { type: String, require: true },
+  sender_phone: { type: String, require: true },
   receiver_address: { type: String, require: true },
+  receiver_name: { type: String, require: true },
+  receiver_phone: { type: String, require: true },
   payment_type: { type: String, require: true },
   cod_amount: { type: Number },
   note: String,

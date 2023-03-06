@@ -62,3 +62,41 @@
         }
     }
 }
+
+.orderList {
+    display: grid;
+    gap: 20px;
+    .order {
+        border-left: 4px solid var(--primary-color);
+        padding: 20px;
+        box-shadow: var(--shadow);
+        border-radius: 5px;
+        position: relative;
+    }
+    .orderInfo {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .itemList {
+        display: flex;
+        gap: 20px;
+        .item {
+            padding: 5px 20px;
+            border-radius: 5px;
+            margin: 0;
+            border: 1px solid #adadad;
+        }
+    }
+    .iconList {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        svg {
+            cursor: pointer;
+        }
+    }
+}

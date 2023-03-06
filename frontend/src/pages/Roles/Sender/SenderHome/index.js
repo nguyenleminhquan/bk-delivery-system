@@ -8,11 +8,14 @@ import Table from 'components/Table';
 import { getOrdersByUserId } from 'features/user/orderSlice';
 import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
 import { orderStatusList } from 'utils/constants';
+import SpecificSenderOrder from 'components/SpecificSenderOrder';
 
 function SenderHome() {
 	const { user } = useSelector((state) => state.user);
 	const { orders } = useSelector((state) => state.order);
 	const [rowData, setRowData] = useState([]);
+	const [showSpecificOrder, setShowSpecificOrder] = useState(false);
+	const [specificOrder, setSpecificOrder]= useState('')
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -31,7 +34,10 @@ function SenderHome() {
 			row.status = orderStatusList[item.status]
 			row.btns = (
 				<div>
-					<FaEye />
+					<FaEye onClick={() => {
+						setShowSpecificOrder(true)
+						setSpecificOrder(item)
+					 }} />
 					<FaEdit className='edit-btn' />
 					<FaTrashAlt className='delete-btn' />
 				</div>
@@ -114,9 +120,45 @@ function SenderHome() {
 			</div>
 
 			{/* Table */}
-			<div className='mt-20'>
+			{/* <div className='mt-20'>
 				<Table data={data} />
+			</div> */}
+			<div className={styles.orderList}>
+				{
+					orders.map((order) => (
+						<div key={order._id} className={styles.order}>
+							<div className={styles.orderInfo}>
+								<p><span className='fw-bold'>Mã đơn hàng:</span> {order._id}</p>
+								<p><span className='fw-bold'>Thời gian tạo:</span> </p>
+								<p><span className='fw-bold'>Phí vận chuyển:</span> {order.shipping_fee}đ</p>
+								<p><span className='fw-bold'>Trạng thái:</span> {order.status}</p>
+							</div>
+							<div>
+								<p className='fw-bold'>Sản phẩm</p>
+								<div className={styles.itemList}>
+									{
+										order.items.map((item) => (
+											<p key={item._id} className={styles.item} > {item.name} </p>
+										))
+									}
+								</div>
+							</div>
+							<div className={styles.iconList}>
+								<FaEye className='text-success' onClick={() => {
+									setShowSpecificOrder(true)
+									setSpecificOrder(order)
+								}} />
+								<FaEdit className='text-primary' />
+								<FaTrashAlt className='text-danger' />
+							</div>
+						</div>
+					))
+				}
 			</div>
+
+			{
+				showSpecificOrder && <SpecificSenderOrder order={specificOrder} closeModal={() => setShowSpecificOrder(false)} />
+			}
 
 		</div>
 	)

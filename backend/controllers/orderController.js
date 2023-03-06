@@ -12,13 +12,17 @@ const createOrder = async (req, res, next) => {
   let newOrder = new Order({
     weight: 0,
     sender_address: bodyObj.sender_address,
+    sender_name: bodyObj.sender_name,
+    sender_phone: bodyObj.sender_phone,
     receiver_address: bodyObj.receiver_address,
+    receiver_name: bodyObj.receiver_name,
+    receiver_phone: bodyObj.receiver_phone,
     payment_type: bodyObj.payment_type,
     cod_amount: bodyObj.cod_amount,
     note: bodyObj.note,
     status: bodyObj.status,
     shipping_fee: bodyObj.shipping_fee,
-    user_id: bodyObj.user_i
+    user_id: bodyObj.user_id
   })
   // Save order for getting _id
   await newOrder.save()
@@ -68,7 +72,11 @@ const getOrderById = async (req, res, next) => {
 // Get order by id
 const getOrdersByUserId = async (req, res, next) => {
   try {
-    let data = await Order.find({ user_id: req.params.userId })
+    let data = await Order
+    .find({ user_id: req.params.userId })
+    .populate({
+      path: 'items'
+    })
     return res.json(data)
   } catch (error) {
     return next(createError(400))
