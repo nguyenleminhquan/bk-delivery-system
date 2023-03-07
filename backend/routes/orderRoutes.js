@@ -13,7 +13,6 @@ import verifyRoles from '../middlewares/verifyRoles.js'
 
 const route = express.Router()
 
-// Get all order
 route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['sender', 'driver_inner', 'driver_inter']), getAllOrder)
 route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['sender']), createOrder)
 route.get('/user/:userId', verifyRefreshToken, verifyToken, verifyRoles(['sender']), getOrdersByUserId)

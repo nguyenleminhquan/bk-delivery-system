@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import express from 'express'
 import verifyToken from '../middlewares/verifyToken.js'
 import verifyRefreshToken from '../middlewares/verifyRefreshToken.js'
 import verifyRoles from '../middlewares/verifyRoles.js'
