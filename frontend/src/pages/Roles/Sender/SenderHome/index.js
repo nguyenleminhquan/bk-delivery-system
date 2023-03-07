@@ -10,12 +10,36 @@ import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
 import { orderStatusList } from 'utils/constants';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
 
+const tabs = [
+	{
+		field: 'all',
+		name: 'Tất cả'
+	},
+	{
+		field: 'waiting',
+		name: 'Đang xử lý'
+	},
+	{
+	  	field: 'picking',
+	  	name: 'Đơn được gán',
+	},
+	{
+	  	field: 'accepted',
+	  	name: 'Đã nhận đơn',
+	},
+	{
+	  	field: 'picked',
+	  	name: 'Đã lấy hàng',
+	}
+  ]
+
 function SenderHome() {
 	const { user } = useSelector((state) => state.user);
 	const { orders } = useSelector((state) => state.order);
-	const [rowData, setRowData] = useState([]);
+	const [configOrders, setConfigOrders] = useState([]);
 	const [showSpecificOrder, setShowSpecificOrder] = useState(false);
-	const [specificOrder, setSpecificOrder]= useState('')
+	const [specificOrder, setSpecificOrder]= useState('');
+	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -23,71 +47,13 @@ function SenderHome() {
 	}, [dispatch, user.id])
 
 	useEffect(() => {
-		let orderArray = JSON.parse(JSON.stringify(orders));
-		let orderData = [];
-		orderArray.map((item, index) => {
-			let row = {};
-			row.id = item._id;
-			row.receiver = 'Nguyễn Văn A'
-			row.fee = item.shipping_fee + 'đ';
-			row.createdTime = item.createdAt;
-			row.status = orderStatusList[item.status]
-			row.btns = (
-				<div>
-					<FaEye onClick={() => {
-						setShowSpecificOrder(true)
-						setSpecificOrder(item)
-					 }} />
-					<FaEdit className='edit-btn' />
-					<FaTrashAlt className='delete-btn' />
-				</div>
-			)
-			orderData.push(row)
-		})
-		setRowData(orderData)
-	}, [orders])
-
-	const data = {
-		columns: [
-			{
-				label: 'Mã đơn hàng',
-				field: 'id',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Người nhận',
-				field: 'receiver',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Tổng phí',
-				field: 'fee',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Ngày tạo',
-				field: 'createdTime',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Trạng thái',
-				field: 'status',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: '',
-				field: 'btns',
-				sort: 'asc',
-				width: 200
-			},
-		],
-		rows: rowData
-	}
+		if (selectedTab.field === 'all') {
+			setConfigOrders(orders)
+		}
+		else {
+			setConfigOrders(orders.filter((order) => order.status === selectedTab.field))
+		}
+	}, [selectedTab])
 
 	return (
 		<div>
@@ -119,22 +85,35 @@ function SenderHome() {
 				</div>
 			</div>
 
+			<ul className={styles.tabHeader}>
+				{tabs.map(tab => (
+				<li key={tab.name} 
+					className={selectedTab.field === tab.field ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
+					onClick={() => setSelectedTab(tab)}
+				>{tab.name}</li>
+				))}
+			</ul>
+
 			{/* Table */}
 			{/* <div className='mt-20'>
 				<Table data={data} />
 			</div> */}
 			<div className={styles.orderList}>
 				{
-					orders.map((order) => (
+					configOrders.map((order) => (
 						<div key={order._id} className={styles.order}>
 							<div className={styles.orderInfo}>
-								<p><span className='fw-bold'>Mã đơn hàng:</span> {order._id}</p>
-								<p><span className='fw-bold'>Thời gian tạo:</span> </p>
-								<p><span className='fw-bold'>Phí vận chuyển:</span> {order.shipping_fee}đ</p>
-								<p><span className='fw-bold'>Trạng thái:</span> {order.status}</p>
+								<div><p className='fw-bold mb-0'>Mã đơn hàng:</p> {order._id}</div>
+								<div><p className='fw-bold mb-0'>Thời gian tạo:</p> </div>
+								<div><p className='fw-bold mb-0'>Phí vận chuyển:</p> {order.shipping_fee}đ</div>
+								<div><p className='fw-bold mb-0'>Trạng thái:</p> {order.status}</div>
+							</div>
+							<div className=''>
+								<p className='fw-bold mb-0'>Địa chỉ người nhận:</p> 
+								<p> {order.receiver_address} </p>
 							</div>
 							<div>
-								<p className='fw-bold'>Sản phẩm</p>
+								<p className='fw-bold mb-1'>Sản phẩm:</p>
 								<div className={styles.itemList}>
 									{
 										order.items.map((item) => (

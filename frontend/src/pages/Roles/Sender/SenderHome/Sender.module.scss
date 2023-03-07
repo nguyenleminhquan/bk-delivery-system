@@ -66,16 +66,24 @@
 .orderList {
     display: grid;
     gap: 20px;
+    p {
+        margin-bottom: 0;
+    }
     .order {
         border-left: 4px solid var(--primary-color);
         padding: 20px;
         box-shadow: var(--shadow);
+        box-shadow: 0 1px 4px rgb(0, 0, 0, 0.2);
         border-radius: 5px;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
     .orderInfo {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
+        // margin-bottom: 10px;
     }
     .itemList {
         display: flex;
@@ -97,6 +105,28 @@
         gap: 10px;
         svg {
             cursor: pointer;
+        }
+    }
+}
+
+.tabHeader {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    .tabHeaderItem {
+        min-width: 150px;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        & ~ .tabHeaderItem {
+            margin-left: 12px;
+        }
+
+        &.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
         }
     }
 }
