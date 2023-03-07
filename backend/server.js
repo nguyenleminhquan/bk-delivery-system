@@ -6,9 +6,10 @@ import APINotFoundHandler from './middlewares/APINotFoundHandler.js'
 import connectDB from './config/db/connectDB.js'
 import { Server } from 'socket.io';
 
-import userRoutes from './routes/userRoute.js'
-import orderRoutes from './routes/orderRoute.js'
+import userRoutes from './routes/userRoutes.js'
+import orderRoutes from './routes/orderRoutes.js'
 import deliveryRoutes from './routes/deliveryRoutes.js'
+import stockRoutes from './routes/stockRoutes.js'
 
 connectDB()
 dotenv.config()
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/user', userRoutes)
 app.use('/order', orderRoutes)
 app.use('/delivery', deliveryRoutes)
+app.use('/stock', stockRoutes)
 
 app.get('/', (req, res, next) => {
     res.send('API is running!')

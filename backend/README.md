@@ -16,3 +16,5 @@
 | /delivery/history/:driverId | GET | Get delivery history | Authorization: Bearer <refresh_token> <access_token> | |
 | /delivery/:id/update-status | PATCH | Change the status of delivery | Authorization: Bearer <refresh_token> <access_token> | status: string |
 | /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
+| /stock| POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
+| /stock/:stock_id/orders| GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
