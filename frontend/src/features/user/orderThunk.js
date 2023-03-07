@@ -1,3 +1,4 @@
+import { checkForUnauthorizedResponse } from "services/axios";
 import OrderService from "services/order.service";
 
 export const getOrderThunk = async(thunkAPI) => {
@@ -7,7 +8,7 @@ export const getOrderThunk = async(thunkAPI) => {
         // return res.data;
     } catch(error) {
         console.log(error);
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+        return checkForUnauthorizedResponse(error, thunkAPI)
     }
 }
 
@@ -18,7 +19,7 @@ export const getOrdersByUserIdThunk = async(userId, thunkAPI) => {
         return res.data;
     } catch(error) {
         console.log(error);
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+        return checkForUnauthorizedResponse(error, thunkAPI)
     }
 }
 
@@ -31,7 +32,6 @@ export const createOrderThunk = async(payload, thunkAPI) => {
         return res.data
     } catch(error) {
         console.log(error);
-        return thunkAPI.rejectWithValue(error.response.data.msg);
-
+        return checkForUnauthorizedResponse(error, thunkAPI)
     }
 }

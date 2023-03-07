@@ -116,7 +116,11 @@ function CreateOrder() {
         } else {
             const orderPayload = {
                 sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                sender_name: senderInfo.fullname,
+                sender_phone: senderInfo.phone,
                 receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
+                receiver_name: receiverInfo.fullname,
+                receiver_phone: receiverInfo.phone,
                 payment_type: paymentMethod,
                 cod_amount: cod,
                 note,
