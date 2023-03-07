@@ -1,0 +1,49 @@
+.admin-dashboard {
+    .widget {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        p {
+            margin: 0;
+        }
+        &-item {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            border-bottom: 4px solid #000;
+            .title {
+                color: #000;
+                opacity: 0.5;
+                text-transform: uppercase;
+            }
+            .num {
+                font-size: 32px;
+                font-weight: bold;
+            }
+            .icon {
+                font-size: 32px;
+            }
+            &.blue-color {
+                border-color: #3F6AD8;
+                .icon {
+                    color: #3F6AD8;
+                }
+            }
+            &.cyan-color {
+                border-color: #17A2B8;
+                .icon {
+                    color: #17A2B8;
+                }
+            }
+            &.orange-color {
+                border-color: #F7B924;
+                .icon {
+                    color: #F7B924;
+                }
+            }
+            &.green-color {
+                border-color: #3AC47D;
+            }
+        }
+    }
+}
