@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const userSchema = mongoose.Schema({
@@ -30,10 +30,6 @@ const userSchema = mongoose.Schema({
   stock_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Stock'
-  },
-  vehicle: {
-    type: String,
-    license_plate_number: String
   },
   area_code: {
     type: Number

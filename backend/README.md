@@ -18,3 +18,5 @@
 | /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
 | /stock| POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
 | /stock/:stock_id/orders| GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
