@@ -40,29 +40,6 @@
     }
 }
 
-.orderSubFilter {
-    display: flex;
-    padding: 0 16px;
-    margin: 12px 0;
-    font-weight: bold;
-    font-size: 16px;
-    background-color: var(--white-color);
-    border-radius: 5px;
-
-    li {
-        min-width: 220px;
-        text-align: center;
-        line-height: 50px;
-        &.active {
-            border-bottom: 2px solid var(--primary-color); 
-        }
-        &:hover  {
-            border-bottom: 2px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-    }
-}
-
 .orderList {
     display: grid;
     gap: 20px;
@@ -70,7 +47,7 @@
         margin-bottom: 0;
     }
     .order {
-        border-left: 4px solid var(--primary-color);
+        border-left: 8px solid var(--primary-color);
         padding: 20px;
         box-shadow: var(--shadow);
         box-shadow: 0 1px 4px rgb(0, 0, 0, 0.2);
@@ -78,7 +55,12 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 20px;
+    }
+    .orderTitles {
+        font-weight: bold;
+        margin-bottom: 0;
+        color: #0f5455;
     }
     .orderInfo {
         display: grid;
@@ -87,9 +69,9 @@
     }
     .itemList {
         display: flex;
-        gap: 20px;
+        gap: 10px;
         .item {
-            padding: 5px 20px;
+            padding: 5px 10px;
             border-radius: 5px;
             margin: 0;
             border: 1px solid #adadad;
@@ -103,8 +85,29 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        svg {
+        .icon {
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
             cursor: pointer;
+            span {
+                font-size: 14px;
+                display: inline-block;
+                margin-left: 10px;
+            }
+            &.green {
+                background-color: #28a745;
+            }
+            &.blue {
+                background-color: #007bff;
+            }
+            &.red {
+                background-color: #dc3545;
+            }
+            svg {
+                width: 14px;
+                height: 14px;
+            }
         }
     }
 }
@@ -119,14 +122,16 @@
         text-align: center;
         font-weight: 600;
         cursor: pointer;
-        border-bottom: 2px solid transparent;
+        border-bottom: 4px solid transparent;
+        color: #848484;
         & ~ .tabHeaderItem {
             margin-left: 12px;
         }
 
         &.active {
-            border-bottom: 2px solid var(--primary-color);
+            border-bottom: 4px solid var(--primary-color);
             color: var(--primary-color);
+            font-weight: bold;
         }
     }
 }

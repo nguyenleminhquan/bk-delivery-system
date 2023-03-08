@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import styles from './Sender.module.scss'
-import Table from 'components/Table';
 import { getOrdersByUserId } from 'features/user/orderSlice';
 import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
 import { orderStatusList } from 'utils/constants';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
+import moment from 'moment/moment';
 
 const tabs = [
 	{
@@ -20,18 +20,22 @@ const tabs = [
 		name: 'Đang xử lý'
 	},
 	{
-	  	field: 'picking',
-	  	name: 'Đơn được gán',
-	},
-	{
-	  	field: 'accepted',
-	  	name: 'Đã nhận đơn',
+		field: 'accepted',
+		name: 'Được nhận'
 	},
 	{
 	  	field: 'picked',
 	  	name: 'Đã lấy hàng',
-	}
-  ]
+	},
+	{
+	  	field: 'delivering',
+	  	name: 'Đang giao hàng',
+	},
+	{
+	  	field: 'success',
+	  	name: 'Giao thành công',
+	},
+]
 
 function SenderHome() {
 	const { user } = useSelector((state) => state.user);
@@ -50,10 +54,18 @@ function SenderHome() {
 		if (selectedTab.field === 'all') {
 			setConfigOrders(orders)
 		}
+		else if (selectedTab.field === 'delivering') {
+			setConfigOrders(orders.filter((order) => 
+				order.status === 'arrived_send_stock' ||
+				order.status === 'coming_dest_stock' ||
+				order.status === 'arrived_dest_stock' ||
+				order.status === 'delivering'
+			))
+		}
 		else {
 			setConfigOrders(orders.filter((order) => order.status === selectedTab.field))
 		}
-	}, [selectedTab])
+	}, [selectedTab, orders])
 
 	return (
 		<div>
@@ -85,6 +97,7 @@ function SenderHome() {
 				</div>
 			</div>
 
+			<h2 className='pt-5 pb-3 fs-3'>Danh sách đơn hàng</h2>
 			<ul className={styles.tabHeader}>
 				{tabs.map(tab => (
 				<li key={tab.name} 
@@ -94,46 +107,57 @@ function SenderHome() {
 				))}
 			</ul>
 
-			{/* Table */}
-			{/* <div className='mt-20'>
-				<Table data={data} />
-			</div> */}
-			<div className={styles.orderList}>
-				{
-					configOrders.map((order) => (
-						<div key={order._id} className={styles.order}>
-							<div className={styles.orderInfo}>
-								<div><p className='fw-bold mb-0'>Mã đơn hàng:</p> {order._id}</div>
-								<div><p className='fw-bold mb-0'>Thời gian tạo:</p> </div>
-								<div><p className='fw-bold mb-0'>Phí vận chuyển:</p> {order.shipping_fee}đ</div>
-								<div><p className='fw-bold mb-0'>Trạng thái:</p> {order.status}</div>
-							</div>
-							<div className=''>
-								<p className='fw-bold mb-0'>Địa chỉ người nhận:</p> 
-								<p> {order.receiver_address} </p>
-							</div>
-							<div>
-								<p className='fw-bold mb-1'>Sản phẩm:</p>
-								<div className={styles.itemList}>
-									{
-										order.items.map((item) => (
-											<p key={item._id} className={styles.item} > {item.name} </p>
-										))
-									}
+			{/* Order List */}
+			{
+				configOrders.length === 0 
+				? <p className='fs-3 text-center'> Không tìm thấy đơn hàng phù hợp </p>
+				:
+				<div className={styles.orderList}>
+					{
+						configOrders.map((order) => (
+							<div key={order._id} className={styles.order}>
+								<div className={styles.orderInfo}>
+									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
+									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
+									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
+									<div><p className={styles.orderTitles}>Trạng thái</p> {order.status}</div>
+								</div>
+								<div className=''>
+									<p className={styles.orderTitles}>Địa chỉ người nhận</p> 
+									<p> {order.receiver_address} </p>
+								</div>
+								<div>
+									<p className='fw-bold mb-1'>Sản phẩm</p>
+									<div className={styles.itemList}>
+										{
+											order.items.map((item) => (
+												<p key={item._id} className={styles.item} > {item.name} x {item.quantity} </p>
+											))
+										}
+									</div>
+								</div>
+								<div className={styles.iconList}>
+									<div className={`${styles.icon} ${styles.green}`} onClick={() => {
+										setShowSpecificOrder(true)
+										setSpecificOrder(order)
+									}}>
+										<FaEye />
+										<span>Xem chi tiết</span>
+									</div>
+									<div className={`${styles.icon} ${styles.blue}`}>
+										<FaEdit />
+										<span>Chỉnh sửa</span>
+									</div>
+									<div className={`${styles.icon} ${styles.red}`}>
+										<FaTrashAlt />
+										<span>Xóa</span>
+									</div>
 								</div>
 							</div>
-							<div className={styles.iconList}>
-								<FaEye className='text-success' onClick={() => {
-									setShowSpecificOrder(true)
-									setSpecificOrder(order)
-								}} />
-								<FaEdit className='text-primary' />
-								<FaTrashAlt className='text-danger' />
-							</div>
-						</div>
-					))
-				}
-			</div>
+						))
+					}
+				</div>
+			}
 
 			{
 				showSpecificOrder && <SpecificSenderOrder order={specificOrder} closeModal={() => setShowSpecificOrder(false)} />
