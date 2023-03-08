@@ -8,7 +8,8 @@ const itemSchema = mongoose.Schema({
   order_id: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order'
-  }
+  },
+  weight: Number
 }, { timestamps: true })
 
 export default mongoose.model('Item', itemSchema)
