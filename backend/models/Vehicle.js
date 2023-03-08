@@ -8,7 +8,11 @@ const vehicleSchema = mongoose.Schema({
   },
   from: String,
   to: String,
-  license_plate_number: String
+  license_plate_number: String,
+  orders: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order'
+  }]
 })
 
 export default mongoose.model('Vehicle', vehicleSchema)
