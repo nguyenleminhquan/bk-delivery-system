@@ -20,3 +20,4 @@
 | /stock/:stock_id/orders| GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
+| /vehicle/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string <br/> order_id: string |
