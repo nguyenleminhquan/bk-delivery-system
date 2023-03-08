@@ -98,16 +98,16 @@ function SpecificSenderOrder({ closeModal, order }) {
                         <thead>
                             <tr>
                                 <td>Sản phẩm</td>
-                                <td>Giá</td>
                                 <td>Số lượng</td>
+                                <td>Khối lượng</td>
                             </tr>
                         </thead>
                         <tbody>
                             {order.items.map((item) => (
                                 <tr key={item._id}>
                                     <td> {item.name} </td>
-                                    <td> {item.price}đ </td>
                                     <td> {item.quantity} </td>
+                                    <td> {item.weight} kg </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -116,12 +116,12 @@ function SpecificSenderOrder({ closeModal, order }) {
                     <div>
                         <p>Tạm tính:</p>
                         <p>Phí vận chuyển:</p>
-                        <p>Tổng cộng:</p>
+                        <p className='total'>Tổng cộng:</p>
                     </div>
                     <div>
-                        <p className='fw-bold'> {totalPrice}đ </p>
+                        <p className='fw-bold'> {order.cod_amount}đ </p>
                         <p className='fw-bold'> {order.shipping_fee}đ </p>
-                        <p className='fw-bold'> {totalPrice - order.shipping_fee}đ </p>
+                        <p className='fw- total'> {order.cod_amount + order.shipping_fee}đ </p>
                     </div>
                 </div>
             </div>
