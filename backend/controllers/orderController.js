@@ -10,7 +10,7 @@ const createOrder = async (req, res, next) => {
   const bodyObj = req.body
 
   let newOrder = new Order({
-    weight: 0,
+    weight: bodyObj.weight,
     sender_address: bodyObj.sender_address,
     sender_name: bodyObj.sender_name,
     sender_phone: bodyObj.sender_phone,
@@ -35,7 +35,6 @@ const createOrder = async (req, res, next) => {
     await item.save()
     // Push item
     newOrder.items.push(item)
-    newOrder.weight += bodyObj.items[i].weight
   }
 
   try {
