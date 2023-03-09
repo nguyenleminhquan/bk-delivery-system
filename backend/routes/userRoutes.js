@@ -10,11 +10,14 @@ import {
     changePassword,
     testJWT,
     getWorkingDay,
-    updateWorkingDays
+    updateWorkingDays,
+    deleteUser,
+    getAllEmployee
 } from '../controllers/userController.js'
 
 const route = express.Router()
 
+route.get('/employee', verifyRefreshToken, verifyToken, verifyRoles(['admin']), getAllEmployee)
 route.post('/login', userLogin)
 route.post('/register', userRegister)
 // Lay access token moi
@@ -25,5 +28,6 @@ route.post('/:id/update', verifyRefreshToken, verifyToken, updateUserInfo);
 route.post('/:id/change-password', verifyRefreshToken, verifyToken, changePassword)
 route.get('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker', 'driver_inner', 'driver_inter']), getWorkingDay)
 route.post('/working-day', verifyRefreshToken, verifyToken, verifyRoles(['stocker', 'driver_inner', 'driver_inter']), updateWorkingDays)
+route.delete('/:id', verifyRefreshToken, verifyToken, verifyRoles(['admin']), deleteUser)
 
 export default route
