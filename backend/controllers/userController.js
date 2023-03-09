@@ -128,6 +128,28 @@ const updateUserInfo = async (req, res, next) => {
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        await User.findByIdAndDelete(req.params.id)
+
+        return res.json({msg: 'Delete successfully!'})
+    } catch (error) {
+        return next(createError(400))
+    }
+}
+
+const getAllEmployee = async (req, res, next) => {
+    try {
+        let allEmployee = await User.find({ 
+            typeUser:{ $in: ['driver_inner', 'driver_inter', 'stocker'] }
+        })
+
+        return res.json(allEmployee)
+    } catch (error) {
+        return next(createError(400))
+    }
+}
+
 const changePassword = async (req, res, next) => {
     try {
         const userId = req.params.id;
@@ -275,5 +297,7 @@ export {
     changePassword,
     testJWT,
     getWorkingDay,
-    updateWorkingDays
+    updateWorkingDays,
+    deleteUser,
+    getAllEmployee
 }
