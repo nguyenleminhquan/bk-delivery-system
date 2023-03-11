@@ -1,7 +1,7 @@
 import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
 import { useState, useEffect } from 'react'
 import { BiPencil } from 'react-icons/bi'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
+import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
 import styles from './CreateOrder.module.scss'
 import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
@@ -9,6 +9,8 @@ import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from 'features/user/orderSlice'
 import AddressForm from 'components/AddressForm'
+import { toast } from 'react-toastify'
+import { produceWithPatches } from 'immer'
 
 const infoModel = {
     fullname: '',
@@ -46,6 +48,12 @@ const orderTypes = [
     {code: 'others', label: 'Còn lại'}
 ];
 
+const recentlyAddress = [
+    'Thanh Xuân, Hà Nội',
+    'Ba Đình, Hà Nội',
+    'Trần Duy Hưng, Hà Nội'
+]
+
 function CreateOrder() {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
@@ -60,6 +68,10 @@ function CreateOrder() {
     const [receiverWards, setReceiverWards] = useState([]);
     const [address, setAddress] = useState([]);
 
+    const [senderAddress, setSenderAddress] = useState('');
+    const [receiverAddress, setReceiverAddress] = useState('');
+
+    const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
 
     const [note, setNote] = useState('');
@@ -90,6 +102,8 @@ function CreateOrder() {
         const lastProduct = products.at(-1);
         if (!checkEmptyProductInfo(lastProduct)) {
             setProducts(prev => [...prev, productModel])
+        } else {
+            toast.error('Vui lòng điền đủ thông tin sản phẩm trước khi điền sản phẩm mới.')
         }
     }
 
@@ -105,29 +119,30 @@ function CreateOrder() {
                 return true;
             }
         });
+        console.log(receiverInfo)
         console.log('empty sender info: ', isEmptySenderInfo);
         console.log('empty receiver info: ', isEmptyReceiverInfo);
-        if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
-            alert('Chưa điền đầy đủ thông tin!');
-        } else {
-            const payload = {
-                sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
-                receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
-                payment_type: paymentMethod,
-                cod_amount: cod,
-                note,
-                status: 'WAITING',
-                shipping_fee: calculateTotalFee(),
-                user_id: user.id,
-                items: products.map(product => ({
-                    name: product.name,
-                    quantity: product.quantity,
-                    type: product.type,
-                    weight: product.weight,
-                }))
-            }
-            dispatch(createOrder(payload));
-        }
+        // if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
+        //     alert('Chưa điền đầy đủ thông tin!');
+        // } else {
+        //     const payload = {
+        //         sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+        //         receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
+        //         payment_type: paymentMethod,
+        //         cod_amount: cod,
+        //         note,
+        //         status: 'WAITING',
+        //         shipping_fee: calculateTotalFee(),
+        //         user_id: user.id,
+        //         items: products.map(product => ({
+        //             name: product.name,
+        //             quantity: product.quantity,
+        //             type: product.type,
+        //             weight: product.weight,
+        //         }))
+        //     }
+        //     dispatch(createOrder(payload));
+        // }
     }
 
     const handleChangePaymentOption = e => {
@@ -152,6 +167,18 @@ function CreateOrder() {
         }
     }
 
+    const handleSaveSenderInfo = () => {
+        if (editSender) {
+            const address = `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`;
+            setSenderAddress(address);
+        }
+        setEditSender(!editSender);
+    }
+
+    const handleRemoveProduct = (id) => {
+        setProducts(prev => prev.filter((product, index) =>  index !== id));
+    }
+
     useEffect(() => {
         if (products.at(-1).weight && products.at(-1).quantity) {
             const updated = calculateTotalFee() + parseInt(cod);
@@ -163,8 +190,17 @@ function CreateOrder() {
 
     useEffect(() => {
         // Get sender info from user profile
+        const addressArr = user.address.split(',');
+        const reservedArr = [...addressArr].reverse();
+        setSenderAddress(reservedArr.map((str, index) => 
+            index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
+        ));
         setSenderInfo(prev => ({
             ...prev,
+            city: addressArr[0] ?? '',
+            district: addressArr[1] ?? '',
+            ward: addressArr[2] ?? '',
+            address: addressArr[3] ?? '',
             fullname: user.fullname,
             phone: user.phone,
         }))
@@ -188,21 +224,48 @@ function CreateOrder() {
                 <div className="container-fluid bg-white p-5">
                     <div className="row">
                         <div className="col-8">
-                            <div className={styles.createOrderSection}>
-                                <div className={styles.title}>
-                                    <span className='ms-2 me-3'>Bên gửi</span>
-                                    <button className={styles.editBtn}>
-                                        {/* {editAddress ? <BsCheckSquare /> : <BsPencilSquare />} */}
-                                    </button>
+                            <div className={`${styles.createOrderSection} row`}>
+                                <div className="col-12">
+                                    <div className={styles.title}>
+                                        <span className='ms-2 me-3'>Bên gửi</span>
+                                        <button className={styles.editBtn} onClick={() => handleSaveSenderInfo()}>
+                                            {editSender ? <BsCheckSquare /> : <BsPencilSquare />}
+                                        </button>
+                                    </div>
                                 </div>
-                                <AddressForm 
-                                    stateInfo={senderInfo}
-                                    setStateInfo={setSenderInfo}
-                                    cities={address}
-                                    districts={senderDistricts}
-                                    setDistricts={setSenderDistricts}
-                                    wards={senderWards}
-                                    setWards={setSenderWards}/>
+                                <div className="col-6 mt-2">
+                                    <span className='fw-semibold'>{user.fullname} - {user.phone}</span>
+                                    <p>{senderAddress}</p>
+                                </div>
+                                {editSender ? (
+                                    <div className="col-6 mt-2">
+                                        <AddressForm 
+                                            stateInfo={senderInfo}
+                                            setStateInfo={setSenderInfo}
+                                            cities={address}
+                                            districts={senderDistricts}
+                                            setDistricts={setSenderDistricts}
+                                            wards={senderWards}
+                                            setWards={setSenderWards}
+                                            activeField={['city', 'district', 'province', 'address']}/>
+
+                                    </div>
+                                ) : (
+                                    <div className="col-6 mt-2">
+                                        <p className='fw-semibold'>Các địa chỉ gửi gần đây:</p>
+                                        {recentlyAddress.map((address, index) => (
+                                            <div className={styles.optionWrap} key={index}>
+                                                <input type="radio" 
+                                                    name='recentlyAddress'
+                                                    className='me-3'
+                                                    checked={address === senderAddress}
+                                                    value={address}
+                                                    onChange={e => setSenderAddress(e.target.value)}/> 
+                                                <label htmlFor="recentlyAddress" className='ms-2' onClick={() => setSenderAddress(address)}>{address}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -216,7 +279,8 @@ function CreateOrder() {
                                     districts={receiverDistricts}
                                     setDistricts={setReceiverDistricts}
                                     wards={receiverWards}
-                                    setWards={setReceiverWards}/>
+                                    setWards={setReceiverWards}
+                                    activeField={['fullname', 'phone', 'city', 'district', 'province', 'address']}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -226,12 +290,12 @@ function CreateOrder() {
                                 <div className={styles.content}>
                                     {products.map((product, index) => (
                                         <div key={index} className={styles.orderItem}>
-                                            <div className={styles.imageUpload}>
+                                            {/* <div className={styles.imageUpload}>
                                                 <label htmlFor='file-input'>
                                                     <span className={styles.button}>Upload ảnh</span>
                                                 </label>
                                                 <input id="file-input" type="file" style={{display: 'none'}} />
-                                            </div>
+                                            </div> */}
 
                                             <div className={styles.info}>
                                                 <span className='fw-semibold'>{index+1}. </span>
@@ -272,9 +336,20 @@ function CreateOrder() {
                                                         ))}
                                                     </select>
                                                 </div>
-                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
-                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
-                                                </button>
+
+                                                <div className='d-flex flex-column'>
+                                                    {products.length > 1 && (
+                                                        <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
+                                                            <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
+                                                        </button>
+                                                    )}
+                                                    {index === products.length - 1 && (
+                                                        <button className='flex-fill bg-white' onClick={handleAddProduct}>
+                                                            <AiOutlinePlusCircle className={styles.addItemBtn}/>
+                                                        </button>
+                                                    )}
+                                                    <button></button>
+                                                </div>
                                             </div>
                                         </div> 
                                     ))}
