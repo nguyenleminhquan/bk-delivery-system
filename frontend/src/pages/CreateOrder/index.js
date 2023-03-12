@@ -106,56 +106,36 @@ function CreateOrder() {
         if (isDisabledSubmit()) {
             toast.error('Chưa điền đầy đủ thông tin.');
             return;
-        }
-        // if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
-            // toast.error('Chưa điền đầy đủ thông tin.');
-        // } else {
-        //     const payload = {
-        //         sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
-        //         receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
-        //         payment_type: paymentMethod,
-        //         cod_amount: cod,
-        //         note,
-        //         status: 'WAITING',
-        //         shipping_fee: calculateTotalFee(),
-        //         user_id: user.id,
-        //         items: products.map(product => ({
-        //             name: product.name,
-        //             quantity: product.quantity,
-        //             type: product.type,
-        //             weight: product.weight,
-        //         }))
-        //     }
-        //     dispatch(createOrder(payload));
-        // }
-        const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
-        const receiver_address = (
-            `${receiverInfo.fullname}, ` + 
-            `${receiverInfo.phone}, ` +
-            `${receiverInfo.address ?? receiverInfo.address}, ` + 
-            `${receiverInfo.ward ?? receiverInfo.ward}, ` +
-            `${receiverInfo.district ?? receiverInfo.district}, ` +
-            receiverInfo.city ?? receiverInfo.city
-        );
+        } else {
+            const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
+            const receiver_address = (
+                `${receiverInfo.fullname}, ` + 
+                `${receiverInfo.phone}, ` +
+                `${receiverInfo.address ?? receiverInfo.address}, ` + 
+                `${receiverInfo.ward ?? receiverInfo.ward}, ` +
+                `${receiverInfo.district ?? receiverInfo.district}, ` +
+                receiverInfo.city ?? receiverInfo.city
+            );
 
-        const payload = {
-            sender_address,
-            receiver_address,
-            payment_type: paymentMethod,
-            cod_amount: cod,
-            note,
-            status: OrderStatus.PROCESSING,
-            shipping_fee: calculateTotalFee(),
-            user_id: user.id,
-            items: products.map(product => ({
-                name: product.name,
-                quantity: product.quantity,
-                type: product.type,
-                weight: product.weight,
-            }))
-        }
+            const payload = {
+                sender_address,
+                receiver_address,
+                payment_type: paymentMethod,
+                cod_amount: cod,
+                note,
+                status: OrderStatus.PROCESSING,
+                shipping_fee: calculateTotalFee(),
+                user_id: user.id,
+                items: products.map(product => ({
+                    name: product.name,
+                    quantity: product.quantity,
+                    type: product.type,
+                    weight: product.weight,
+                }))
+            }
 
-        console.log(payload);
+            dispatch(createOrder(payload));
+        }
     }
 
     const handleChangePaymentOption = e => {
@@ -182,7 +162,12 @@ function CreateOrder() {
 
     const handleSaveSenderInfo = () => {
         if (editSender) {
-            const address = `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`;
+            const address = (
+                (senderInfo.address && `${senderInfo.address}, `) +
+                (senderInfo.ward && `${senderInfo.ward}, `) +
+                (senderInfo.district && `${senderInfo.district}, `) +
+                (senderInfo.city && senderInfo.city)
+            );
             setSenderAddress(address);
         }
         setEditSender(!editSender);
@@ -263,7 +248,7 @@ function CreateOrder() {
                                             activeField={['city', 'district', 'province', 'address']}/>
                                         <div className="row mt-4">
                                             <div className="col-12 text-end">
-                                                <button className='btn btn-medium me-3' onClick={() => setEditSender(!editSender)}>Save</button>
+                                                <button className='btn btn-medium me-3' onClick={handleSaveSenderInfo}>Lưu</button>
                                             </div>
                                         </div>
 
