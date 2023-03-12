@@ -3,6 +3,7 @@ import { BiLogOut } from 'react-icons/bi'
 import { BsPersonCircle } from 'react-icons/bs'
 import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
+import {CODMethodIcon, MomoMethodIcon, ATMMethodIcon } from '../components/Icons';
 
 export const loginFields = (values) => [
     {
@@ -202,7 +203,6 @@ export const senderSidebar = [
     },
 ];
 
-
 export const driverSidebar = [
     {
         id: 1,
@@ -344,3 +344,22 @@ export const adminSidebar = [
         type: 'beneath'
     },
 ]
+
+export const paymentMethods = [
+    { code: 'cod', label: 'Thanh toán trực tiếp', icon: <CODMethodIcon /> },
+    { code: 'momo', label: 'Momo', icon: <MomoMethodIcon /> },
+    { code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon /> },
+]
+
+export const paymentOptions = [
+    { code: 'sender', label: 'Người gửi thanh toán' },
+    { code: 'receiver', label: 'Người nhận thanh toán' }
+]
+
+export const orderTypes = [
+    { code: 'electronic', label: 'Điện tử' },
+    { code: 'fragile', label: 'Dễ vỡ' },
+    { code: 'food', label: 'Thức ăn' },
+    { code: 'cloth', label: 'Quần áo' },
+    { code: 'others', label: 'Còn lại' }
+];

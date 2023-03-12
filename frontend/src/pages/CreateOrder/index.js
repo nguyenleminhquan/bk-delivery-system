@@ -1,16 +1,20 @@
-import { BsSearch, BsPencilSquare } from 'react-icons/bs'
-import { useState, useEffect } from 'react'
-import { BiPencil } from 'react-icons/bi'
-import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
-import styles from './CreateOrder.module.scss'
-import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { createOrder } from 'features/user/orderSlice'
-import AddressForm from 'components/AddressForm'
-import { toast } from 'react-toastify'
-import { OrderStatus } from 'utils/enum'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+
+// Import icon
+import { BsSearch, BsPencilSquare } from 'react-icons/bs';
+import { BiPencil } from 'react-icons/bi';
+import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
+
+import { createOrder } from 'features/user/orderSlice';
+import AddressForm from 'components/AddressForm';
+import { OrderStatus } from 'utils/enum';
+import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
+
+import styles from './CreateOrder.module.scss';
 
 const infoModel = {
     fullname: '',
@@ -28,25 +32,6 @@ const productModel = {
     imgUrl: '',
     type: '',
 }
-
-const paymentOptions = [
-    {code: 'sender', label: 'Người gửi thanh toán'},
-    {code: 'receiver', label: 'Người nhận thanh toán'}
-]
-
-const paymentMethods = [
-    {code: 'cod', label: 'Thanh toán trực tiếp', icon: <CODMethodIcon />},
-    {code: 'momo', label: 'Momo', icon: <MomoMethodIcon />},
-    {code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon />},
-]
-
-const orderTypes = [
-    {code: 'electronic', label: 'Điện tử'},
-    {code: 'fragile', label: 'Dễ vỡ'},
-    {code: 'food', label: 'Thức ăn'},
-    {code: 'cloth', label: 'Quần áo'},
-    {code: 'others', label: 'Còn lại'}
-];
 
 const recentlyAddress = [
     'Thanh Xuân, Hà Nội',
