@@ -29,7 +29,7 @@ const productModel = {
     name: '',
     weight: '',
     quantity: '',
-    imgUrl: '',
+    // imgUrl: '',
     type: '',
 }
 
@@ -95,19 +95,20 @@ function CreateOrder() {
         return product.name === '' || product.weight === '' || product.quantity === '';
     }
 
-    const handleSubmit = () => {
+    const isDisabledSubmit = () => {
         const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
         const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
-        const isEmptyProduct = products.forEach(product => {
-            if (Object.values(product).some(value => value === '')) {
-                return true;
-            }
-        });
-        // console.log(receiverInfo)
-        // console.log('empty sender info: ', isEmptySenderInfo);
-        // console.log('empty receiver info: ', isEmptyReceiverInfo);
+        const isEmptyProduct = Object.values(products.at(-1)).some(value => value === '');
+        return isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct;
+    }
+
+    const handleSubmit = () => {
+        if (isDisabledSubmit()) {
+            toast.error('Chưa điền đầy đủ thông tin.');
+            return;
+        }
         // if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
-        //     alert('Chưa điền đầy đủ thông tin!');
+            // toast.error('Chưa điền đầy đủ thông tin.');
         // } else {
         //     const payload = {
         //         sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
@@ -127,7 +128,6 @@ function CreateOrder() {
         //     }
         //     dispatch(createOrder(payload));
         // }
-
         const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
         const receiver_address = (
             `${receiverInfo.fullname}, ` + 
@@ -139,7 +139,7 @@ function CreateOrder() {
         );
 
         const payload = {
-            sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+            sender_address,
             receiver_address,
             payment_type: paymentMethod,
             cod_amount: cod,
@@ -351,7 +351,7 @@ function CreateOrder() {
                                                             <select value={product.type}
                                                                 onChange={e => handleUpdateProduct(e, index, 'type')}>
                                                                 {product?.type 
-                                                                    ? <option value={product.value}>{product.value}</option>
+                                                                    ? <option value={product.type}>{product.type}</option>
                                                                     : <option value="">--Loại--</option>
                                                                 }
                                                                 {orderTypes.map(item => (
@@ -439,7 +439,7 @@ function CreateOrder() {
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
                                     <h1 className={styles.importantLine}>{totalFee}đ</h1>
-                                    <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
+                                    <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button>
                                 </div>
                             </div>
                         </div>

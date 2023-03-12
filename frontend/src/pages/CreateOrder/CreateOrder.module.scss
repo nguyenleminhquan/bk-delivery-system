@@ -166,4 +166,8 @@
     &:hover {
         background-color: var(--primary-hover-color);
     }
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
