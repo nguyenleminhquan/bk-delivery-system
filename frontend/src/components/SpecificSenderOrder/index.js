@@ -1,5 +1,7 @@
+import moment from 'moment'
 import React from 'react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
+import { orderStatusList } from 'utils/constants'
 import './index.scss'
 
 let orderTrackingStatusList = [
@@ -36,7 +38,8 @@ let orderTrackingStatusList = [
 ]
 
 function SpecificSenderOrder({ closeModal, order }) {
-    const totalPrice = order.items.reduce((total, item) => total + item.price, 0)
+    const tracking = order.tracking ? order.tracking : {};
+    
   return (
     <div className='specific-sender-order'>
         <div className='container'>
@@ -50,17 +53,17 @@ function SpecificSenderOrder({ closeModal, order }) {
                     </p>
                     <div className='order-track'>
                         {
-                            orderTrackingStatusList.map((item) => (
-                                <div className='order-track-step' key={item.id}>
-                                    <div className="order-track-status">
+                            Object.entries(orderStatusList).map(([key, value]) => (
+                                <div className={key in tracking ? 'order-track-step completed' : 'order-track-step'} key={key}>
+                                    <div className='order-track-status'>
                                         <span className="order-track-status-dot">
                                             <FaCheck />
                                         </span>
                                         <span className="order-track-status-line"></span>
                                     </div>
                                     <div className="order-track-text">
-                                        <p className="order-track-text-stat"> {item.desc} </p>
-                                        <span className="order-track-text-sub"> {item.date} </span>
+                                        <p className="order-track-text-stat"> {value} </p>
+                                        <span className="order-track-text-sub"> {key in tracking ? moment(tracking[key]).format('DD-MM-YYYY HH:mm:ss') : ''} </span>
                                     </div>
                                 </div>
                             ))

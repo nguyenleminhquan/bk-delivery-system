@@ -26,7 +26,7 @@
             padding: 8px 0;
             margin-bottom: 30px;
             .box {
-                padding: 20px 20px 40px;
+                padding: 20px 20px;
             }
         }
         .order-track {
@@ -40,6 +40,17 @@
             &-step {
               display: flex;
               height: 70px;
+              &.completed {
+                .order-track-status-dot {
+                  background: #00a000;
+                }
+                .order-track-status-line {
+                  background: #00a000;
+                }
+                .order-track-text {
+                  color: #000;
+                }
+              }
               
               &:last-child {
                 overflow: hidden;
@@ -58,7 +69,7 @@
                 width: 22px;
                 height: 22px;
                 border-radius: 50%;
-                background: #00a000;
+                background: #c0c0c0;
                 position: relative;
                 svg {
                   color: #fff;
@@ -73,13 +84,14 @@
                 display: block;
                 margin: 0 auto;
                 width: 2px;
-                height: 7rem;
-                background: #00a000;
+                height: 55px;
+                background: #c0c0c0;
               }
             }
             
             &-text {
               line-height: 1.5;
+              color: #c0c0c0;
               &-stat {
                 font-size: 13px;
                 font-weight: 500;
