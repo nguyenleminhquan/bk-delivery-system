@@ -9,6 +9,7 @@ import { acceptDelivery, updateDeliveryStatus } from 'features/delivery/delivery
 import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
 import ViewOrderInfo from 'components/ViewOrderInfo';
+import { checkInDay } from 'features/user/userSlice';
 
 const tabs = [
   {
@@ -27,6 +28,7 @@ const tabs = [
 
 
 function DriverHome() {
+  const dispatch = useDispatch();
   const [toggleCheckinPopup, setToggleCheckinPopup] = useState(false);
   const [toggleViewOrderPopup, setToggleViewOrderPopup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
@@ -37,11 +39,13 @@ function DriverHome() {
   const { user } = useSelector((state) => state.user)
   let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
   const socket = useContext(SocketContext);
-  const dispatch = useDispatch();
   
   const handleTracking = () => {
     console.log('Chúc mừng bạn đã điểm danh thành công');
     // Cakk api for work-tracking...
+    const now = Date.now();
+    dispatch(checkInDay(now));
+    setToggleCheckinPopup(false);
   }
 
   const btns = {

@@ -54,3 +54,12 @@ export const clearStoreThunk = async(message, thunkAPI) => {
         return Promise.reject();
     }
 }
+
+export const checkInDayThunk = async(time, thunkAPI) => {
+    try {
+        const res = await UserService.checkInDay(time);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
