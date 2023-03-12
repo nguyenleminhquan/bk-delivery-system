@@ -1,6 +1,6 @@
 import { BsSearch } from 'react-icons/bs'
 import { BiPencil } from 'react-icons/bi'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import styles from './Sender.module.scss'
@@ -9,6 +9,7 @@ import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
 import { orderStatusList } from 'utils/constants';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import moment from 'moment/moment';
+import { SocketContext } from 'index';
 
 const tabs = [
 	{
@@ -40,22 +41,43 @@ const tabs = [
 function SenderHome() {
 	const { user } = useSelector((state) => state.user);
 	const { orders } = useSelector((state) => state.order);
-	const [configOrders, setConfigOrders] = useState([]);
+	const [updatedOrders, setUpdatedOrders] = useState([]);
+	const [ordersByStatus, setOrdersByStatus] = useState([]);
 	const [showSpecificOrder, setShowSpecificOrder] = useState(false);
 	const [specificOrder, setSpecificOrder]= useState('');
 	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const dispatch = useDispatch();
+	const socket = useContext(SocketContext);
 
 	useEffect(() => {
 		dispatch(getOrdersByUserId(user.id))
 	}, [dispatch, user.id])
 
 	useEffect(() => {
+		setUpdatedOrders(orders)
+	}, [orders])
+
+	useEffect(() => {
+		console.log('updatedOrder', updatedOrders)
+		socket.on('updateOrderStatus', (data) => {
+			const { order_id, status, date } = data;
+			const tempOrders = JSON.parse(JSON.stringify(updatedOrders))
+			tempOrders.forEach((order) => {
+				if (order._id === order_id) {
+					order.status = status
+					order.tracking[status] = date;
+				}
+			})
+			setUpdatedOrders(tempOrders)
+		})
+	}, [socket, updatedOrders])
+
+	useEffect(() => {
 		if (selectedTab.field === 'all') {
-			setConfigOrders(orders)
+			setOrdersByStatus(updatedOrders)
 		}
 		else if (selectedTab.field === 'delivering') {
-			setConfigOrders(orders.filter((order) => 
+			setOrdersByStatus(updatedOrders.filter((order) => 
 				order.status === 'arrived_send_stock' ||
 				order.status === 'coming_dest_stock' ||
 				order.status === 'arrived_dest_stock' ||
@@ -63,9 +85,9 @@ function SenderHome() {
 			))
 		}
 		else {
-			setConfigOrders(orders.filter((order) => order.status === selectedTab.field))
+			setOrdersByStatus(updatedOrders.filter((order) => order.status === selectedTab.field))
 		}
-	}, [selectedTab, orders])
+	}, [selectedTab, updatedOrders])
 
 	return (
 		<div>
@@ -109,18 +131,18 @@ function SenderHome() {
 
 			{/* Order List */}
 			{
-				configOrders.length === 0 
+				ordersByStatus.length === 0 
 				? <p className='fs-3 text-center'> Không tìm thấy đơn hàng phù hợp </p>
 				:
 				<div className={styles.orderList}>
 					{
-						configOrders.map((order) => (
+						ordersByStatus.map((order) => (
 							<div key={order._id} className={styles.order}>
 								<div className={styles.orderInfo}>
 									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
-									<div><p className={styles.orderTitles}>Trạng thái</p> {order.status}</div>
+									<div><p className={styles.orderTitles}>Trạng thái</p> {orderStatusList[order.status]}</div>
 								</div>
 								<div className=''>
 									<p className={styles.orderTitles}>Địa chỉ người nhận</p> 

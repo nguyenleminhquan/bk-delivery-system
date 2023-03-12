@@ -49,15 +49,23 @@ function DriverHome() {
   }
 
   const btns = {
-    accept: (id) => {
+    accept: (delivery) => {
+      const { order } = delivery;
       return {
         id: 'accept',
         text: 'Nhận đơn',
         action: () => {
           socket.emit('acceptDelivery', {
             driver_id: user.id,
-            delivery_id: id
+            delivery_id: delivery._id
           })
+          if (order.status === 'waiting') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'accepted',
+              date: new Date()
+            })
+          }
           // dispatch(acceptDelivery({ driver_id: user.id, delivery_id: id }))
         }
       }
@@ -66,8 +74,13 @@ function DriverHome() {
       const { order } = delivery;
       const { items } = order;
       const orderPopop = {
+        id: order._id,
         sender_address: order.sender_address,
+        sender_name: order.sender_name,
+        sender_phone: order.sender_phone,
         receiver_address: order.receiver_address,
+        receiver_name: order.receiver_name,
+        receiver_phone: order.receiver_phone,
         quantity: items.length,
         weight: order.weight,
         items: items
@@ -81,28 +94,72 @@ function DriverHome() {
         }
       }
     },
-    picked: (id) => {
+    picked: (delivery) => {
+      const { order } = delivery;
       return {
         id: 'picked',
         text: 'Đã lấy hàng',
         action: () => {
           socket.emit('updateDeliveryStatus', {
-            delivery_id: id,
+            delivery_id: delivery._id,
             status: 'picked'
           })
+          if (order.status === 'accepted') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'picked',
+              date: new Date()
+            })
+          }
+          if (order.status === 'arrived_send_stock') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'coming_dest_stock',
+              date: new Date()
+            })
+          }
+          if (order.status === 'arrived_dest_stock') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'delivering',
+              date: new Date()
+            })
+          }
           // dispatch(updateDeliveryStatus({ delivery_id: id, status: 'picked' }))
         }
       }
     },
-    deliveried: (id) => {
+    deliveried: (delivery) => {
+      const { order } = delivery;
       return {
         id: 'deliveried',
         text: 'Đã giao xong',
         action: () => {
           socket.emit('updateDeliveryStatus', {
-            delivery_id: id,
+            delivery_id: delivery._id,
             status: 'deliveried'
           })
+          if (order.status === 'picked') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'arrived_send_stock',
+              date: new Date()
+            })
+          }
+          if (order.status === 'coming_dest_stock') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'arrived_dest_stock',
+              date: new Date()
+            })
+          }
+          if (order.status === 'delivering') {
+            socket.emit('updateOrderStatus', {
+              order_id: order._id,
+              status: 'success',
+              date: new Date()
+            })
+          }
           // dispatch(updateDeliveryStatus({ delivery_id: id, status: 'deliveried' }))
         }
       }
@@ -133,6 +190,15 @@ function DriverHome() {
       })
       setAllDeliveries(tempDeliveries);
     })
+    socket.on('updateOrderStatus', (data) => {
+      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      tempDeliveries.forEach((item) => {
+        if (item.order._id === data.order_id) {
+          item.order.status = data.status
+        }
+      })
+      setAllDeliveries(tempDeliveries);
+    })
   }, [socket, allDeliveries])
 
   useEffect(() => {
@@ -152,13 +218,13 @@ function DriverHome() {
     const { accept, viewOrder, picked, deliveried } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item._id), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
     }
     if (selectedTab.field === 'accepted') {
-      tempDeliveries.forEach((item) => { item.btns = [picked(item._id), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })
     }
     if (selectedTab.field === 'picked') {
-      tempDeliveries.forEach((item) => { item.btns = [deliveried(item._id), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item)] })
     }
     setConfigDeliveries(tempDeliveries)
   }, [deliveries])

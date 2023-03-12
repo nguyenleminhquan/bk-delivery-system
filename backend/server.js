@@ -12,6 +12,7 @@ import orderRoutes from './routes/orderRoutes.js'
 import deliveryRoutes from './routes/deliveryRoutes.js'
 import stockRoutes from './routes/stockRoutes.js'
 import vehicleRoutes from './routes/vehicleRoutes.js'
+import { socketOrder } from './controllers/orderController.js'
 
 connectDB()
 dotenv.config()
@@ -48,5 +49,6 @@ const io = new Server(server, {
     }
 });
 socketDelivery(io)
+socketOrder(io)
 
 

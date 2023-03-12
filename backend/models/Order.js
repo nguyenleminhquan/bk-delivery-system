@@ -17,10 +17,19 @@ const orderSchema = mongoose.Schema({
   shipping_fee: Number,
   status: {
     type: String,
-    enum: ['waiting', 'picking', 'picking_success', 'import', 'classify', 
-    'transshipment', 'delivery', 'delivery_success', 'delivery_failed',
-    'resending_waiting', 'damaged', 'delivery_back', 'contact_waiting'],
+    enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'arrived_send_stock', 'coming_dest_stock',
+          'arrived_dest_stock', 'delivering', 'success'],
     default: 'waiting'
+  },
+  tracking: {
+    waiting: mongoose.Schema.Types.Date,
+    accepted: mongoose.Schema.Types.Date,
+    picked: mongoose.Schema.Types.Date,
+    arrived_send_stock: mongoose.Schema.Types.Date,
+    coming_dest_stock: mongoose.Schema.Types.Date,
+    arrived_dest_stock: mongoose.Schema.Types.Date,
+    delivering: mongoose.Schema.Types.Date,
+    success: mongoose.Schema.Types.Date,
   },
   items: [{
     type: mongoose.Schema.Types.ObjectId,
