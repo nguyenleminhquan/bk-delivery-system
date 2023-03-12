@@ -7,10 +7,10 @@ import { acceptDelivery, createDelivery, getDeliveryByStatus, getDeliveryHistory
 const route = express.Router()
 
 // Get all delivery
-route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['driver']), getDeliveryByStatus)
-route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['user', 'stocker', 'driver']), createDelivery)
-route.get('/history/:driverId', verifyRefreshToken, verifyToken, verifyRoles(['driver']), getDeliveryHistory)
-route.patch('/:id/update-status', verifyRefreshToken, verifyToken, verifyRoles(['driver']), updateDeliveryStatus)
-route.patch('/:id/accept-delivery', verifyRefreshToken, verifyToken, verifyRoles(['driver']), acceptDelivery)
+route.get('/', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), getDeliveryByStatus)
+route.post('/', verifyRefreshToken, verifyToken, verifyRoles(['user', 'stocker', 'driver_inner', 'driver_inter']), createDelivery)
+route.get('/history/:driverId', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), getDeliveryHistory)
+route.patch('/:id/update-status', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), updateDeliveryStatus)
+route.patch('/:id/accept-delivery', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), acceptDelivery)
 
 export default route

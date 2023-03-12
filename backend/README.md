@@ -5,6 +5,7 @@
 | /user/token | POST | Refresh acccess token | Authorization: Bearer <refresh_token> <access_token> | email: string |
 | /user/working-day | GET | Get working days | Authorization: Bearer <refresh_token> <access_token> | |
 | /user/working-day | POST | Update working day | Authorization: Bearer <refresh_token> <access_token> | time: string (recommend using Date.now()) |
+| /user/:id/update | POST | Update user info | Authorization: Bearer <refresh_token> <access_token> | information you want to update |
 | /order | GET | Get all order | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | POST | Create new order | Authorization: Bearer <refresh_token> <access_token> | sender_address: string <br /> receiver_address: string <br/>payment_type: string<br/> cod_amount: number<br/>note: string<br/>status: string<br/>shipping_fee: number<br/>user_id: objectId<br>items:<br> [{ <br/>name: string, <br>quantity: number, <br>type: string, <br>weight: number<br>}] |
 | /order/:id | GET | Get order by id | Authorization: Bearer <refresh_token> <access_token> | |
@@ -16,3 +17,9 @@
 | /delivery/history/:driverId | GET | Get delivery history | Authorization: Bearer <refresh_token> <access_token> | |
 | /delivery/:id/update-status | PATCH | Change the status of delivery | Authorization: Bearer <refresh_token> <access_token> | status: string |
 | /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
+| /stock| POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
+| /stock/:stock_id/orders| GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
+| /vehicle/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string <br/> order_id: string |
+| /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |

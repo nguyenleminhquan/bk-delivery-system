@@ -1,0 +1,83 @@
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    justify-content: center;
+    align-items: flex-start;
+    display: flex;
+    z-index: 99;
+
+    .container {
+        background-color: #fff;
+        min-width: 500px;
+        max-width: calc(100% - 32px);
+        position: relative;
+        animation: fadeIn ease 0.5s;
+        margin-top: 10px;
+        padding: 12px 24px;
+        border-radius: 5px;
+        .header {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .body {
+            padding: 18px 0;
+            font-size: 16px;
+        }
+        .footer {
+            text-align: right;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-250px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    & ~ .formGroup {
+        margin-top: 12px;
+    }
+    label:not([for]) {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    input, select {
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        border-radius: 5px;
+        &:focus {
+            border-color: var(--secondary-color);
+        }
+    }
+    input {
+        &::placeholder {
+            color: var(--placeholder-input-color);
+            font-size: 14px;
+        }
+    }
+    select {
+        // appearance: none;
+        // -webkit-appearance: none;
+        // -moz-appearance: none;
+        &::after {
+            background-color: red;
+        }
+    }
+}

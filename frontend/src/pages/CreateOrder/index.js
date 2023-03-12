@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { SocketContext } from 'index';
 
 // Import icon
 import { BsSearch, BsPencilSquare } from 'react-icons/bs';
@@ -42,6 +43,7 @@ const recentlyAddress = [
 function CreateOrder() {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
+    const { newOrder } = useSelector((state) => state.order);
 
     const [senderInfo, setSenderInfo] = useState(infoModel);
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
@@ -65,6 +67,8 @@ function CreateOrder() {
     const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
 
     const [totalFee, setTotalFee] = useState(0);
+
+    const socket = useContext(SocketContext);
 
     const getAddress = () => {
         axios.get('https://provinces.open-api.vn/api/?depth=3')
@@ -106,56 +110,35 @@ function CreateOrder() {
         if (isDisabledSubmit()) {
             toast.error('Chưa điền đầy đủ thông tin.');
             return;
-        }
-        // if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
-            // toast.error('Chưa điền đầy đủ thông tin.');
-        // } else {
-        //     const payload = {
-        //         sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
-        //         receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
-        //         payment_type: paymentMethod,
-        //         cod_amount: cod,
-        //         note,
-        //         status: 'WAITING',
-        //         shipping_fee: calculateTotalFee(),
-        //         user_id: user.id,
-        //         items: products.map(product => ({
-        //             name: product.name,
-        //             quantity: product.quantity,
-        //             type: product.type,
-        //             weight: product.weight,
-        //         }))
-        //     }
-        //     dispatch(createOrder(payload));
-        // }
-        const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
-        const receiver_address = (
-            `${receiverInfo.fullname}, ` + 
-            `${receiverInfo.phone}, ` +
-            `${receiverInfo.address ?? receiverInfo.address}, ` + 
-            `${receiverInfo.ward ?? receiverInfo.ward}, ` +
-            `${receiverInfo.district ?? receiverInfo.district}, ` +
-            receiverInfo.city ?? receiverInfo.city
-        );
+        } else {
+            const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
+            const receiver_address = (
+                `${receiverInfo.fullname}, ` + 
+                `${receiverInfo.phone}, ` +
+                `${receiverInfo.address ?? receiverInfo.address}, ` + 
+                `${receiverInfo.ward ?? receiverInfo.ward}, ` +
+                `${receiverInfo.district ?? receiverInfo.district}, ` +
+                receiverInfo.city ?? receiverInfo.city
+            );
 
-        const payload = {
-            sender_address,
-            receiver_address,
-            payment_type: paymentMethod,
-            cod_amount: cod,
-            note,
-            status: OrderStatus.PROCESSING,
-            shipping_fee: calculateTotalFee(),
-            user_id: user.id,
-            items: products.map(product => ({
-                name: product.name,
-                quantity: product.quantity,
-                type: product.type,
-                weight: product.weight,
-            }))
+            const payload = {
+                sender_address,
+                receiver_address,
+                payment_type: paymentMethod,
+                cod_amount: cod,
+                note,
+                status: OrderStatus.PROCESSING,
+                shipping_fee: calculateTotalFee(),
+                user_id: user.id,
+                items: products.map(product => ({
+                    name: product.name,
+                    quantity: product.quantity,
+                    type: product.type,
+                    weight: product.weight,
+                }))
+            }
+            dispatch(createOrder(payload));
         }
-
-        console.log(payload);
     }
 
     const handleChangePaymentOption = e => {
@@ -228,11 +211,11 @@ function CreateOrder() {
                     <BsSearch />
                     <input type="text" className='form-control ms-5' placeholder='Nhập mã đơn hàng' />
                 </div>
-                <Link className='btn fs-4' to="/create-order">
+                <Link className='btn fs-6' to="/create-order">
                     <BiPencil className='me-3'/> Tạo đơn hàng
                 </Link>
             </div>
-            <h2 className='pt-5 pb-3 fs-1'>Tạo đơn hàng mới</h2>
+            <h2 className='pt-5 pb-3 fs-3'>Tạo đơn hàng mới</h2>
             <div className='flex-fill mx-100 overflow-auto'>
                 <div className="container-fluid bg-white p-5">
                     <div className="row">

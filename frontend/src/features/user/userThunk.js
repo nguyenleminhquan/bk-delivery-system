@@ -1,3 +1,4 @@
+import { clearAllDeliveriesState } from "features/delivery/deliverySlice";
 import AuthService from "services/auth.service";
 import { checkForUnauthorizedResponse } from "services/axios";
 import UserService from "services/user.service";
@@ -47,8 +48,18 @@ export const changePasswordThunk = async(user, thunkAPI) => {
 export const clearStoreThunk = async(message, thunkAPI) => {
     try {
         thunkAPI.dispatch(logoutUser(message));
+        thunkAPI.dispatch(clearAllDeliveriesState())
         return Promise.resolve();
     } catch(error) {
         return Promise.reject();
+    }
+}
+
+export const checkInDayThunk = async(time, thunkAPI) => {
+    try {
+        const res = await UserService.checkInDay(time);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }

@@ -12,4 +12,4 @@ const stockSchema = mongoose.Schema({
   }
 }, { timestamps: true })
 
-export default mongoose.model('stock', stockSchema)
+export default mongoose.model('Stock', stockSchema)

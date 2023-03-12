@@ -12,7 +12,7 @@
 
     .container {
         background-color: #fff;
-        min-width: 450px;
+        min-width: 500px;
         max-width: calc(100% - 32px);
         position: relative;
         animation: fadeIn ease 0.5s;
@@ -20,14 +20,14 @@
         padding: 12px 24px;
         border-radius: 5px;
         .header {
-            font-size: 1.8rem;
+            font-size: 18px;
             font-weight: bold;
             padding: 8px 0;
             border-bottom: 1px solid var(--border-color);
         }
         .body {
             padding: 18px 0;
-            font-size: 1.6rem;
+            font-size: 16px;
         }
         .footer {
             text-align: right;

@@ -1,7 +1,7 @@
 .formGroup {
     display: flex;
     flex-direction: column;
-    font-size: 1.4rem;
+    font-size: 14px;
     & ~ .formGroup {
         margin-top: 12px;
     }
@@ -20,7 +20,7 @@
     input {
         &::placeholder {
             color: var(--placeholder-input-color);
-            font-size: 1.4rem;
+            font-size: 14px;
         }
     }
     select {

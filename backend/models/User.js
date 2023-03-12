@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const userSchema = mongoose.Schema({
@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   typeUser: {
     type: String,
-    enum: ['user', ,'sender', 'driver', 'stocker', 'admin'],
+    enum: ['user', ,'sender', 'driver_inner', 'driver_inter', 'stocker', 'admin'],
     default: 'user'
   },
   sender_address: String,
@@ -30,10 +30,6 @@ const userSchema = mongoose.Schema({
   stock_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Stock'
-  },
-  vehicle: {
-    type: String,
-    license_plate_number: String
   },
   area_code: {
     type: Number

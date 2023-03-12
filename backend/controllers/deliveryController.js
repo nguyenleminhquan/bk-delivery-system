@@ -6,7 +6,15 @@ const getDeliveryByStatus = async (req, res, next) => {
     try {
         const status = req.query.status;
         const area_code = req.query.area_code;
-        const data = await Delivery.find({ status: status, area_code: area_code });
+        const type = req.query.type;
+        const data = await Delivery.
+        find({ status: status, area_code: area_code, type: type })
+        .populate({
+            path: 'order',
+            populate: {
+                path: 'items',
+            }
+        });;
         return res.json(data);
     } catch (err) {
         console.log(err)
@@ -16,7 +24,7 @@ const getDeliveryByStatus = async (req, res, next) => {
 
 const createDelivery = async (req, res, next) => {
     try {
-        let { order_id, driver_id, status, area_code, from, to } = req.body;
+        let { order_id, driver_id, status, area_code, from, to, type } = req.body;
         if (from.includes('stock_')) {
             let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
             from = stock.name + '&'  + stock.address
@@ -26,12 +34,13 @@ const createDelivery = async (req, res, next) => {
             to = stock.name + '&' + stock.address
         }
         let newDelivery = new Delivery({
-            order_id: order_id,
-            driver_id: driver_id,
+            order: order_id,
+            driver: driver_id,
             status: status,
             area_code: area_code,
             from: from,
-            to: to
+            to: to,
+            type: type
         })
         await newDelivery.save();
         return res.json(newDelivery);
@@ -44,8 +53,15 @@ const createDelivery = async (req, res, next) => {
 const getDeliveryHistory = async (req, res, next) => {
     try {
         const id = req.params.driverId
-        const data = await Delivery.find({ driver_id: id, status: 'deliveried' });
-        return res.json(data);
+        const delivery = await Delivery
+        .find({ driver: id, status: 'deliveried' })
+        .populate({
+            path: 'order',
+            populate: {
+                path: 'items',
+            }
+        });
+        return res.json(delivery);
     } catch (err) {
         console.log(err)
         return next(createError(400));
@@ -68,7 +84,7 @@ const acceptDelivery = async (req, res, next) => {
         const driver_id = req.body.driver_id;
         const waitingDelivery = await Delivery.findById(id);
         if (waitingDelivery.status === 'waiting') {
-            let data = await Delivery.findByIdAndUpdate(id, {status: 'accepted', driver_id: driver_id}, {new: true})
+            let data = await Delivery.findByIdAndUpdate(id, {status: 'accepted', driver: driver_id}, {new: true})
             return res.json(data)
         }
         else {
@@ -80,10 +96,84 @@ const acceptDelivery = async (req, res, next) => {
     }
 }
 
+const socketDelivery = (io) => {
+    io.on('connection', async (socket) => {
+        console.log('a user connected');
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+        })
+        socket.on('message', (msg) => {
+            console.log("message: ", msg);
+            io.emit('message', msg);
+        })
+        socket.on('newDelivery', async(data) => {
+            console.log('data', data)
+            // config data received
+            let { status, area_code, order_id, driver_id, type, from, to } = data;
+            if (from.includes('stock_')) {
+                let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
+                from = stock.name + '&'  + stock.address
+            }
+            if (to.includes('stock_')) {
+                let stock = await Stock.findOne({ area_code: to.slice(6, to.length) })
+                to = stock.name + '&' + stock.address
+            }
+            // save new delivery
+            let newDelivery = new Delivery({
+                order: order_id,
+                driver: driver_id,
+                status: status,
+                area_code: area_code,
+                from: from,
+                to: to,
+                type: type
+            })
+            const res = await newDelivery.save();
+            const delivery =  await Delivery
+            .findById(res._id)
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'items',
+                }
+            })
+            io.emit('newDelivery', delivery)
+        })
+        socket.on('allDeliveries', async(data) => {
+            const { area_code, type } = data;
+            const deliveries = await Delivery
+            .find({ area_code: area_code, type: type })
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'items',
+                }
+            })
+            // console.log(deliveries)
+            socket.emit('allDeliveries', deliveries)
+        })
+        socket.on('acceptDelivery', async(data) => {
+            const { delivery_id, driver_id } = data;
+            const waitingDelivery = await Delivery.findById(delivery_id);
+            if (waitingDelivery.status === 'waiting') {
+                let updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true})
+                // return res.json(data)
+                socket.emit('updatedDelivery', updatedDelivery)
+            }
+        })
+        socket.on('updateDeliveryStatus', async(data) => {
+            const { delivery_id, status } = data;
+            let updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: status}, {new: true})
+            socket.emit('updatedDelivery', updatedDelivery)
+        })
+    });
+}
+
 export { 
     getDeliveryByStatus, 
     createDelivery, 
     getDeliveryHistory,
     updateDeliveryStatus,
-    acceptDelivery 
+    acceptDelivery,
+    socketDelivery 
 }

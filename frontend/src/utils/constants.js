@@ -363,3 +363,14 @@ export const orderTypes = [
     { code: 'cloth', label: 'Quần áo' },
     { code: 'others', label: 'Còn lại' }
 ];
+export const orderStatusList = {
+    "waiting": 'Đơn hàng đang được xử lý',
+    "accepted": 'Đơn hàng đã được chấp nhận',
+    "picked": "Đã lấy hàng và đang đến kho nguồn",
+    "arrived_send_stock": "Đã đến kho nguồn",
+    "import": "Đã nhập kho",
+    "coming_dest_stock": "Đang đến kho đích",
+    "arrived_dest_stock": "Đã đến kho đích",
+    "delivering": "Đang giao đến người nhận",
+    "success": "Giao hàng đến người nhận thành công",
+}

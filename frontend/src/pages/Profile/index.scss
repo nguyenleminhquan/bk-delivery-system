@@ -1,34 +1,27 @@
 .profile {
-    margin: 10px 10px 0 calc(var(--sidebar-width) + 30px);
     background-color: var(--white-color);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    height: 97vh;
     box-shadow: 1px 0 4px #BEBEBE;
 }
 
 .profile-container {
-    height: 100%;
+    box-shadow: var(--shadow);
     position: relative;
-    overflow-y: auto;
 }
 
 .profile .card {
     height: 100px;
     background-color: #1A3E4F;
-    color: var(--white-color);
-    font-size: 2.2rem;
+    color: #fff;
+    font-size: 24px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     padding-left: 30px;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 20px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    position: fixed;
-    top: 10px;
-    left: calc(var(--sidebar-width) + 30px);
-    right: 10px;
     .avatar {
         width: 60px;
         height: 60px;
@@ -43,12 +36,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
-    position: fixed;
-    top: calc(10px + 100px);
-    left: calc(var(--sidebar-width) + 30px);
-    right: 10px;
-    z-index: 10;
-    background-color: #fff;
+    position: relative;
     &::before {
         content: '';
         position: absolute;
@@ -63,11 +51,11 @@
         padding: 8px 16px;
         border-radius: 10px;
         cursor: pointer;
-        font-size: 1.6rem;
+        font-size: 18px;
         &.active,
         &:hover {
             color: #fff;
-            background-color:var(--primary-color);
+            background-color: #55BAD2;
         }
         &:hover {
             transition: var(--transition);
@@ -78,13 +66,12 @@
 
 .profile .tab-item {
     max-width: 480px;
+    width: 90%;
     margin: 0 auto;
     padding-bottom: 100px;
     padding-top: 30px;
-    position: relative;
-    top: calc(10px + 100px + 80px);
     .title {
-        font-size: 2.2rem;
+        font-size: 24px;
         text-align: center;
         margin-bottom: 30px;
     }
@@ -95,8 +82,8 @@
 }
 
 .profile .illus-img {
-    position: fixed;
-    right: 10px;
+    position: absolute;
+    right: 0;
     bottom: 0;
     width: 400px;
 }

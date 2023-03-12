@@ -11,9 +11,9 @@
     scroll-behavior: smooth;
 }
 
-html {
-    font-size: 62.5%;
-}
+// html {
+//     font-size: 62.5%;
+// }
 
 ul, h1, h2, h3, h4, h5 {
     padding: 0;
@@ -72,7 +72,7 @@ input {
     transition: var(--transition);
     &.btn-medium {
         height: 36px;
-        font-size: 1.6rem;
+        font-size: 16px;
     }
     &.btn-small {
         height: 24px;
@@ -91,26 +91,48 @@ input {
     border-color: var(--primary-color);
 }
 
+.customBtn {
+    font-size: 16px;
+    background-color: var(--white-color);
+    color: var(--header-color);
+    border-color: var(--primary-color);
+    & ~ .customBtn {
+        margin-left: 12px;
+    }
+    &.active {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border: unset;
+    }
+    &:hover {
+        background-color: var(--primary-hover-color);
+        color: var(--white-color);
+    }
+}
+
 body {
     font-size: 14px;
     font-family: var(--primary-font);
     text-rendering: optimizeSpeed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
+    background-color: #F5F5F5;
+}
+
+.protected-route {
+    display: grid;
+    grid-template-columns: auto 1fr;
 }
 
 .wrapper {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    // display: flex;
-    // justify-content: center;
-    background-color: #f5f5f5;
-    // align-items: flex-start;
-    overflow: auto;
-    // box-shadow: 2px 8px 2px #BEBEBE;
+    width: 300px;
+    height: 100%;
+    min-height: 100vh;
+    background-color: var(--white-color);
+    box-shadow: 2px 8px 2px #BEBEBE;
+    box-shadow: rgba(0, 0, 0, 0.1) 1px 0px 0px 0px;
+}
+
+.routes {
+    padding: 30px;
 }
 
 // Check in button for driver, stocker
@@ -122,7 +144,7 @@ body {
     height: 50px;
     background-color: var(--primary-color);
     border-radius: 50%;
-    font-size: 3rem;
+    font-size: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
