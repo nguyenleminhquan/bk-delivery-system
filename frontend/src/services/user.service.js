@@ -17,9 +17,14 @@ const changePassword = ({ userId, oldPass, newPass }) => {
     )
 }
 
+export const checkInDay = ({time}) => {
+    return customFetch.post('/user/working-day', time);
+}
+
 const UserService = {
     updateUser,
-    changePassword
+    changePassword,
+    checkInDay
 }
 
 export default UserService

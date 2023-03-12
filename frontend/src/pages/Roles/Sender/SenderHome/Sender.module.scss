@@ -40,25 +40,98 @@
     }
 }
 
-.orderSubFilter {
-    display: flex;
-    padding: 0 16px;
-    margin: 12px 0;
-    font-weight: bold;
-    font-size: 16px;
-    background-color: var(--white-color);
-    border-radius: 5px;
-
-    li {
-        min-width: 220px;
-        text-align: center;
-        line-height: 50px;
-        &.active {
-            border-bottom: 2px solid var(--primary-color); 
+.orderList {
+    display: grid;
+    gap: 20px;
+    p {
+        margin-bottom: 0;
+    }
+    .order {
+        border-left: 8px solid var(--primary-color);
+        padding: 20px;
+        box-shadow: var(--shadow);
+        box-shadow: 0 1px 4px rgb(0, 0, 0, 0.2);
+        border-radius: 5px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .orderTitles {
+        font-weight: bold;
+        margin-bottom: 0;
+        color: #0f5455;
+    }
+    .orderInfo {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        // margin-bottom: 10px;
+    }
+    .itemList {
+        display: flex;
+        gap: 10px;
+        .item {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 0;
+            border: 1px solid #adadad;
         }
-        &:hover  {
-            border-bottom: 2px solid var(--primary-color);
+    }
+    .iconList {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .icon {
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            span {
+                font-size: 14px;
+                display: inline-block;
+                margin-left: 10px;
+            }
+            &.green {
+                background-color: #28a745;
+            }
+            &.blue {
+                background-color: #007bff;
+            }
+            &.red {
+                background-color: #dc3545;
+            }
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+}
+
+.tabHeader {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    .tabHeaderItem {
+        min-width: 150px;
+        text-align: center;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        color: #848484;
+        & ~ .tabHeaderItem {
+            margin-left: 12px;
+        }
+
+        &.active {
+            border-bottom: 4px solid var(--primary-color);
             color: var(--primary-color);
+            font-weight: bold;
         }
     }
 }

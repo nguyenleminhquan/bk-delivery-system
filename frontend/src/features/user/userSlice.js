@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { changePasswordThunk, clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, checkInDayThunk, clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
@@ -35,6 +35,13 @@ export const changePassword = createAsyncThunk(
     'user/changePassword',
     async(user, thunkAPI) => {
         return changePasswordThunk(user, thunkAPI)
+    }
+)
+
+export const checkInDay = createAsyncThunk(
+    'user/checkInDay',
+    async(time, thunkAPI) => {
+        return checkInDayThunk(time, thunkAPI);
     }
 )
 
@@ -128,6 +135,18 @@ const userSlice = createSlice({
         // [testJWT.rejected]: (state, { payload }) => {
         //     toast.error(payload)
         // }
+
+        [checkInDay.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [checkInDay.pending]: (state) => {
+            state.isLoading = true;
+        },
+        [checkInDay.fulfilled]: (state) => {
+            state.isLoading = false;
+            toast.success('Điểm danh thành công!');
+        }
     }
 })
 

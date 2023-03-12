@@ -1,87 +1,93 @@
 import { BsSearch } from 'react-icons/bs'
 import { BiPencil } from 'react-icons/bi'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import styles from './Sender.module.scss'
-import Table from 'components/Table';
 import { getOrdersByUserId } from 'features/user/orderSlice';
 import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
 import { orderStatusList } from 'utils/constants';
+import SpecificSenderOrder from 'components/SpecificSenderOrder';
+import moment from 'moment/moment';
+import { SocketContext } from 'index';
+
+const tabs = [
+	{
+		field: 'all',
+		name: 'Tất cả'
+	},
+	{
+		field: 'waiting',
+		name: 'Đang xử lý'
+	},
+	{
+		field: 'accepted',
+		name: 'Được nhận'
+	},
+	{
+	  	field: 'picked',
+	  	name: 'Đã lấy hàng',
+	},
+	{
+	  	field: 'delivering',
+	  	name: 'Đang giao hàng',
+	},
+	{
+	  	field: 'success',
+	  	name: 'Giao thành công',
+	},
+]
 
 function SenderHome() {
 	const { user } = useSelector((state) => state.user);
 	const { orders } = useSelector((state) => state.order);
-	const [rowData, setRowData] = useState([]);
+	const [updatedOrders, setUpdatedOrders] = useState([]);
+	const [ordersByStatus, setOrdersByStatus] = useState([]);
+	const [showSpecificOrder, setShowSpecificOrder] = useState(false);
+	const [specificOrder, setSpecificOrder]= useState('');
+	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const dispatch = useDispatch();
+	const socket = useContext(SocketContext);
 
 	useEffect(() => {
 		dispatch(getOrdersByUserId(user.id))
 	}, [dispatch, user.id])
 
 	useEffect(() => {
-		let orderArray = JSON.parse(JSON.stringify(orders));
-		let orderData = [];
-		orderArray.map((item, index) => {
-			let row = {};
-			row.id = item._id;
-			row.receiver = 'Nguyễn Văn A'
-			row.fee = item.shipping_fee + 'đ';
-			row.createdTime = item.createdAt;
-			row.status = orderStatusList[item.status]
-			row.btns = (
-				<div>
-					<FaEye />
-					<FaEdit className='edit-btn' />
-					<FaTrashAlt className='delete-btn' />
-				</div>
-			)
-			orderData.push(row)
-		})
-		setRowData(orderData)
+		setUpdatedOrders(orders)
 	}, [orders])
 
-	const data = {
-		columns: [
-			{
-				label: 'Mã đơn hàng',
-				field: 'id',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Người nhận',
-				field: 'receiver',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Tổng phí',
-				field: 'fee',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Ngày tạo',
-				field: 'createdTime',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: 'Trạng thái',
-				field: 'status',
-				sort: 'asc',
-				width: 200
-			},
-			{
-				label: '',
-				field: 'btns',
-				sort: 'asc',
-				width: 200
-			},
-		],
-		rows: rowData
-	}
+	useEffect(() => {
+		console.log('updatedOrder', updatedOrders)
+		socket.on('updateOrderStatus', (data) => {
+			const { order_id, status, date } = data;
+			const tempOrders = JSON.parse(JSON.stringify(updatedOrders))
+			tempOrders.forEach((order) => {
+				if (order._id === order_id) {
+					order.status = status
+					order.tracking[status] = date;
+				}
+			})
+			setUpdatedOrders(tempOrders)
+		})
+	}, [socket, updatedOrders])
+
+	useEffect(() => {
+		if (selectedTab.field === 'all') {
+			setOrdersByStatus(updatedOrders)
+		}
+		else if (selectedTab.field === 'delivering') {
+			setOrdersByStatus(updatedOrders.filter((order) => 
+				order.status === 'arrived_send_stock' ||
+				order.status === 'coming_dest_stock' ||
+				order.status === 'arrived_dest_stock' ||
+				order.status === 'delivering'
+			))
+		}
+		else {
+			setOrdersByStatus(updatedOrders.filter((order) => order.status === selectedTab.field))
+		}
+	}, [selectedTab, updatedOrders])
 
 	return (
 		<div>
@@ -113,10 +119,71 @@ function SenderHome() {
 				</div>
 			</div>
 
-			{/* Table */}
-			<div className='mt-20'>
-				<Table data={data} />
-			</div>
+			<h2 className='pt-5 pb-3 fs-3'>Danh sách đơn hàng</h2>
+			<ul className={styles.tabHeader}>
+				{tabs.map(tab => (
+				<li key={tab.name} 
+					className={selectedTab.field === tab.field ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
+					onClick={() => setSelectedTab(tab)}
+				>{tab.name}</li>
+				))}
+			</ul>
+
+			{/* Order List */}
+			{
+				ordersByStatus.length === 0 
+				? <p className='fs-3 text-center'> Không tìm thấy đơn hàng phù hợp </p>
+				:
+				<div className={styles.orderList}>
+					{
+						ordersByStatus.map((order) => (
+							<div key={order._id} className={styles.order}>
+								<div className={styles.orderInfo}>
+									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
+									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
+									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
+									<div><p className={styles.orderTitles}>Trạng thái</p> {orderStatusList[order.status]}</div>
+								</div>
+								<div className=''>
+									<p className={styles.orderTitles}>Địa chỉ người nhận</p> 
+									<p> {order.receiver_address} </p>
+								</div>
+								<div>
+									<p className='fw-bold mb-1'>Sản phẩm</p>
+									<div className={styles.itemList}>
+										{
+											order.items.map((item) => (
+												<p key={item._id} className={styles.item} > {item.name} x {item.quantity} </p>
+											))
+										}
+									</div>
+								</div>
+								<div className={styles.iconList}>
+									<div className={`${styles.icon} ${styles.green}`} onClick={() => {
+										setShowSpecificOrder(true)
+										setSpecificOrder(order)
+									}}>
+										<FaEye />
+										<span>Xem chi tiết</span>
+									</div>
+									<div className={`${styles.icon} ${styles.blue}`}>
+										<FaEdit />
+										<span>Chỉnh sửa</span>
+									</div>
+									<div className={`${styles.icon} ${styles.red}`}>
+										<FaTrashAlt />
+										<span>Xóa</span>
+									</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			}
+
+			{
+				showSpecificOrder && <SpecificSenderOrder order={specificOrder} closeModal={() => setShowSpecificOrder(false)} />
+			}
 
 		</div>
 	)

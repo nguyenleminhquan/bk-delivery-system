@@ -5,10 +5,14 @@ import errorHander from './middlewares/errorHandler.js'
 import APINotFoundHandler from './middlewares/APINotFoundHandler.js'
 import connectDB from './config/db/connectDB.js'
 import { Server } from 'socket.io';
+import { socketDelivery } from './controllers/deliveryController.js'
 
-import userRoutes from './routes/userRoute.js'
-import orderRoutes from './routes/orderRoute.js'
+import userRoutes from './routes/userRoutes.js'
+import orderRoutes from './routes/orderRoutes.js'
 import deliveryRoutes from './routes/deliveryRoutes.js'
+import stockRoutes from './routes/stockRoutes.js'
+import vehicleRoutes from './routes/vehicleRoutes.js'
+import { socketOrder } from './controllers/orderController.js'
 
 connectDB()
 dotenv.config()
@@ -24,6 +28,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/user', userRoutes)
 app.use('/order', orderRoutes)
 app.use('/delivery', deliveryRoutes)
+app.use('/stock', stockRoutes)
+app.use('/vehicle', vehicleRoutes)
 
 app.get('/', (req, res, next) => {
     res.send('API is running!')
@@ -42,7 +48,7 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
-import { socketDelivery } from './controllers/deliveryController.js'
 socketDelivery(io)
+socketOrder(io)
 
 
