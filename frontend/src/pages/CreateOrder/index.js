@@ -1,4 +1,4 @@
-import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
+import { BsSearch, BsPencilSquare } from 'react-icons/bs'
 import { useState, useEffect } from 'react'
 import { BiPencil } from 'react-icons/bi'
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai'
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from 'features/user/orderSlice'
 import AddressForm from 'components/AddressForm'
 import { toast } from 'react-toastify'
-import { produceWithPatches } from 'immer'
+import { OrderStatus } from 'utils/enum'
 
 const infoModel = {
     fullname: '',
@@ -69,7 +69,6 @@ function CreateOrder() {
     const [address, setAddress] = useState([]);
 
     const [senderAddress, setSenderAddress] = useState('');
-    const [receiverAddress, setReceiverAddress] = useState('');
 
     const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
@@ -119,9 +118,9 @@ function CreateOrder() {
                 return true;
             }
         });
-        console.log(receiverInfo)
-        console.log('empty sender info: ', isEmptySenderInfo);
-        console.log('empty receiver info: ', isEmptyReceiverInfo);
+        // console.log(receiverInfo)
+        // console.log('empty sender info: ', isEmptySenderInfo);
+        // console.log('empty receiver info: ', isEmptyReceiverInfo);
         // if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
         //     alert('Chưa điền đầy đủ thông tin!');
         // } else {
@@ -143,6 +142,35 @@ function CreateOrder() {
         //     }
         //     dispatch(createOrder(payload));
         // }
+
+        const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
+        const receiver_address = (
+            `${receiverInfo.fullname}, ` + 
+            `${receiverInfo.phone}, ` +
+            `${receiverInfo.address ?? receiverInfo.address}, ` + 
+            `${receiverInfo.ward ?? receiverInfo.ward}, ` +
+            `${receiverInfo.district ?? receiverInfo.district}, ` +
+            receiverInfo.city ?? receiverInfo.city
+        );
+
+        const payload = {
+            sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+            receiver_address,
+            payment_type: paymentMethod,
+            cod_amount: cod,
+            note,
+            status: OrderStatus.PROCESSING,
+            shipping_fee: calculateTotalFee(),
+            user_id: user.id,
+            items: products.map(product => ({
+                name: product.name,
+                quantity: product.quantity,
+                type: product.type,
+                weight: product.weight,
+            }))
+        }
+
+        console.log(payload);
     }
 
     const handleChangePaymentOption = e => {
@@ -229,7 +257,7 @@ function CreateOrder() {
                                     <div className={styles.title}>
                                         <span className='ms-2 me-3'>Bên gửi</span>
                                         <button className={styles.editBtn} onClick={() => handleSaveSenderInfo()}>
-                                            {editSender ? <BsCheckSquare /> : <BsPencilSquare />}
+                                            {!editSender && <BsPencilSquare />}
                                         </button>
                                     </div>
                                 </div>
@@ -248,6 +276,11 @@ function CreateOrder() {
                                             wards={senderWards}
                                             setWards={setSenderWards}
                                             activeField={['city', 'district', 'province', 'address']}/>
+                                        <div className="row mt-4">
+                                            <div className="col-12 text-end">
+                                                <button className='btn btn-medium me-3' onClick={() => setEditSender(!editSender)}>Save</button>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 ) : (
@@ -298,57 +331,65 @@ function CreateOrder() {
                                             </div> */}
 
                                             <div className={styles.info}>
-                                                <span className='fw-semibold'>{index+1}. </span>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>Tên</label>
-                                                    <input type="text"
-                                                        placeholder='Nhập tên sản phẩm'
-                                                        className={styles.mediumInput}
-                                                        value={product.name}
-                                                        onChange={e => handleUpdateProduct(e, index, 'name')}/>
-                                                </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>KL(gram)</label>
-                                                    <input type="text" 
-                                                        placeholder='0' 
-                                                        className={styles.smallInput}
-                                                        value={product.weight}
-                                                        onChange={e => handleUpdateProduct(e, index, 'weight')}/>
-                                                </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>SL</label>
-                                                    <input type="text" 
-                                                        placeholder='0'
-                                                        className={styles.extraSmallInput}
-                                                        value={product.quantity}
-                                                        onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
-                                                </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>Loại</label>
-                                                    <select value={product.type}
-                                                        onChange={e => handleUpdateProduct(e, index, 'type')}>
-                                                        {product?.type 
-                                                            ? <option value={product.value}>{product.value}</option>
-                                                            : <option value="">--Loại--</option>
-                                                        }
-                                                        {orderTypes.map(item => (
-                                                            <option key={item.code} value={item.code}>{item.label}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-
-                                                <div className='d-flex flex-column'>
-                                                    {products.length > 1 && (
-                                                        <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
-                                                            <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
-                                                        </button>
-                                                    )}
-                                                    {index === products.length - 1 && (
-                                                        <button className='flex-fill bg-white' onClick={handleAddProduct}>
-                                                            <AiOutlinePlusCircle className={styles.addItemBtn}/>
-                                                        </button>
-                                                    )}
-                                                    <button></button>
+                                                <span className='fw-semibold'>{index+1}.&nbsp;</span>
+                                                <div className="row">
+                                                    <div className="col-4">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>Tên</label>
+                                                            <input type="text"
+                                                                placeholder='Tên sản phẩm'
+                                                                value={product.name}
+                                                                onChange={e => handleUpdateProduct(e, index, 'name')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>KL(gram)</label>
+                                                            <input type="text" 
+                                                                placeholder='0' 
+                                                                value={product.weight}
+                                                                onChange={e => handleUpdateProduct(e, index, 'weight')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-1">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>SL</label>
+                                                            <input type="text" 
+                                                                placeholder='0'
+                                                                value={product.quantity}
+                                                                onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>Loại</label>
+                                                            <select value={product.type}
+                                                                onChange={e => handleUpdateProduct(e, index, 'type')}>
+                                                                {product?.type 
+                                                                    ? <option value={product.value}>{product.value}</option>
+                                                                    : <option value="">--Loại--</option>
+                                                                }
+                                                                {orderTypes.map(item => (
+                                                                    <option key={item.code} value={item.code}>{item.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-1">
+                                                        <div className='d-flex flex-column'>
+                                                            {products.length > 1 && (
+                                                                <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
+                                                                    <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
+                                                                </button>
+                                                            )}
+                                                            {index === products.length - 1 && (
+                                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
+                                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
+                                                                </button>
+                                                            )}
+                                                            <button></button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div> 
