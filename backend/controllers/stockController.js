@@ -55,7 +55,68 @@ const getOrderInStocks = async (req, res, next) => {
   }
 }
 
+const addStock = async (req, res, next) => {
+  try {
+    const { area_code } = req.body
+    // Check area_code is number
+    if (typeof area_code != "number") {
+      return next(createError(400, 'Type of area_code must be number'))
+    }
+
+    // Check duplicate area_code
+    let existStock = await Stock.find({ area_code })
+    if (existStock != "") {
+      return next(createError(400, 'The stock has been added'))
+    }
+
+    let newStock = new Stock(req.body)
+    newStock = await newStock.save()
+
+    return res.json(newStock)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const getAllStock = async (req, res, next) => {
+  try {
+    let allStock = await Stock.find()
+    return res.json(allStock)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const deleteStock = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    let stock = await Stock.findByIdAndDelete(id)
+
+    return res.json(stock)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const editStock = async (req, res, next) => {
+  try {
+    if (req.body.name || req.body.area_code) {
+      return next(createError(400, 'You can\'t modify this field'))
+    }
+
+    await Stock.findByIdAndUpdate(req.params.id, { address: req.body.address })
+
+    return res.json({ msg: 'Update successfully' })
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   importOrderToStock,
-  getOrderInStocks
+  getOrderInStocks,
+  addStock,
+  getAllStock,
+  deleteStock,
+  editStock
 }
