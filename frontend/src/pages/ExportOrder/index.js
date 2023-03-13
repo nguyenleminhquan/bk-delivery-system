@@ -2,9 +2,10 @@ import styles from './ExportOrder.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { BiPencil } from 'react-icons/bi'
 import { TbFileExport } from 'react-icons/tb'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { TruckIcon } from 'components/Icons';
+import { getVehicles } from 'features/delivery/deliverySlice';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -70,8 +71,9 @@ const truckRoutesModels = [
  */
 
 function ExportOrder() {
-    // const { user } = useSelector(state => state.user);
+    const { vehicles } = useSelector(state => state.delivery);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [truckRoutes, setTruckRoutes] = useState(truckRoutesModels);
     const [routeFilters,  setRouteFilters] = useState(routeModels);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
@@ -96,19 +98,21 @@ function ExportOrder() {
         navigate('/load-order', {state: {truckInfo}});
     }
 
-    useEffect(() => {
-        // call api get truck route by route -> set state for truck route
-        setTruckRoutes(() => {
-            if (selectedRouteFilter === 'Tất cả') {
-                return truckRoutesModels
-            } else {
-                return truckRoutesModels.filter(route => route.label === selectedRouteFilter)
-            }
-        });
-    }, [selectedRouteFilter])
+    // Filter
+    // useEffect(() => {
+    //     // call api get truck route by route -> set state for truck route
+    //     setTruckRoutes(() => {
+    //         if (selectedRouteFilter === 'Tất cả') {
+    //             return truckRoutesModels
+    //         } else {
+    //             return truckRoutesModels.filter(route => route.label === selectedRouteFilter)
+    //         }
+    //     });
+    // }, [selectedRouteFilter])
 
     useEffect(() => {
         // Get truck routes by stocker location -> compare stocker location with source field
+        dispatch(getVehicles());
     }, []);
 
     return (
@@ -150,25 +154,28 @@ function ExportOrder() {
                     </div>
                 </div>
                 <div className="row mt-3">
-                    {truckRoutes.map(route => (
-                        <div className="col-4 mb-4" key={route.id} onClick={() => handleChooseTruck(route)}>
+                    {vehicles.map(route => (
+                        <div className="col-4 mb-4" key={route._id} onClick={() => handleChooseTruck(route)}>
                             <div className={styles.blockItem}>
                                 <div className="d-flex">
                                     <div className="d-flex flex-column">
-                                        <span className={styles.label}>{route.label}</span>
+                                        <span className={styles.label}>{route.from} - {route.to}</span>
                                         <span className='mt-2'>Khả dụng, Kg:</span>
-                                        <span className={styles.status}><span className='fw-semibold'>{route.availability}</span>/{route.net}</span>
-                                        <span>Mã xe: <span className='fw-semibold'>{route.id}</span></span>
-                                        <span>Tài xế: <span className='fw-semibold'>{route.driver}</span></span>
+                                        <span className={styles.status}>
+                                            <span className='fw-semibold'>{route.max_weight - route.current_weight}</span>
+                                            /{route.max_weight}
+                                        </span>
+                                        <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
+                                        <span>Tài xế: <span className='fw-semibold'>{route?.driver_name}</span></span>
                                     </div>
                                     <div className="d-flex flex-column align-items-end">
-                                        <h1 className={handleSetStatus((route.net - route.availability) / route.net)}>{((route.net - route.availability) / route.net)*100}%</h1>
+                                        <h1 className={handleSetStatus(route.current_weight / route.max_weight)}>{(route.current_weight / route.max_weight)*100}%</h1>
                                         {/* Truck image */}
                                         <TruckIcon 
                                             width="95%" 
                                             height="100%"
-                                            availability={(route.net - route.availability) / route.net}
-                                            color={handleChooseColor((route.net - route.availability)/ route.net)} />
+                                            availability={route.current_weight / route.max_weight}
+                                            color={handleChooseColor(route.current_weight/ route.max_weight)} />
                                     </div>
                                 </div>
                             </div>

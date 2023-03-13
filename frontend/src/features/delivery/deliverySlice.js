@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehiclesThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
+    vehicles: [],
     toggleAction: true,
     isLoading: false,
     error: null,
@@ -37,7 +38,12 @@ export const updateDeliveryStatus = createAsyncThunk(
     }
 )
 
-
+export const getVehicles = createAsyncThunk(
+    'delivery/getVehicles',
+    async(thunkAPI) => {
+        return getVehiclesThunk(thunkAPI);
+    }
+)
 
 const deliverySlice = createSlice({
     name: 'delivery',
@@ -87,6 +93,15 @@ const deliverySlice = createSlice({
         [updateDeliveryStatus.rejected]: (state, { payload }) => {
             toast.error(payload)
         },
+        [getVehicles.fulfilled]: (state, { payload }) => {
+            console.log(payload);
+            state.vehicles = payload;
+            state.isLoading = false;
+        },
+        [getVehicles.rejected]: (state, { payload }) => {
+            toast.error(payload);
+            state.isLoading = false;
+        }
     }
 })
 

@@ -26,11 +26,16 @@ const updateDeliveryStatus = ({ delivery_id, status }) => {
     )
 }
 
+const getVehicles = () => {
+    return customFetch.get('/vehicle');
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
     updateDeliveryStatus,
-    acceptDelivery
+    acceptDelivery,
+    getVehicles
 }
 
 export default DeliveryService
