@@ -115,7 +115,7 @@ const ConfirmOrderLists = ({orders}) => {
 function LoadOrderToTruck() {
     const location = useLocation();
     const {truckInfo} = location.state;
-    const [truckAvailable, setTruckAvailable] = useState(truckInfo.availability);
+    const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
     const [orders, setOrders] = useState(() => orderModels.map(order => ({...order, checked: false})));
     const [selected, setSelected] = useState(0);
@@ -224,6 +224,10 @@ function LoadOrderToTruck() {
     }
 
     useEffect(() => {
+        console.log(truckInfo);
+    }, [])
+
+    useEffect(() => {
         console.log(truckLoad);
     }, [truckLoad])
 
@@ -250,20 +254,20 @@ function LoadOrderToTruck() {
                 </div>
                 <div className="row mt-3">
                     <div className="col-12">
-                        <span className={styles.truckLabel}>{truckInfo.label}, {truckInfo.id}</span>
+                        <span className={styles.truckLabel}>{truckInfo.from} - {truckInfo.to}, {truckInfo.license_plate_number}</span>
                     </div>
                 </div>
-                <div className="row mt-2 ">
+                <div className="row mt-2">
                     <div className="col-5">
                         <div className={styles.leftCol}>
                             <div className={styles.title}>Truck Load</div>
-                            <div className={handleSetStatus((truckInfo.net - truckAvailable) / truckInfo.net)}>{((truckInfo.net - truckAvailable) / truckInfo.net)*100}%</div>
+                            <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{(truckInfo.current_weight / truckInfo.max_weight)*100}%</div>
                             <div className="my-5">
                                 <TruckIcon 
                                     width="80%"
                                     height="100%" 
-                                    availability={(truckInfo.net - truckAvailable) / truckInfo.net}
-                                    color={handleChooseColor((truckInfo.net - truckAvailable)/ truckInfo.net)}
+                                    availability={truckInfo.current_weight / truckInfo.max_weight}
+                                    color={handleChooseColor(truckInfo.current_weight / truckInfo.max_weight)}
                                 />
                             </div>
                             <div className={styles.action}>
