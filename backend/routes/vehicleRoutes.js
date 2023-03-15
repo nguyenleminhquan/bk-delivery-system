@@ -6,13 +6,15 @@ import {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
-  deleteOrderFromVehicle
+  deleteOrderFromVehicle,
+  getAllOrdersByVehicle
 }  from '../controllers/vehicleController.js'
 
 const router = express.Router()
 
 router.get('/', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker']), getAllVehicle)
 router.post('/', verifyRefreshToken, verifyToken, verifyRoles(['admin']), addVehicle)
+router.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
 router.post('/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), pushOrderToVehicle)
 router.delete('/order/:order_id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), deleteOrderFromVehicle)
 
