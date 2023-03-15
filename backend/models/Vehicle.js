@@ -12,7 +12,11 @@ const vehicleSchema = mongoose.Schema({
   orders: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order'
-  }]
+  }],
+  driver_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 export default mongoose.model('Vehicle', vehicleSchema)
