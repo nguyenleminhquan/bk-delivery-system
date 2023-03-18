@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehiclesThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleOrdersThunk, getVehiclesThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
     vehicles: [],
+    vehicleOrders: [],
     toggleAction: true,
     isLoading: false,
     error: null,
@@ -42,6 +43,13 @@ export const getVehicles = createAsyncThunk(
     'delivery/getVehicles',
     async(thunkAPI) => {
         return getVehiclesThunk(thunkAPI);
+    }
+)
+
+export const getVehicleOrders = createAsyncThunk(
+    'delivery/getVehicleOrders',
+    async(vehicle, thunkAPI) => {
+        return getVehicleOrdersThunk(vehicle, thunkAPI);
     }
 )
 
@@ -99,6 +107,14 @@ const deliverySlice = createSlice({
             state.isLoading = false;
         },
         [getVehicles.rejected]: (state, { payload }) => {
+            toast.error(payload);
+            state.isLoading = false;
+        },
+        [getVehicleOrders.fulfilled]: (state, { payload }) => {
+            state.vehicleOrders = payload;
+            state.isLoading = false;
+        },
+        [getVehicleOrders.rejected]: (state, { payload }) => {
             toast.error(payload);
             state.isLoading = false;
         }

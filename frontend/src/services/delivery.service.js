@@ -30,12 +30,17 @@ const getVehicles = () => {
     return customFetch.get('/vehicle');
 }
 
+const getVehicleOrders = (vehicle_id) => {
+    return customFetch.get(`/vehicle/${vehicle_id}/order`);
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
     updateDeliveryStatus,
     acceptDelivery,
-    getVehicles
+    getVehicles,
+    getVehicleOrders
 }
 
 export default DeliveryService

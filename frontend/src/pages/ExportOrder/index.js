@@ -166,7 +166,7 @@ function ExportOrder() {
                                             /{route.max_weight}
                                         </span>
                                         <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
-                                        <span>Tài xế: <span className='fw-semibold'>{route?.driver_name}</span></span>
+                                        <span>Tài xế: <span className='fw-semibold'>{route?.driver_id}</span></span>
                                     </div>
                                     <div className="d-flex flex-column align-items-end">
                                         <h1 className={handleSetStatus(route.current_weight / route.max_weight)}>{(route.current_weight / route.max_weight)*100}%</h1>

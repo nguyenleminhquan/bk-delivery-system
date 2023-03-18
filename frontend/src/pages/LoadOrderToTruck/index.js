@@ -8,6 +8,8 @@ import { TruckIcon } from 'components/Icons';
 import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
+import { useDispatch, useSelector } from 'react-redux';
+import { getVehicleOrders } from 'features/delivery/deliverySlice';
 
 const orderModels = [
     {
@@ -60,8 +62,10 @@ const orderModels = [
     }
 ]
 
-const ConfirmOrderLists = ({orders}) => {
+const ConfirmOrderLists = ({vehicle}) => {
+    const dispatch = useDispatch();
     const [toggleFilter, setToggleFilter] = useState(false);
+    const { vehicleOrders } = useSelector(state => state.delivery);
     
     const handleSortCol = () => {
         /**
@@ -69,9 +73,9 @@ const ConfirmOrderLists = ({orders}) => {
          * order (false) ->  sort desc
          */
         if (!toggleFilter) {
-            orders.sort((a, b) => a.weight - b.weight);
+            vehicleOrders.sort((a, b) => a.weight - b.weight);
         } else {
-            orders.sort((a, b) => b.weight - a.weight);
+            vehicleOrders.sort((a, b) => b.weight - a.weight);
         }
         setToggleFilter(!toggleFilter);
     }
@@ -79,6 +83,10 @@ const ConfirmOrderLists = ({orders}) => {
     const handleDeleteOrder = () => {
         
     }
+
+    useEffect(() => {
+        dispatch(getVehicleOrders(vehicle._id));
+    }, [])
 
     return (
         <div className={styles.customTableWrap}>
@@ -97,9 +105,9 @@ const ConfirmOrderLists = ({orders}) => {
                     <div className="col-1"></div>
                 </div>
                 <div className={styles.ordersWrap}>
-                    {orders.map(order => (
+                    {vehicleOrders.map(order => (
                         <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
-                            <div className="col-6">{order.id}</div>
+                            <div className="col-6">{order._id}</div>
                             <div className="col-5">{order.weight}</div>
                             <div className="col-1">
                                 <div className={styles.deleteBtn} onClick={handleDeleteOrder}><RiDeleteBin6Fill /></div>
@@ -113,6 +121,7 @@ const ConfirmOrderLists = ({orders}) => {
 }
 
 function LoadOrderToTruck() {
+    const dispatch = useDispatch();
     const location = useLocation();
     const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
@@ -223,14 +232,6 @@ function LoadOrderToTruck() {
         setToggleFilter(!toggleFilter);
     }
 
-    useEffect(() => {
-        console.log(truckInfo);
-    }, [])
-
-    useEffect(() => {
-        console.log(truckLoad);
-    }, [truckLoad])
-
     return (
         <div className={styles.wrapper}>
             <div className="container">
@@ -327,7 +328,7 @@ function LoadOrderToTruck() {
 
             {openPopup && (
                 <ConfirmPopup title="Danh sách đơn hàng"
-                    content={<ConfirmOrderLists orders={truckLoad}/>}
+                    content={<ConfirmOrderLists vehicle={truckInfo}/>}
                     okLabel="OK"
                     actionYes={() => setOpenPopup(false)}
                 />
