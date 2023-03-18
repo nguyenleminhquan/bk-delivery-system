@@ -172,7 +172,12 @@ function CreateOrder() {
 
     const handleSaveSenderInfo = () => {
         if (editSender) {
-            const address = `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`;
+            const address = (
+                (senderInfo.address && `${senderInfo.address}, `) +
+                (senderInfo.ward && `${senderInfo.ward}, `) +
+                (senderInfo.district && `${senderInfo.district}, `) +
+                (senderInfo.city && senderInfo.city)
+            );
             setSenderAddress(address);
         }
         setEditSender(!editSender);
@@ -253,7 +258,7 @@ function CreateOrder() {
                                             activeField={['city', 'district', 'province', 'address']}/>
                                         <div className="row mt-4">
                                             <div className="col-12 text-end">
-                                                <button className='btn btn-medium me-3' onClick={() => setEditSender(!editSender)}>Save</button>
+                                                <button className='btn btn-medium me-3' onClick={handleSaveSenderInfo}>Lưu</button>
                                             </div>
                                         </div>
 
