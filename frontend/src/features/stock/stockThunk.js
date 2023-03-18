@@ -8,3 +8,12 @@ export const getStocksThunk = async(thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const addStockThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.addStock(payload);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}

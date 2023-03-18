@@ -4,9 +4,13 @@ const getStocks = () => {
     return customFetch.get('/stock');
 }
 
+const addStock = (payload) => {
+    return customFetch.post('/stock', payload);
+}
 
 const StockService = {
-    getStocks
+    getStocks,
+    addStock,
 }
 
 export default StockService;
