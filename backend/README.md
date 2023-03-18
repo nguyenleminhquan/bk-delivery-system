@@ -17,9 +17,14 @@
 | /delivery/history/:driverId | GET | Get delivery history | Authorization: Bearer <refresh_token> <access_token> | |
 | /delivery/:id/update-status | PATCH | Change the status of delivery | Authorization: Bearer <refresh_token> <access_token> | status: string |
 | /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
-| /stock| POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
-| /stock/:stock_id/orders| GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
+| /stock| GET | Get all stock | Authorization: Bearer <refresh_token> <access_token> | |
+| /stock| POST | Add stock | Authorization: Bearer <refresh_token> <access_token> | name: string <br/> address: string <br/> area_code: number |
+| /stock/:id | DELETE | Delete stock | Authorization: Bearer <refresh_token> <access_token> | |
+| /stock/:id | PATCH | Edit stock | Authorization: Bearer <refresh_token> <access_token> | address: string |
+| /stock/order | POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
+| /stock/:stock_id/order | GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle/:id/order | GET | Get all orders by vehicle id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
 | /vehicle/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string <br/> order_id: string |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |

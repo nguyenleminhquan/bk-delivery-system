@@ -121,7 +121,7 @@ function CreateOrder() {
                 receiverInfo.city ?? receiverInfo.city
             );
 
-            const payload = {
+            const orderPayload = {
                 sender_address,
                 receiver_address,
                 payment_type: paymentMethod,
@@ -137,7 +137,14 @@ function CreateOrder() {
                     weight: product.weight,
                 }))
             }
-            dispatch(createOrder(payload));
+            const deliveryPayload = {
+                status: 'waiting',
+                area_code: user.area_code,
+                type: 'inner',
+                from: `${senderInfo.fullname}&${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                to: `stock_${user.area_code}`
+            }
+            dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         }
     }
 

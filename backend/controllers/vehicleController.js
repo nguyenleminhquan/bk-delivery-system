@@ -6,7 +6,7 @@ import Order from "../models/Order.js"
 
 const getAllVehicle = async (req, res, next) => {
   try {
-    let allVehicle = await Vehicle.find({})
+    let allVehicle = await Vehicle.find({}).populate('orders').populate('driver_id')
 
     return res.json(allVehicle)
   } catch (error) {
@@ -16,7 +16,7 @@ const getAllVehicle = async (req, res, next) => {
 
 const addVehicle = async (req, res, next) => {
   try {
-    if (!(req.body.max_weight && req.body.from && req.body.to && req.body.license_plate_number)) {
+    if (!(req.body.max_weight && req.body.from && req.body.to && req.body.license_plate_number && req.body.driver_id)) {
       return next(createError(400, 'Please provide enough information!'))
     }
     
@@ -91,9 +91,22 @@ const deleteOrderFromVehicle = async (req, res, next) => {
   }
 }
 
+const getAllOrdersByVehicle = async (req, res, next) => {
+  try {
+    const vehicle_id = req.params.id
+
+    let vehicle = await Vehicle.findById(vehicle_id).populate('orders')
+
+    return res.json(vehicle.orders)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
-  deleteOrderFromVehicle
+  deleteOrderFromVehicle,
+  getAllOrdersByVehicle
 }
