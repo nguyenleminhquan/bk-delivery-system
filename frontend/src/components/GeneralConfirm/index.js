@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import AddressForm from 'components/AddressForm';
+import React, { useEffect, useState } from 'react';
 import styles from './GeneralConfirm.module.scss';
 
 /** How to use this component?
@@ -21,6 +23,20 @@ import styles from './GeneralConfirm.module.scss';
 
 function GeneralConfirm(props) {
   const [formData, setFormData] = useState({});
+  const [address, setAddress] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  // const handleChange = (address) => {
+  //   setAddress(address);
+  // }
+
+  // const handleSelect = async(address) => {
+  //   const results = await geocodeByAddress(address);
+  //   const latLng = await getLatLng(results[0]);
+  //   setAddress(address);
+  // }
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -37,6 +53,16 @@ function GeneralConfirm(props) {
       props.onConfirm(formData);
     }
   }
+
+  useEffect(() => {
+    if (props.addressForm) {
+      // Call data for map api
+      console.log(1);
+      axios.get('https://provinces.open-api.vn/api/?depth=3')
+        .then(res => setCities(res.data))
+        .catch(error => console.log(error))
+    }
+  }, [props.addressForm])
 
   return (
     <div className={styles.modal}>
@@ -64,6 +90,52 @@ function GeneralConfirm(props) {
               ))}
             </form>
           }
+          {/* Use auto complete when Google API is available */}
+          {/* {props.addressForm && (
+            <PlacesAutocomplete
+              value={address}
+              onChange={handleChange}
+              onSelect={handleSelect}>
+              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                <div>
+                  <input
+                    {...getInputProps({
+                      placeholder: "Enter address...",
+                      className: "form-control"
+                    })}
+                  />
+                  <div>
+                    {loading ? <div>Đang tải...</div> : null}
+
+                    {suggestions.map((suggestion) => {
+                      const style = {
+                        backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
+                      };
+                      return (
+                        <div
+                          {...getSuggestionItemProps(suggestion, { style })}
+                          key={suggestion.placeId}
+                        >
+                          {suggestion.description}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </PlacesAutocomplete>
+          )} */}
+
+          {props.addressForm && (
+            <AddressForm
+              stateInfo={address}
+              setStateInfo={setAddress}
+              cities={cities}
+              districts={districts}
+              setDistricts={setDistricts}
+              wards={wards}
+              setWards={setWards}/>
+          )}
         </div>
         
         <div className={styles.footer}>
