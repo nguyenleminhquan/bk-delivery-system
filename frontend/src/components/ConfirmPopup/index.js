@@ -24,7 +24,7 @@ function ConfirmPopup(props) {
                     {props.content}
                 </div>
                 <div className={styles.footer}>
-                    {props.cancelLabel && <button type="button" className='btn btn-medium bg-secondary' onClick={props.actionNo}>{props.cancelLabel}</button>}
+                    {props.cancelLabel && <button style={{backgroundColor: '#6C757D'}} type="button" className='btn btn-medium' onClick={props.actionNo}>{props.cancelLabel}</button>}
                     {props.okLabel && <button type="button" className="btn btn-medium ms-3" onClick={props.actionYes}>{props.okLabel}</button>} 
                 </div>
             </div>

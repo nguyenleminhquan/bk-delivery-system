@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, deleteVehicleOrderThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleAvailableOrderThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersThunk, getVehiclesThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleAvailableOrderThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -71,7 +71,7 @@ export const deleteVehicleOrder = createAsyncThunk(
 export const postVehicleOrders = createAsyncThunk(
     'delivery/postVehicleOrders',
     async(vehicle, thunkAPI) => {
-        return postVehicleOrders(vehicle, thunkAPI);
+        return postVehicleOrdersThunk(vehicle, thunkAPI);
     }
 )
 
@@ -86,6 +86,13 @@ export const getVehicleByRoute = createAsyncThunk(
     'delivery/getVehicleByRoute',
     async(param, thunkAPI) => {
         return getVehicleByRouteThunk(param, thunkAPI);
+    }
+)
+
+export const exportOrderOnVehicle = createAsyncThunk(
+    'delivery/exportOrderOnVehicle',
+    async(payload, thunkAPI) => {
+        return exportOrderOnVehicleThunk(payload, thunkAPI);
     }
 )
 
@@ -212,6 +219,18 @@ const deliverySlice = createSlice({
             console.log(payload);
             state.isLoading = false;
             state.vehicles = payload;
+        },
+        [exportOrderOnVehicle.pending]: state => {
+            state.isLoading = true;
+        }, 
+        [exportOrderOnVehicle.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [exportOrderOnVehicle.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.success('Xuất đơn hàng lên xe tải thành công');
+            // Save order data...
         }
     }
 })

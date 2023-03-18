@@ -38,8 +38,8 @@ const getVehicleOrders = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}/order`);
 }
 
-const postVehicleOrders = ({vehicle_id, order_ids}) => {
-    return customFetch.post(`/vehicle/${vehicle_id}/order`, order_ids);
+const postVehicleOrders = ({vehicle_id, list_orders}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders});
 }
 
 const deleteVehicleOrder = ({order_id, vehicle_id}) => {
@@ -54,6 +54,10 @@ const getVehicleByRoute = ({from, to}) => {
     return customFetch.get(`/vehicle/search?from=${from}&to=${to}`);
 }
 
+const exportOrderOnVehicle = ({vehicle_id, stocker_id}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/export-order`, { stocker_id });
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
@@ -66,6 +70,7 @@ const DeliveryService = {
     postVehicleOrders,
     getVehicleAvailableOrder,
     getVehicleByRoute,
+    exportOrderOnVehicle,
 }
 
 export default DeliveryService

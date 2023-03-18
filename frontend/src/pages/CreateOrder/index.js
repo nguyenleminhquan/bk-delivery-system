@@ -12,7 +12,7 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -30,7 +30,7 @@ const infoModel = {
 const productModel = {
     name: '',
     weight: '',
-    quantity: '',
+    // quantity: '',
     // imgUrl: '',
     type: '',
 }
@@ -134,17 +134,19 @@ function CreateOrder() {
                 quantity: product.quantity,
                 type: product.type,
                 weight: product.weight,
-            }))
+            })),
+            weight: getTotalProductWeight(products)
+
         };
         const deliveryPayload = {
             status: OrderStatus.WAITING,
             area_code: user.area_code,
             type: 'inner',
-            from: `${senderInfo.fullname}&${senderAddress}`,
-            to: `stock_${user.area_code}`
+            from: `${senderInfo.fullname}&${senderAddress ?? generateFinalAddress(senderInfo)}`,
+            to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`,
+            from_code: senderInfo?.city ? AreaDelivery.find(area => area.label === senderInfo.city).code : user.area_code,
+            to_code: AreaDelivery.find(area => area.label === receiverInfo.city).code
         }
-
-        console.log(orderPayload);
         dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         clearOrderState();
     }
@@ -166,6 +168,10 @@ function CreateOrder() {
         if (object?.addressDetail && object?.ward && object?.district && object?.city) {
             return `${object?.addressDetail}, ${object?.ward}, ${object?.district}, ${object?.city}`;
         }
+    }
+
+    function getTotalProductWeight(products) {
+        return products.reduce((acc, curr) => acc + Number(curr.weight), 0);
     }
 
     const handleChangePaymentOption = e => {
