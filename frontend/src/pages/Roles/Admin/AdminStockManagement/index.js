@@ -1,6 +1,6 @@
 import GeneralConfirm from 'components/GeneralConfirm';
 import Table from 'components/Table';
-import { addStock, deleteStock, getStocks } from 'features/stock/stockSlice';
+import { addStock, deleteStock, editStock, getStocks } from 'features/stock/stockSlice';
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
@@ -57,11 +57,12 @@ function AdminStockManagement() {
         const area_code = Number(payload.area_code);
 
         dispatch(addStock({name, address, area_code}));
-        setShowEditPopup('');
+        setShowEditPopup(false);
     }
 
-    const handleEditStock = payload => {
-        
+    const handleEditStock = address => {
+        dispatch(editStock(showEditPopup._id, {address}));
+        setShowEditPopup(false);
     }
 
     const handleDeleteStock = () => {
@@ -101,18 +102,17 @@ function AdminStockManagement() {
 
             {showEditPopup && (
                 <GeneralConfirm
-                    title="Thêm mới"
+                    title={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
                     cancelText="Đóng lại"
                     onCancel={() => setShowEditPopup(false)}
-                    confirmText="Thêm mới"
-                    onConfirm={handleAddStock}
+                    onConfirm={showEditPopup?.name ? handleEditStock : handleAddStock}
                     showForm={true}
                     formFields={[
-                        { name: "name", label: "Tên kho", type: "text", value: showEditPopup.name },
-                        { name: "area_code", label: "Mã kho", type: "text", value: showEditPopup.area_code}
+                        { name: "name", label: "Tên kho", type: "text", value: showEditPopup.name, disabled: !!showEditPopup.name },
+                        { name: "area_code", label: "Mã kho", type: "text", value: showEditPopup.area_code, disabled: !!showEditPopup.area_code}
                     ]}
                     formValue={showEditPopup}
-                    formSubmitText="Thêm mới"
+                    formSubmitText={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
                     addressAutoForm={true}
                 />
             )}

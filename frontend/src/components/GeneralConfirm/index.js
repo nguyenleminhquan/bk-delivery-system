@@ -98,6 +98,11 @@ function GeneralConfirm(props) {
         .then(res => setCities(res.data))
         .catch(error => console.log(error))
     }
+
+    if (props.addressAutoForm) {
+      setAutoAddress(props.formValue?.address ?? '');
+      setAddress(props.formValue?.address ?? '');
+    }
   }, [props.addressForm])
 
   return (
@@ -120,7 +125,11 @@ function GeneralConfirm(props) {
                     ))}
                     </select>
                   ) : (
-                    <input type={field.type} name={field.name} value={field.value} onChange={handleInputChange} />
+                    <input type={field.type} 
+                      name={field.name} 
+                      defaultValue={field.value}
+                      onChange={handleInputChange}
+                      disabled={field.disabled} />
                   )}
                 </div>
               ))}
