@@ -1,7 +1,8 @@
 import styles from './AddressForm.module.scss'
 
 // Props contains: [stateInfo, setStateInfo], cities, districts, wards
-function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, wards, setWards, activeField}) {
+function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, wards, setWards, activeField, combination}) {
+    const TagName = combination ? 'div' : 'form'
     const handleChangeInfo = (event) => {
         const key = event.target.name;
         const value = event.target.value;
@@ -46,11 +47,15 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
     }
 
     const getFormLayout = () => {
-        return isActiveField('fullname') || isActiveField('phone') ? 'col-6' : 'col-12';
+        return combination
+            ? ''
+            : isActiveField('fullname') || isActiveField('phone') 
+                ? 'col-6' 
+                : 'col-12';
     }
 
     return (
-        <form className='row m-1'>
+        <TagName className={`mt-2 ${!combination && 'row'}`}>
             <div className={getFormLayout()}>
                 {isActiveField('fullname') && (
                     <div className={styles.formGroup}>
@@ -136,7 +141,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                     </div>
                 )}
             </div>
-        </form>
+        </TagName>
     );
 }
 
