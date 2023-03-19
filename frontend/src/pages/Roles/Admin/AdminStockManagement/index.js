@@ -61,7 +61,7 @@ function AdminStockManagement() {
     }
 
     const handleEditStock = address => {
-        dispatch(editStock(showEditPopup._id, {address}));
+        dispatch(editStock({id: showEditPopup._id, ...address}));
         setShowEditPopup(false);
     }
 

@@ -12,8 +12,8 @@ const deleteStock = id => {
     return customFetch.delete(`/stock/${id}`);
 }
 
-const editStock = id => {
-    return customFetch.patch(`/stock/${id}`);
+const editStock = ({id, address}) => {
+    return customFetch.patch(`/stock/${id}`, {address});
 }
 
 const StockService = {
