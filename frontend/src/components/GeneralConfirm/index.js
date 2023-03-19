@@ -1,6 +1,8 @@
 import axios from 'axios';
 import AddressForm from 'components/AddressForm';
 import React, { useEffect, useState } from 'react';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { toast } from 'react-toastify';
 import styles from './GeneralConfirm.module.scss';
 
 /** How to use this component?
@@ -23,18 +25,23 @@ import styles from './GeneralConfirm.module.scss';
 
 function GeneralConfirm(props) {
   const [formData, setFormData] = useState({});
-  const [address, setAddress] = useState([]);
+  const [address, setAddress] = useState({city: '', district: '', ward: '', address: ''});
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
 
+  // const [autoAddress, setAutoAddress] = useState('');
+
   // const handleChange = (address) => {
-  //   setAddress(address);
+  //   setAutoAddress(address);
   // }
 
   // const handleSelect = async(address) => {
   //   const results = await geocodeByAddress(address);
   //   const latLng = await getLatLng(results[0]);
+  //   console.log("Address: ", address);
+  //   console.log("Latitude: ", latLng.lat);
+  //   console.log("Longitude: ", latLng.lng);
   //   setAddress(address);
   // }
 
@@ -49,15 +56,30 @@ function GeneralConfirm(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (props.onConfirm) {
-      props.onConfirm(formData);
+    // Validate input field
+    if (Object.values(formData).every(value => value) && 
+        Object.values(address).every(value => value)) {
+      props.onConfirm({...formData, ...address});
+    } else {
+      toast.error('Chưa điền đầy đủ thông tin.');
     }
+
+    // if (props.onConfirm) {
+    //   props.onConfirm(formData);
+    // }
+
+    // if (props.addressForm) {
+    //   if (Object.values(address).every(value => value)) {
+    //     props.onConfirm(address);
+    //   } else {
+    //     toast.error('Chưa đầy đủ thông tin.');
+    //   }
+    // }
   }
 
   useEffect(() => {
     if (props.addressForm) {
       // Call data for map api
-      console.log(1);
       axios.get('https://provinces.open-api.vn/api/?depth=3')
         .then(res => setCities(res.data))
         .catch(error => console.log(error))
@@ -88,12 +110,25 @@ function GeneralConfirm(props) {
                   )}
                 </div>
               ))}
+
+              {props.addressForm && (
+                <AddressForm
+                  combination={true}
+                  stateInfo={address}
+                  setStateInfo={setAddress}
+                  cities={cities}
+                  districts={districts}
+                  setDistricts={setDistricts}
+                  wards={wards}
+                  setWards={setWards}
+                  activeField={['city', 'district', 'province', 'address']}/>
+              )}
             </form>
           }
           {/* Use auto complete when Google API is available */}
-          {/* {props.addressForm && (
+          {/* {props.addressAutoForm && (
             <PlacesAutocomplete
-              value={address}
+              value={autoAddress}
               onChange={handleChange}
               onSelect={handleSelect}>
               {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
@@ -126,16 +161,7 @@ function GeneralConfirm(props) {
             </PlacesAutocomplete>
           )} */}
 
-          {props.addressForm && (
-            <AddressForm
-              stateInfo={address}
-              setStateInfo={setAddress}
-              cities={cities}
-              districts={districts}
-              setDistricts={setDistricts}
-              wards={wards}
-              setWards={setWards}/>
-          )}
+          
         </div>
         
         <div className={styles.footer}>
@@ -144,6 +170,7 @@ function GeneralConfirm(props) {
             <button onClick={props.onConfirm} className="btn btn-medium">{props.confirmText}</button>
           }
           {props.showForm && <button onClick={handleSubmit} className="btn btn-medium ms-1">{props.formSubmitText}</button>}
+          {/* {props.addressForm && <button onClick={handleSubmit} className="btn btn-medium ms-1">{props.confirmText}</button>} */}
         </div>
       </div>
     </div>

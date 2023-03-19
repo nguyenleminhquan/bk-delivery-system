@@ -1,6 +1,6 @@
 import GeneralConfirm from 'components/GeneralConfirm';
 import Table from 'components/Table';
-import { getStocks } from 'features/stock/stockSlice';
+import { addStock, deleteStock, getStocks } from 'features/stock/stockSlice';
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
@@ -52,15 +52,21 @@ function AdminStockManagement() {
     const [showDeletePopup, setShowDeletePopup] = useState('');
 
     const handleAddStock = payload => {
-        console.log(payload)
+        const name = payload.name;
+        const address = `${payload.address}, ${payload.ward}, ${payload.district}, ${payload.city}`;
+        const area_code = 49;
+
+        dispatch(addStock({name, address, area_code}));
+        setShowEditPopup('');
     }
 
     const handleEditStock = payload => {
 
     }
 
-    const handleDeleteStock = payload => {
-        
+    const handleDeleteStock = () => {
+        dispatch(deleteStock(showDeletePopup));
+        setShowDeletePopup('');
     }
 
     useEffect(() => {
@@ -98,10 +104,13 @@ function AdminStockManagement() {
                     title="Thêm mới"
                     cancelText="Đóng lại"
                     onCancel={() => setShowEditPopup(false)}
-                    showConfirmButton={true}
-                    onConfirm={handleAddStock}
                     confirmText="Thêm mới"
-                    // addressForm={true}
+                    onConfirm={handleAddStock}
+                    addressForm={true}
+                    showForm={true}
+                    formFields={[{ name: "name", label: "Tên kho", type: "text" }]}
+                    formSubmitText="Thêm mới"
+                    // addressAutoForm={true}
                 />
             )}
 
