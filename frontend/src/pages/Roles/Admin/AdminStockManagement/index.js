@@ -72,7 +72,7 @@ function AdminStockManagement() {
     useEffect(() => {
         const rows = [...stocks.map(stock => ({
             ...stock,
-            edit: (<BiEdit className="text-success" role="button" onClick={handleEditStock}/>),
+            edit: (<BiEdit className="text-success" role="button" onClick={() => setShowEditPopup(stock)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setShowDeletePopup(stock._id)}/>)
         }))];
 
@@ -106,12 +106,12 @@ function AdminStockManagement() {
                     onCancel={() => setShowEditPopup(false)}
                     confirmText="Thêm mới"
                     onConfirm={handleAddStock}
-                    // addressForm={true}
                     showForm={true}
                     formFields={[
-                        { name: "name", label: "Tên kho", type: "text" },
-                        { name: "area_code", label: "Mã kho", type: "text"}
+                        { name: "name", label: "Tên kho", type: "text", value: showEditPopup.name },
+                        { name: "area_code", label: "Mã kho", type: "text", value: showEditPopup.area_code}
                     ]}
+                    formValue={showEditPopup}
                     formSubmitText="Thêm mới"
                     addressAutoForm={true}
                 />

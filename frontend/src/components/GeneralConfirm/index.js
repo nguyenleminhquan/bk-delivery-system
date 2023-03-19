@@ -110,7 +110,7 @@ function GeneralConfirm(props) {
           {props.message && <span>{props.message}</span>}
           {props.showForm &&
             <form>
-              {props.formFields.map((field) => (
+              {props.formFields.map((field, index) => (
                 <div className={styles.formGroup} key={field.name}>
                   <label>{field.label}</label>
                   {field.type === 'select' ? (
@@ -120,7 +120,7 @@ function GeneralConfirm(props) {
                     ))}
                     </select>
                   ) : (
-                    <input type={field.type} name={field.name} onChange={handleInputChange} />
+                    <input type={field.type} name={field.name} value={field.value} onChange={handleInputChange} />
                   )}
                 </div>
               ))}
