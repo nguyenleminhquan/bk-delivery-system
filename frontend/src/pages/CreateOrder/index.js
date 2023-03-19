@@ -1,15 +1,21 @@
-import { BsSearch, BsPencilSquare, BsCheckSquare } from 'react-icons/bs'
-import { useState, useEffect, useContext } from 'react'
-import { BiPencil } from 'react-icons/bi'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
-import styles from './CreateOrder.module.scss'
-import { ATMMethodIcon, CODMethodIcon, MomoMethodIcon } from 'components/Icons'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { createOrder } from 'features/user/orderSlice'
-import AddressForm from 'components/AddressForm'
-import { SocketContext } from 'index'
+import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { SocketContext } from 'index';
+
+// Import icon
+import { BsSearch, BsPencilSquare } from 'react-icons/bs';
+import { BiPencil } from 'react-icons/bi';
+import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
+
+import { createOrder } from 'features/user/orderSlice';
+import AddressForm from 'components/AddressForm';
+import { OrderStatus } from 'utils/enum';
+import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
+
+import styles from './CreateOrder.module.scss';
 
 const infoModel = {
     fullname: '',
@@ -24,28 +30,15 @@ const productModel = {
     name: '',
     weight: '',
     quantity: '',
-    imgUrl: '',
+    // imgUrl: '',
     type: '',
 }
 
-const paymentOptions = [
-    {code: 'sender', label: 'Người gửi thanh toán'},
-    {code: 'receiver', label: 'Người nhận thanh toán'}
+const recentlyAddress = [
+    'Thanh Xuân, Hà Nội',
+    'Ba Đình, Hà Nội',
+    'Trần Duy Hưng, Hà Nội'
 ]
-
-const paymentMethods = [
-    {code: 'cod', label: 'Thanh toán trực tiếp', icon: <CODMethodIcon />},
-    {code: 'momo', label: 'Momo', icon: <MomoMethodIcon />},
-    {code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon />},
-]
-
-const orderTypes = [
-    {code: 'electronic', label: 'Điện tử'},
-    {code: 'fragile', label: 'Dễ vỡ'},
-    {code: 'food', label: 'Thức ăn'},
-    {code: 'cloth', label: 'Quần áo'},
-    {code: 'others', label: 'Còn lại'}
-];
 
 function CreateOrder() {
     const dispatch = useDispatch();
@@ -62,6 +55,9 @@ function CreateOrder() {
     const [receiverWards, setReceiverWards] = useState([]);
     const [address, setAddress] = useState([]);
 
+    const [senderAddress, setSenderAddress] = useState('');
+
+    const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
 
     const [note, setNote] = useState('');
@@ -94,6 +90,8 @@ function CreateOrder() {
         const lastProduct = products.at(-1);
         if (!checkEmptyProductInfo(lastProduct)) {
             setProducts(prev => [...prev, productModel])
+        } else {
+            toast.error('Vui lòng điền đủ thông tin sản phẩm trước khi điền sản phẩm mới.')
         }
     }
 
@@ -101,30 +99,35 @@ function CreateOrder() {
         return product.name === '' || product.weight === '' || product.quantity === '';
     }
 
-    const handleSubmit = async () => {
+    const isDisabledSubmit = () => {
         const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
         const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
-        const isEmptyProduct = products.forEach(product => {
-            if (Object.values(product).some(value => value === '')) {
-                return true;
-            }
-        });
-        console.log('empty sender info: ', isEmptySenderInfo);
-        console.log('empty receiver info: ', isEmptyReceiverInfo);
-        if (isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct) {
-            alert('Chưa điền đầy đủ thông tin!');
+        const isEmptyProduct = Object.values(products.at(-1)).some(value => value === '');
+        return isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct;
+    }
+
+    const handleSubmit = () => {
+        if (isDisabledSubmit()) {
+            toast.error('Chưa điền đầy đủ thông tin.');
+            return;
         } else {
+            const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
+            const receiver_address = (
+                `${receiverInfo.fullname}, ` + 
+                `${receiverInfo.phone}, ` +
+                `${receiverInfo.address ?? receiverInfo.address}, ` + 
+                `${receiverInfo.ward ?? receiverInfo.ward}, ` +
+                `${receiverInfo.district ?? receiverInfo.district}, ` +
+                receiverInfo.city ?? receiverInfo.city
+            );
+
             const orderPayload = {
-                sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
-                sender_name: senderInfo.fullname,
-                sender_phone: senderInfo.phone,
-                receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
-                receiver_name: receiverInfo.fullname,
-                receiver_phone: receiverInfo.phone,
+                sender_address,
+                receiver_address,
                 payment_type: paymentMethod,
                 cod_amount: cod,
                 note,
-                status: 'waiting',
+                status: OrderStatus.PROCESSING,
                 shipping_fee: calculateTotalFee(),
                 user_id: user.id,
                 items: products.map(product => ({
@@ -167,6 +170,23 @@ function CreateOrder() {
         }
     }
 
+    const handleSaveSenderInfo = () => {
+        if (editSender) {
+            const address = (
+                (senderInfo.address && `${senderInfo.address}, `) +
+                (senderInfo.ward && `${senderInfo.ward}, `) +
+                (senderInfo.district && `${senderInfo.district}, `) +
+                (senderInfo.city && senderInfo.city)
+            );
+            setSenderAddress(address);
+        }
+        setEditSender(!editSender);
+    }
+
+    const handleRemoveProduct = (id) => {
+        setProducts(prev => prev.filter((product, index) =>  index !== id));
+    }
+
     useEffect(() => {
         if (products.at(-1).weight && products.at(-1).quantity) {
             const updated = calculateTotalFee() + parseInt(cod);
@@ -178,8 +198,17 @@ function CreateOrder() {
 
     useEffect(() => {
         // Get sender info from user profile
+        const addressArr = user.address.split(',');
+        const reservedArr = [...addressArr].reverse();
+        setSenderAddress(reservedArr.map((str, index) => 
+            index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
+        ));
         setSenderInfo(prev => ({
             ...prev,
+            city: addressArr[0] ?? '',
+            district: addressArr[1] ?? '',
+            ward: addressArr[2] ?? '',
+            address: addressArr[3] ?? '',
             fullname: user.fullname,
             phone: user.phone,
         }))
@@ -203,21 +232,53 @@ function CreateOrder() {
                 <div className="container-fluid bg-white p-5">
                     <div className="row">
                         <div className="col-8">
-                            <div className={styles.createOrderSection}>
-                                <div className={styles.title}>
-                                    <span className='ms-2 me-3'>Bên gửi</span>
-                                    <button className={styles.editBtn}>
-                                        {/* {editAddress ? <BsCheckSquare /> : <BsPencilSquare />} */}
-                                    </button>
+                            <div className={`${styles.createOrderSection} row`}>
+                                <div className="col-12">
+                                    <div className={styles.title}>
+                                        <span className='ms-2 me-3'>Bên gửi</span>
+                                        <button className={styles.editBtn} onClick={() => handleSaveSenderInfo()}>
+                                            {!editSender && <BsPencilSquare />}
+                                        </button>
+                                    </div>
                                 </div>
-                                <AddressForm 
-                                    stateInfo={senderInfo}
-                                    setStateInfo={setSenderInfo}
-                                    cities={address}
-                                    districts={senderDistricts}
-                                    setDistricts={setSenderDistricts}
-                                    wards={senderWards}
-                                    setWards={setSenderWards}/>
+                                <div className="col-6 mt-2">
+                                    <span className='fw-semibold'>{user.fullname} - {user.phone}</span>
+                                    <p>{senderAddress}</p>
+                                </div>
+                                {editSender ? (
+                                    <div className="col-6 mt-2">
+                                        <AddressForm 
+                                            stateInfo={senderInfo}
+                                            setStateInfo={setSenderInfo}
+                                            cities={address}
+                                            districts={senderDistricts}
+                                            setDistricts={setSenderDistricts}
+                                            wards={senderWards}
+                                            setWards={setSenderWards}
+                                            activeField={['city', 'district', 'province', 'address']}/>
+                                        <div className="row mt-4">
+                                            <div className="col-12 text-end">
+                                                <button className='btn btn-medium me-3' onClick={handleSaveSenderInfo}>Lưu</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                ) : (
+                                    <div className="col-6 mt-2">
+                                        <p className='fw-semibold'>Các địa chỉ gửi gần đây:</p>
+                                        {recentlyAddress.map((address, index) => (
+                                            <div className={styles.optionWrap} key={index}>
+                                                <input type="radio" 
+                                                    name='recentlyAddress'
+                                                    className='me-3'
+                                                    checked={address === senderAddress}
+                                                    value={address}
+                                                    onChange={e => setSenderAddress(e.target.value)}/> 
+                                                <label htmlFor="recentlyAddress" className='ms-2' onClick={() => setSenderAddress(address)}>{address}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -231,7 +292,8 @@ function CreateOrder() {
                                     districts={receiverDistricts}
                                     setDistricts={setReceiverDistricts}
                                     wards={receiverWards}
-                                    setWards={setReceiverWards}/>
+                                    setWards={setReceiverWards}
+                                    activeField={['fullname', 'phone', 'city', 'district', 'province', 'address']}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -241,55 +303,74 @@ function CreateOrder() {
                                 <div className={styles.content}>
                                     {products.map((product, index) => (
                                         <div key={index} className={styles.orderItem}>
-                                            <div className={styles.imageUpload}>
+                                            {/* <div className={styles.imageUpload}>
                                                 <label htmlFor='file-input'>
                                                     <span className={styles.button}>Upload ảnh</span>
                                                 </label>
                                                 <input id="file-input" type="file" style={{display: 'none'}} />
-                                            </div>
+                                            </div> */}
 
                                             <div className={styles.info}>
-                                                <span className='fw-semibold'>{index+1}. </span>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>Tên</label>
-                                                    <input type="text"
-                                                        placeholder='Nhập tên sản phẩm'
-                                                        className={styles.mediumInput}
-                                                        value={product.name}
-                                                        onChange={e => handleUpdateProduct(e, index, 'name')}/>
+                                                <span className='fw-semibold'>{index+1}.&nbsp;</span>
+                                                <div className="row">
+                                                    <div className="col-4">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>Tên</label>
+                                                            <input type="text"
+                                                                placeholder='Tên sản phẩm'
+                                                                value={product.name}
+                                                                onChange={e => handleUpdateProduct(e, index, 'name')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>KL(gram)</label>
+                                                            <input type="text" 
+                                                                placeholder='0' 
+                                                                value={product.weight}
+                                                                onChange={e => handleUpdateProduct(e, index, 'weight')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-1">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>SL</label>
+                                                            <input type="text" 
+                                                                placeholder='0'
+                                                                value={product.quantity}
+                                                                onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <div className='d-flex'>
+                                                            <label className='fw-semibold me-1'>Loại</label>
+                                                            <select value={product.type}
+                                                                onChange={e => handleUpdateProduct(e, index, 'type')}>
+                                                                {product?.type 
+                                                                    ? <option value={product.type}>{product.type}</option>
+                                                                    : <option value="">--Loại--</option>
+                                                                }
+                                                                {orderTypes.map(item => (
+                                                                    <option key={item.code} value={item.code}>{item.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-1">
+                                                        <div className='d-flex flex-column'>
+                                                            {products.length > 1 && (
+                                                                <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
+                                                                    <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
+                                                                </button>
+                                                            )}
+                                                            {index === products.length - 1 && (
+                                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
+                                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
+                                                                </button>
+                                                            )}
+                                                            <button></button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>KL(gram)</label>
-                                                    <input type="text" 
-                                                        placeholder='0' 
-                                                        className={styles.smallInput}
-                                                        value={product.weight}
-                                                        onChange={e => handleUpdateProduct(e, index, 'weight')}/>
-                                                </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>SL</label>
-                                                    <input type="text" 
-                                                        placeholder='0'
-                                                        className={styles.extraSmallInput}
-                                                        value={product.quantity}
-                                                        onChange={e => handleUpdateProduct(e, index, 'quantity')}/>
-                                                </div>
-                                                <div className='d-flex ms-3'>
-                                                    <label className='fw-semibold me-2'>Loại</label>
-                                                    <select value={product.type}
-                                                        onChange={e => handleUpdateProduct(e, index, 'type')}>
-                                                        {product?.type 
-                                                            ? <option value={product.value}>{product.value}</option>
-                                                            : <option value="">--Loại--</option>
-                                                        }
-                                                        {orderTypes.map(item => (
-                                                            <option key={item.code} value={item.code}>{item.label}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
-                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
-                                                </button>
                                             </div>
                                         </div> 
                                     ))}
@@ -353,7 +434,7 @@ function CreateOrder() {
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
                                     <h1 className={styles.importantLine}>{totalFee}đ</h1>
-                                    <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
+                                    <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button>
                                 </div>
                             </div>
                         </div>
