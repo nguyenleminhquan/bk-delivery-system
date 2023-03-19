@@ -53,15 +53,15 @@ function AdminStockManagement() {
 
     const handleAddStock = payload => {
         const name = payload.name;
-        const address = `${payload.address}, ${payload.ward}, ${payload.district}, ${payload.city}`;
-        const area_code = 49;
+        const address = payload.address;
+        const area_code = Number(payload.area_code);
 
         dispatch(addStock({name, address, area_code}));
         setShowEditPopup('');
     }
 
     const handleEditStock = payload => {
-
+        
     }
 
     const handleDeleteStock = () => {
@@ -106,11 +106,14 @@ function AdminStockManagement() {
                     onCancel={() => setShowEditPopup(false)}
                     confirmText="Thêm mới"
                     onConfirm={handleAddStock}
-                    addressForm={true}
+                    // addressForm={true}
                     showForm={true}
-                    formFields={[{ name: "name", label: "Tên kho", type: "text" }]}
+                    formFields={[
+                        { name: "name", label: "Tên kho", type: "text" },
+                        { name: "area_code", label: "Mã kho", type: "text"}
+                    ]}
                     formSubmitText="Thêm mới"
-                    // addressAutoForm={true}
+                    addressAutoForm={true}
                 />
             )}
 

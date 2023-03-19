@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AddressForm from 'components/AddressForm';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { toast } from 'react-toastify';
 import styles from './GeneralConfirm.module.scss';
@@ -29,21 +29,25 @@ function GeneralConfirm(props) {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const inputRef = useRef(null);
 
-  // const [autoAddress, setAutoAddress] = useState('');
+  const [autoAddress, setAutoAddress] = useState('');
 
-  // const handleChange = (address) => {
-  //   setAutoAddress(address);
-  // }
+  const handleChange = (address) => {
+    setAddress('');
+    setAutoAddress(address);
+  }
 
-  // const handleSelect = async(address) => {
-  //   const results = await geocodeByAddress(address);
-  //   const latLng = await getLatLng(results[0]);
-  //   console.log("Address: ", address);
-  //   console.log("Latitude: ", latLng.lat);
-  //   console.log("Longitude: ", latLng.lng);
-  //   setAddress(address);
-  // }
+  const handleSelect = async(address) => {
+    const results = await geocodeByAddress(address);
+    const latLng = await getLatLng(results[0]);
+    // console.log("Address: ", address);
+    // console.log("Latitude: ", latLng.lat);
+    // console.log("Longitude: ", latLng.lng);
+    inputRef.current.value = address;
+    setAddress(address);
+    setAutoAddress(address);
+  }
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -55,26 +59,36 @@ function GeneralConfirm(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    let data = {};
 
-    // Validate input field
-    if (Object.values(formData).every(value => value) && 
-        Object.values(address).every(value => value)) {
-      props.onConfirm({...formData, ...address});
+    if (Object.values(formData).every(value => value)) {
+      data = {...data, ...formData};
     } else {
-      toast.error('Chưa điền đầy đủ thông tin.');
+      missingField();
     }
 
-    // if (props.onConfirm) {
-    //   props.onConfirm(formData);
-    // }
+    if (props.addressAutoForm) {
+      if (address) {
+        data = {...data, address};
+      } else {
+        missingField();
+      }
+    }
 
-    // if (props.addressForm) {
-    //   if (Object.values(address).every(value => value)) {
-    //     props.onConfirm(address);
-    //   } else {
-    //     toast.error('Chưa đầy đủ thông tin.');
-    //   }
-    // }
+    if (props.addressForm) {
+      if (Object.values(address).every(value => value)) {
+        data = {...data, ...address};
+      } else {
+        missingField();
+      }
+    }
+
+    props.onConfirm(data);
+  }
+  
+  const missingField = () => {
+    toast.error('Chưa điền đẩy đủ thông tin.');
+    return;
   }
 
   useEffect(() => {
@@ -123,45 +137,46 @@ function GeneralConfirm(props) {
                   setWards={setWards}
                   activeField={['city', 'district', 'province', 'address']}/>
               )}
+
+              {/* Use auto complete when Google API is available */}
+              {props.addressAutoForm && (
+                <PlacesAutocomplete
+                  value={autoAddress}
+                  onChange={handleChange}
+                  onSelect={handleSelect}>
+                  {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                    <div className={styles.formGroup}>
+                      <label>Địa chỉ</label>
+                      <input
+                        ref={inputRef}
+                        {...getInputProps({
+                          placeholder: "Nhập vào địa chỉ...",
+                          className: "form-control",
+                        })}
+                      />
+                      <div>
+                        {loading ? <div>Đang tải...</div> : null}
+
+                        {suggestions.map((suggestion) => {
+                          const style = {
+                            backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
+                          };
+                          return (
+                            <div
+                              {...getSuggestionItemProps(suggestion, { style })}
+                              key={suggestion.placeId}
+                            >
+                              {suggestion.description}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </PlacesAutocomplete>
+              )}
             </form>
           }
-          {/* Use auto complete when Google API is available */}
-          {/* {props.addressAutoForm && (
-            <PlacesAutocomplete
-              value={autoAddress}
-              onChange={handleChange}
-              onSelect={handleSelect}>
-              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-                <div>
-                  <input
-                    {...getInputProps({
-                      placeholder: "Enter address...",
-                      className: "form-control"
-                    })}
-                  />
-                  <div>
-                    {loading ? <div>Đang tải...</div> : null}
-
-                    {suggestions.map((suggestion) => {
-                      const style = {
-                        backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
-                      };
-                      return (
-                        <div
-                          {...getSuggestionItemProps(suggestion, { style })}
-                          key={suggestion.placeId}
-                        >
-                          {suggestion.description}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </PlacesAutocomplete>
-          )} */}
-
-          
         </div>
         
         <div className={styles.footer}>
@@ -170,7 +185,6 @@ function GeneralConfirm(props) {
             <button onClick={props.onConfirm} className="btn btn-medium">{props.confirmText}</button>
           }
           {props.showForm && <button onClick={handleSubmit} className="btn btn-medium ms-1">{props.formSubmitText}</button>}
-          {/* {props.addressForm && <button onClick={handleSubmit} className="btn btn-medium ms-1">{props.confirmText}</button>} */}
         </div>
       </div>
     </div>

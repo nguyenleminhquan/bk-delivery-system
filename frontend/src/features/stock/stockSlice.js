@@ -51,6 +51,7 @@ const stockSlice = createSlice({
         },
         [addStock.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
+            state.stocks = [...state.stocks, payload];
             toast.success('Tạo kho mới thành công.');
         },
         [addStock.rejected]: (state, {payload}) => {
@@ -62,6 +63,7 @@ const stockSlice = createSlice({
         },
         [deleteStock.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
+            state.stocks = state.stocks.filter(stock => stock._id !== payload._id);
             toast.success('Xóa kho thành công.');
         },
         [deleteStock.rejected]: (state, {payload}) => {
