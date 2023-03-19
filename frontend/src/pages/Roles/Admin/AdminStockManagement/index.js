@@ -1,6 +1,6 @@
 import GeneralConfirm from 'components/GeneralConfirm';
 import Table from 'components/Table';
-import { getStocks } from 'features/stock/stockSlice';
+import { addStock, deleteStock, editStock, getStocks } from 'features/stock/stockSlice';
 import { useEffect, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
@@ -52,21 +52,28 @@ function AdminStockManagement() {
     const [showDeletePopup, setShowDeletePopup] = useState('');
 
     const handleAddStock = payload => {
-        console.log(payload)
+        const name = payload.name;
+        const address = payload.address;
+        const area_code = Number(payload.area_code);
+
+        dispatch(addStock({name, address, area_code}));
+        setShowEditPopup(false);
     }
 
-    const handleEditStock = payload => {
-
+    const handleEditStock = address => {
+        dispatch(editStock(showEditPopup._id, {address}));
+        setShowEditPopup(false);
     }
 
-    const handleDeleteStock = payload => {
-        
+    const handleDeleteStock = () => {
+        dispatch(deleteStock(showDeletePopup));
+        setShowDeletePopup('');
     }
 
     useEffect(() => {
         const rows = [...stocks.map(stock => ({
             ...stock,
-            edit: (<BiEdit className="text-success" role="button" onClick={handleEditStock}/>),
+            edit: (<BiEdit className="text-success" role="button" onClick={() => setShowEditPopup(stock)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setShowDeletePopup(stock._id)}/>)
         }))];
 
@@ -95,13 +102,18 @@ function AdminStockManagement() {
 
             {showEditPopup && (
                 <GeneralConfirm
-                    title="Thêm mới"
+                    title={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
                     cancelText="Đóng lại"
                     onCancel={() => setShowEditPopup(false)}
-                    showConfirmButton={true}
-                    onConfirm={handleAddStock}
-                    confirmText="Thêm mới"
-                    // addressForm={true}
+                    onConfirm={showEditPopup?.name ? handleEditStock : handleAddStock}
+                    showForm={true}
+                    formFields={[
+                        { name: "name", label: "Tên kho", type: "text", value: showEditPopup.name, disabled: !!showEditPopup.name },
+                        { name: "area_code", label: "Mã kho", type: "text", value: showEditPopup.area_code, disabled: !!showEditPopup.area_code}
+                    ]}
+                    formValue={showEditPopup}
+                    formSubmitText={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
+                    addressAutoForm={true}
                 />
             )}
 

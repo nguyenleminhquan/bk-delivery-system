@@ -17,3 +17,21 @@ export const addStockThunk = async(payload, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const deleteStockThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.deleteStock(payload);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
+
+export const editStockThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.editStock(payload);
+        return res.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
