@@ -6,6 +6,7 @@
 | /user/working-day | GET | Get working days | Authorization: Bearer <refresh_token> <access_token> | |
 | /user/working-day | POST | Update working day | Authorization: Bearer <refresh_token> <access_token> | time: string (recommend using Date.now()) |
 | /user/:id/update | POST | Update user info | Authorization: Bearer <refresh_token> <access_token> | information you want to update |
+| /user/employee | GET | Get all employee | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | GET | Get all order | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | POST | Create new order | Authorization: Bearer <refresh_token> <access_token> | sender_address: string <br /> receiver_address: string <br/>payment_type: string<br/> cod_amount: number<br/>note: string<br/>status: string<br/>shipping_fee: number<br/>user_id: objectId<br>items:<br> [{ <br/>name: string, <br>quantity: number, <br>type: string, <br>weight: number<br>}] |
 | /order/:id | GET | Get order by id | Authorization: Bearer <refresh_token> <access_token> | |
