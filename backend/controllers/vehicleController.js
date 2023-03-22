@@ -37,28 +37,35 @@ const addVehicle = async (req, res, next) => {
 
 const pushOrderToVehicle = async (req, res, next) => {
   try {
-    const { vehicle_id, order_id } = req.body
+    const { list_orders } = req.body
+    const vehicle_id = req.params.id
     let vehicle = await Vehicle.findById(vehicle_id)
-    let order = await Order.findById(order_id)
+    const getOrdersByListID = async (list_orders) => {
+      let orders = []
+      for (let i = 0; i < list_orders.length; i++) {
+        orders.push(await Order.findById(list_orders[i]))
+      }
+      return orders
+    }
+    let orders = await getOrdersByListID(list_orders)
+    for (let i = 0; i < orders.length; i++) {
+      if (vehicle.orders.some(id => id == orders[i]._id.toString())) {
+        return next(createError(400, 'The order has been pushed to the vehicle'))
+      }
 
-    // Check if the order status isn't import
-    if (order.status != 'import') {
-      return next(createError(400, 'The order has not been imported'))
+      if (orders[i].status != 'import') {
+        return next(createError(400, 'The order has not been imported'))
+      }
+
+      if ((vehicle.current_weight + orders[i].weight) > vehicle.max_weight) {
+        return next(createError(400, 'The order weight exceeds the maximum vehicle weight'))
+      }
+      vehicle.current_weight += orders[i].weight
+      await Order.findByIdAndUpdate(orders[i]._id, {status: 'on_vehicle'})
+      vehicle.orders.push(orders[i])
     }
 
-    // Check if the order has been pushed
-    if (vehicle.orders.some(id => id == order_id)) {
-      return next(createError(400, 'The order has been pushed to the vehicle'))
-    }
-
-    if ((vehicle.current_weight + order.weight) > vehicle.max_weight) {
-      return next(createError(400, 'The order weight exceeds the maximum vehicle weight'))
-    }
-
-    vehicle.current_weight += order.weight
-    vehicle.orders.push(order)
     await vehicle.save()
-
     return res.json(vehicle)
   } catch (error) {
     return next(createError(400))
