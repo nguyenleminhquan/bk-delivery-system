@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from 'features/user/userSlice';
+import { getAllEmployee, registerUser } from 'features/user/userSlice';
 
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -78,8 +78,8 @@ const roleModels = [
 ]
 
 function AdminEmployeeManagement() {
-    // const { employees } = useSelector(state => state.employees);
     const dispatch = useDispatch();
+    const { employees } = useSelector(state => state.user);
     const [data, setData] = useState(employeeModels);
     const [openPopup, setOpenPopup] = useState(false);
     const [deletePopup, setDeletePopup] = useState({flag: false, data: {}}); 
@@ -106,37 +106,28 @@ function AdminEmployeeManagement() {
     }
 
     useEffect(() => {
-        // Get employee information
-        // dispatch(getEmployeeInfo())
-    }, [])
-
-    // useEffect(() => {
-    //     let employeeArray = JSON.parse(JSON.stringify(employees));
-    //     // handle data after call api GET to pass to employeeModels row
-    // }, [employees])
+        const rows = [...employees.map(employee => ({
+            generalInfo: (
+                <div>
+                    <div className='d-flex align-items-center'>
+                        <FaUser className='me-2'/> {employee.fullname}</div>
+                    <div className='d-flex align-items-center'>
+                        <HiMail className='me-2'/> {employee.email}</div>
+                    <div className='d-flex align-items-center'>
+                        <IoMdCall className='me-2'/> {employee.phone}</div>
+                </div>
+            ),
+            activeStock: 'Đống Đa, Hà Nội',
+            vehicleInfo: 'Xe máy Honda 63B5-99999',
+            role: 'Tài xế nội thành',
+            edit: (<BiEdit className="text-success" role="button" onClick={handleEdit}/>),
+            delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup({flag: true, data: 1})}/>)
+        }))];
+        setData({...data, rows});
+    }, [employees])
 
     useEffect(() => {
-        const rowData = [
-            {
-                generalInfo: (
-                    <div>
-                        <div className='d-flex align-items-center'>
-                            <FaUser className='me-2'/> Nguyễn Văn A</div>
-                        <div className='d-flex align-items-center'>
-                            <HiMail className='me-2'/> a123@gmail.com</div>
-                        <div className='d-flex align-items-center'>
-                            <IoMdCall className='me-2'/> 0123456789</div>
-                    </div>
-                ),
-                activeStock: 'Đống Đa, Hà Nội',
-                vehicleInfo: 'Xe máy Honda 63B5-99999',
-                role: 'Tài xế nội thành',
-                edit: (<BiEdit className="text-success" role="button" onClick={handleEdit}/>),
-                delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup({flag: true, data: 1})}/>)
-            }
-        ]
-
-        setData({...data, rows: rowData});
+        dispatch(getAllEmployee());
     }, [])
 
     return (
