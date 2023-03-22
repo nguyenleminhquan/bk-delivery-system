@@ -9,7 +9,7 @@ import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, getVehicleOrders } from 'features/delivery/deliverySlice';
 
 const orderModels = [
     {
@@ -80,8 +80,12 @@ const ConfirmOrderLists = ({vehicle}) => {
         setToggleFilter(!toggleFilter);
     }
 
-    const handleDeleteOrder = () => {
-        
+    const handleDeleteOrder = id => {
+        const payload = {
+            order_id: id,
+            vehicle_id: vehicle._id
+        }
+        dispatch(deleteVehicleOrder(payload));
     }
 
     useEffect(() => {
@@ -106,11 +110,11 @@ const ConfirmOrderLists = ({vehicle}) => {
                 </div>
                 <div className={styles.ordersWrap}>
                     {vehicleOrders.map(order => (
-                        <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                        <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
                             <div className="col-6">{order._id}</div>
                             <div className="col-5">{order.weight}</div>
                             <div className="col-1">
-                                <div className={styles.deleteBtn} onClick={handleDeleteOrder}><RiDeleteBin6Fill /></div>
+                                <div className={styles.deleteBtn} role="button" onClick={() => handleDeleteOrder(order._id)}><RiDeleteBin6Fill /></div>
                             </div>
                         </div>
                     ))}
