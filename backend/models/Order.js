@@ -17,7 +17,7 @@ const orderSchema = mongoose.Schema({
   shipping_fee: Number,
   status: {
     type: String,
-    enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'arrived_send_stock', 'coming_dest_stock',
+    enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'on_vehicle', 'coming_dest_stock',
           'arrived_dest_stock', 'delivering', 'success'],
     default: 'waiting'
   },
