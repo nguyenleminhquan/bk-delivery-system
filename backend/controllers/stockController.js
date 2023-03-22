@@ -105,7 +105,7 @@ const editStock = async (req, res, next) => {
     }
 
     await Stock.findByIdAndUpdate(req.params.id, { address: req.body.address })
-
+    let afterUpdate = await Stock.findById(req.params.id)
     return res.json(await Stock.findById(req.params.id))
   } catch (error) {
     return next(createError(400))
