@@ -63,7 +63,7 @@
                 border: 1px solid var(--border-color);
                 display: flex;
                 align-items: center;
-                padding: 5px 20px;
+                padding: 5px 15px;
                 min-height: 80px;
                 &.notComplete {
                     border-color: red;
@@ -88,19 +88,10 @@
                 }
                 .info {
                     display: flex;
-                    margin-left: 8px;
                     flex: 1;
-                    .mediumInput {
-                        max-width: 140px;
-                    }
-                    .smallInput {
-                        max-width: 40px;
-                    }
-                    .extraSmallInput {
-                        max-width: 20px;
-                    }
                     input {
                         border-bottom: 1px solid var(--border-color);
+                        width: 100%;
                         &::placeholder {
                             font-size: 14px;
                             color: var(--placeholder-input-color);
@@ -174,5 +165,9 @@
     transition: var(--transition);
     &:hover {
         background-color: var(--primary-hover-color);
+    }
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 }

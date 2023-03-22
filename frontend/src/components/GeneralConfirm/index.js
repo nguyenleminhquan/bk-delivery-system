@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import AddressForm from 'components/AddressForm';
+import React, { useEffect, useRef, useState } from 'react';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { toast } from 'react-toastify';
 import styles from './GeneralConfirm.module.scss';
 
 /** How to use this component?
@@ -21,6 +25,29 @@ import styles from './GeneralConfirm.module.scss';
 
 function GeneralConfirm(props) {
   const [formData, setFormData] = useState({});
+  const [address, setAddress] = useState({city: '', district: '', ward: '', address: ''});
+  const [cities, setCities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const inputRef = useRef(null);
+
+  const [autoAddress, setAutoAddress] = useState('');
+
+  const handleChange = (address) => {
+    setAddress('');
+    setAutoAddress(address);
+  }
+
+  const handleSelect = async(address) => {
+    const results = await geocodeByAddress(address);
+    const latLng = await getLatLng(results[0]);
+    // console.log("Address: ", address);
+    // console.log("Latitude: ", latLng.lat);
+    // console.log("Longitude: ", latLng.lng);
+    inputRef.current.value = address;
+    setAddress(address);
+    setAutoAddress(address);
+  }
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -32,11 +59,51 @@ function GeneralConfirm(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    let data = {};
 
-    if (props.onConfirm) {
-      props.onConfirm(formData);
+    if (Object.values(formData).every(value => value)) {
+      data = {...data, ...formData};
+    } else {
+      missingField();
     }
+
+    if (props.addressAutoForm) {
+      if (address) {
+        data = {...data, address};
+      } else {
+        missingField();
+      }
+    }
+
+    if (props.addressForm) {
+      if (Object.values(address).every(value => value)) {
+        data = {...data, ...address};
+      } else {
+        missingField();
+      }
+    }
+
+    props.onConfirm(data);
   }
+  
+  const missingField = () => {
+    toast.error('Chưa điền đẩy đủ thông tin.');
+    return;
+  }
+
+  useEffect(() => {
+    if (props.addressForm) {
+      // Call data for map api
+      axios.get('https://provinces.open-api.vn/api/?depth=3')
+        .then(res => setCities(res.data))
+        .catch(error => console.log(error))
+    }
+
+    if (props.addressAutoForm) {
+      setAutoAddress(props.formValue?.address ?? '');
+      setAddress(props.formValue?.address ?? '');
+    }
+  }, [props.addressForm])
 
   return (
     <div className={styles.modal}>
@@ -48,7 +115,7 @@ function GeneralConfirm(props) {
           {props.message && <span>{props.message}</span>}
           {props.showForm &&
             <form>
-              {props.formFields.map((field) => (
+              {props.formFields.map((field, index) => (
                 <div className={styles.formGroup} key={field.name}>
                   <label>{field.label}</label>
                   {field.type === 'select' ? (
@@ -58,10 +125,65 @@ function GeneralConfirm(props) {
                     ))}
                     </select>
                   ) : (
-                    <input type={field.type} name={field.name} onChange={handleInputChange} />
+                    <input type={field.type} 
+                      name={field.name} 
+                      defaultValue={field.value}
+                      onChange={handleInputChange}
+                      disabled={field.disabled} />
                   )}
                 </div>
               ))}
+
+              {props.addressForm && (
+                <AddressForm
+                  combination={true}
+                  stateInfo={address}
+                  setStateInfo={setAddress}
+                  cities={cities}
+                  districts={districts}
+                  setDistricts={setDistricts}
+                  wards={wards}
+                  setWards={setWards}
+                  activeField={['city', 'district', 'province', 'address']}/>
+              )}
+
+              {/* Use auto complete when Google API is available */}
+              {props.addressAutoForm && (
+                <PlacesAutocomplete
+                  value={autoAddress}
+                  onChange={handleChange}
+                  onSelect={handleSelect}>
+                  {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                    <div className={styles.formGroup}>
+                      <label>Địa chỉ</label>
+                      <input
+                        ref={inputRef}
+                        {...getInputProps({
+                          placeholder: "Nhập vào địa chỉ...",
+                          className: "form-control",
+                        })}
+                      />
+                      <div>
+                        {loading ? <div>Đang tải...</div> : null}
+
+                        {suggestions.map((suggestion) => {
+                          const style = {
+                            backgroundColor: suggestion.active ? "#41b6e6" : "#fff"
+                          };
+                          return (
+                            <div
+                              {...getSuggestionItemProps(suggestion, { style })}
+                              key={suggestion.placeId}
+                            >
+                              {suggestion.description}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </PlacesAutocomplete>
+              )}
             </form>
           }
         </div>

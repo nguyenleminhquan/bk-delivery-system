@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 
 import "react-datepicker/dist/react-datepicker.css";
-// import DatePicker from 'vue-datepicker-next';
-import 'vue-datepicker-next/index.css';
 import './index.scss'
 
 function DatePickerComp() {
