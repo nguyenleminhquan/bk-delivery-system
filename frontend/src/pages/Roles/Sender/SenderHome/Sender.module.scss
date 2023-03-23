@@ -43,6 +43,7 @@
 .orderList {
     display: grid;
     gap: 20px;
+    font-size: 16px;
     p {
         margin-bottom: 0;
     }
@@ -117,6 +118,7 @@
     justify-content: center;
     margin-top: 20px;
     margin-bottom: 40px;
+    font-size: 16px;
     .tabHeaderItem {
         min-width: 150px;
         text-align: center;

@@ -76,6 +76,7 @@ const getOrdersByUserId = async (req, res, next) => {
     .populate({
       path: 'items'
     })
+    .sort({ createdAt: -1 })
     return res.json(data)
   } catch (error) {
     return next(createError(400))
@@ -130,7 +131,12 @@ const socketOrder = (io) => {
       const { order_id, status, date } = data;
       let changedOrder = await Order.findById(order_id);
       changedOrder.status = status;
-      changedOrder.tracking[status] = date;
+      if (status === 'cancel') {
+        changedOrder.tracking = {}
+      }
+      else {
+        changedOrder.tracking[status] = date;
+      }
       await changedOrder.save();
       io.emit('updateOrderStatus', data);
     })

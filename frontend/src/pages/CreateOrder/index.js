@@ -111,23 +111,27 @@ function CreateOrder() {
             toast.error('Chưa điền đầy đủ thông tin.');
             return;
         } else {
-            const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
-            const receiver_address = (
-                `${receiverInfo.fullname}, ` + 
-                `${receiverInfo.phone}, ` +
-                `${receiverInfo.address ?? receiverInfo.address}, ` + 
-                `${receiverInfo.ward ?? receiverInfo.ward}, ` +
-                `${receiverInfo.district ?? receiverInfo.district}, ` +
-                receiverInfo.city ?? receiverInfo.city
-            );
+            // const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
+            // const receiver_address = (
+            //     `${receiverInfo.fullname}, ` + 
+            //     `${receiverInfo.phone}, ` +
+            //     `${receiverInfo.address ?? receiverInfo.address}, ` + 
+            //     `${receiverInfo.ward ?? receiverInfo.ward}, ` +
+            //     `${receiverInfo.district ?? receiverInfo.district}, ` +
+            //     receiverInfo.city ?? receiverInfo.city
+            // );
 
             const orderPayload = {
-                sender_address,
-                receiver_address,
+                sender_address: `${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                sender_name: senderInfo.fullname,
+                sender_phone: senderInfo.phone,
+                receiver_address: `${receiverInfo.address}, ${receiverInfo.ward}, ${receiverInfo.district}, ${receiverInfo.city}`,
+                receiver_name: receiverInfo.fullname,
+                receiver_phone: receiverInfo.phone,
                 payment_type: paymentMethod,
                 cod_amount: cod,
                 note,
-                status: OrderStatus.PROCESSING,
+                status: 'waiting',
                 shipping_fee: calculateTotalFee(),
                 user_id: user.id,
                 items: products.map(product => ({
@@ -196,24 +200,24 @@ function CreateOrder() {
         }
     }, [cod, products])
 
-    useEffect(() => {
-        // Get sender info from user profile
-        const addressArr = user.address.split(',');
-        const reservedArr = [...addressArr].reverse();
-        setSenderAddress(reservedArr.map((str, index) => 
-            index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
-        ));
-        setSenderInfo(prev => ({
-            ...prev,
-            city: addressArr[0] ?? '',
-            district: addressArr[1] ?? '',
-            ward: addressArr[2] ?? '',
-            address: addressArr[3] ?? '',
-            fullname: user.fullname,
-            phone: user.phone,
-        }))
-        getAddress();
-    }, [])
+    // useEffect(() => {
+    //     // Get sender info from user profile
+    //     const addressArr = user.address.split(',');
+    //     const reservedArr = [...addressArr].reverse();
+    //     setSenderAddress(reservedArr.map((str, index) => 
+    //         index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
+    //     ));
+    //     setSenderInfo(prev => ({
+    //         ...prev,
+    //         city: addressArr[0] ?? '',
+    //         district: addressArr[1] ?? '',
+    //         ward: addressArr[2] ?? '',
+    //         address: addressArr[3] ?? '',
+    //         fullname: user.fullname,
+    //         phone: user.phone,
+    //     }))
+    //     getAddress();
+    // }, [])
 
     return (
         <div className={styles.wrapper}>

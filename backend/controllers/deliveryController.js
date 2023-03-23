@@ -166,6 +166,11 @@ const socketDelivery = (io) => {
             let updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: status}, {new: true})
             socket.emit('updatedDelivery', updatedDelivery)
         })
+        socket.on('deleteDelivery', async(data) => {
+            const { delivery_id } = data;
+            await Delivery.findByIdAndDelete(delivery_id)
+            socket.emit('deleteDelivery', delivery_id);
+        })
     });
 }
 
