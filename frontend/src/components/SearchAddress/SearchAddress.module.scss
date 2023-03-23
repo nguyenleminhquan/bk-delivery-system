@@ -1,0 +1,11 @@
+.wrapper {
+    position: relative;
+    .suggestionWrap {
+        border-radius: 2px;
+        box-shadow: 0 1px 5px rgb(216, 216, 216);
+        position: absolute;
+        z-index: 10;
+        top: calc(100% + 5px);
+        left: 0;
+    }
+}
