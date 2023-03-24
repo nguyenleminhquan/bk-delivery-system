@@ -191,7 +191,6 @@ function LoadOrderToTruck() {
             setOrders(updateOrderList());
             setTotalWeight(0);
             setSelected(0);
-
         }
     }
 

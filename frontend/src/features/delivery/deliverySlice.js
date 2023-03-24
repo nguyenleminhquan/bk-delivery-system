@@ -60,6 +60,13 @@ export const deleteVehicleOrder = createAsyncThunk(
     }
 )
 
+export const postVehicleOrders = createAsyncThunk(
+    'delivery/postVehicleOrders',
+    async(vehicle, thunkAPI) => {
+        return postVehicleOrders(vehicle, thunkAPI);
+    }
+)
+
 const deliverySlice = createSlice({
     name: 'delivery',
     initialState,
@@ -137,6 +144,19 @@ const deliverySlice = createSlice({
         [deleteVehicleOrder.rejected]: (state, { payload }) => {
             state.isLoading = false;
             toast.error(payload);
+        },
+        [postVehicleOrders.pending]: state => {
+            state.isLoading = true;
+        },
+        [postVehicleOrders.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [postVehicleOrders.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            console.log(payload);
+            // state.vehicleOrders = [...state.vehicleOrders, payload];
+            toast.success('Thêm đơn hàng thành công.');
         }
     }
 })
