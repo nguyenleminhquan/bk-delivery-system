@@ -17,13 +17,8 @@ const orderSchema = mongoose.Schema({
   shipping_fee: Number,
   status: {
     type: String,
-<<<<<<< HEAD
-    enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'arrived_send_stock', 'coming_dest_stock',
-          'arrived_dest_stock', 'delivering', 'success', 'cancel'],
-=======
     enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'on_vehicle', 'coming_dest_stock',
           'arrived_dest_stock', 'delivering', 'success'],
->>>>>>> develop
     default: 'waiting'
   },
   tracking: {
