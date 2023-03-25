@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllEmployee, registerUser } from 'features/user/userSlice';
+import { deleteUser, getAllEmployee, registerUser } from 'features/user/userSlice';
 
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -19,7 +19,6 @@ import GeneralConfirm from 'components/GeneralConfirm';
 
 // Import scss
 import styles from './AdminEmployeeManagement.module.scss';
-import ConfirmPopup from 'components/ConfirmPopup';
 
 const employeeModels = {
     columns: [
@@ -82,7 +81,7 @@ function AdminEmployeeManagement() {
     const { employees } = useSelector(state => state.user);
     const [data, setData] = useState(employeeModels);
     const [openPopup, setOpenPopup] = useState(false);
-    const [deletePopup, setDeletePopup] = useState({flag: false, data: {}}); 
+    const [deletePopup, setDeletePopup] = useState(''); 
 
     const handleConfirm = (formData) => {
         if (formData.fullname && formData.phone && formData.email && formData.typeUser) {
@@ -98,11 +97,11 @@ function AdminEmployeeManagement() {
         // 
     }
 
-    const handleConfirmDelete = (id) => {
+    const handleDeleteEmployee = () => {
         // Call api for PUT employee
         // Todo...
-        console.log('deleted');
-        setDeletePopup(false);
+        dispatch(deleteUser(deletePopup));
+        setDeletePopup('');
     }
 
     useEffect(() => {
@@ -121,7 +120,7 @@ function AdminEmployeeManagement() {
             vehicleInfo: 'Xe máy Honda 63B5-99999',
             role: 'Tài xế nội thành',
             edit: (<BiEdit className="text-success" role="button" onClick={handleEdit}/>),
-            delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup({flag: true, data: 1})}/>)
+            delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
         }))];
         setData({...data, rows});
     }, [employees])
@@ -164,16 +163,18 @@ function AdminEmployeeManagement() {
                
             )}
 
-            {deletePopup.flag && (
+            {deletePopup && (
                 <GeneralConfirm 
                     title="Xóa"
                     message="Bạn có muốn xóa tài khoản này không?"
-                    onCancel={() => setDeletePopup(false)}
+                    onCancel={() => setDeletePopup('')}
                     cancelText="Đóng lại"
                     showConfirmButton={true}
                     confirmText="Xác nhận"
-                    onConfirm={() => handleConfirmDelete(deletePopup.data)}
+                    onConfirm={handleDeleteEmployee}
                 />
+
+                
             )}
         </div>
     )

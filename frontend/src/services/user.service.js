@@ -25,11 +25,16 @@ export const getAllEmployee = () => {
     return customFetch.get('/user/employee');
 }
 
+export const deleteUser = (userId) => {
+    return customFetch.delete(`/user/${userId}`);
+}
+
 const UserService = {
     updateUser,
     changePassword,
     checkInDay,
-    getAllEmployee
+    getAllEmployee,
+    deleteUser
 }
 
 export default UserService

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { changePasswordThunk, checkInDayThunk, clearStoreThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, checkInDayThunk, clearStoreThunk, deleteUserThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
@@ -50,6 +50,13 @@ export const getAllEmployee = createAsyncThunk(
     'user/getAllEmployee',
     async(thunkAPI) => {
         return getAllEmployeeThunk(thunkAPI);
+    }
+)
+
+export const deleteUser = createAsyncThunk(
+    'user/deleteUser',
+    async(id, thunkAPI) => {
+        return deleteUserThunk(id, thunkAPI);
     }
 )
 
@@ -165,6 +172,18 @@ const userSlice = createSlice({
         [getAllEmployee.rejected]: (state, {payload}) => {
             state.isLoading = false;
             toast.error(payload);
+        },
+        [deleteUser.pending]: state => {
+            state.isLoading = true;
+        },
+        [deleteUser.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [deleteUser.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            // Update lai employee...
+            toast.success('Xóa người dùng thành công.');
         }
     }
 })
