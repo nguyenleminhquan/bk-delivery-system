@@ -181,26 +181,6 @@ function CreateOrder() {
         }
     }, [cod, products])
 
-<<<<<<< HEAD
-    // useEffect(() => {
-    //     // Get sender info from user profile
-    //     const addressArr = user.address.split(',');
-    //     const reservedArr = [...addressArr].reverse();
-    //     setSenderAddress(reservedArr.map((str, index) => 
-    //         index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
-    //     ));
-    //     setSenderInfo(prev => ({
-    //         ...prev,
-    //         city: addressArr[0] ?? '',
-    //         district: addressArr[1] ?? '',
-    //         ward: addressArr[2] ?? '',
-    //         address: addressArr[3] ?? '',
-    //         fullname: user.fullname,
-    //         phone: user.phone,
-    //     }))
-    //     getAddress();
-    // }, [])
-=======
     useEffect(() => {
         if (user?.address) {
             setSenderAddress(user?.address);
@@ -213,7 +193,6 @@ function CreateOrder() {
             address: user?.address
         });
     }, [])
->>>>>>> develop
 
     return (
         <div className={styles.wrapper}>
