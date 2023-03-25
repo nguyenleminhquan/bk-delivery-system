@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, getAllEmployee, registerUser } from 'features/user/userSlice';
+import { deleteUser, getAllEmployee, registerUser, updateUser } from 'features/user/userSlice';
 
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -75,31 +75,43 @@ const roleModels = [
         code: 'stocker'
     }
 ]
+const DEFAULT_PASSWORD = '1234567890';
 
 function AdminEmployeeManagement() {
     const dispatch = useDispatch();
     const { employees } = useSelector(state => state.user);
     const [data, setData] = useState(employeeModels);
-    const [openPopup, setOpenPopup] = useState(false);
+    const [editPopup, setEditPopup] = useState();
     const [deletePopup, setDeletePopup] = useState(''); 
 
-    const handleConfirm = (formData) => {
+    const handleAddEmployee = (formData) => {
         if (formData.fullname && formData.phone && formData.email && formData.typeUser) {
             // Create new employee with default password: 1234567890
             dispatch(registerUser({
                 ...formData,
-                password: '1234567890'
+                password: DEFAULT_PASSWORD
             }));
-        } else return toast.error('Thiếu thông tin nhân viên');
+            setEditPopup(false);
+        } else {
+            return toast.error('Thiếu thông tin nhân viên.');
+        }
     }
 
-    const handleEdit = () => {
-        // 
+    const handleEditEmployee = (formData) => {
+        const updatedData = {...editPopup, ...formData};
+        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser) {
+            dispatch(updateUser({
+                userId: editPopup._id,
+                info: updatedData
+            }));
+            setEditPopup(false);
+        } else {
+            return toast.error('Thiếu thông tin nhân viên.');
+        }
     }
 
     const handleDeleteEmployee = () => {
         // Call api for PUT employee
-        // Todo...
         dispatch(deleteUser(deletePopup));
         setDeletePopup('');
     }
@@ -119,7 +131,7 @@ function AdminEmployeeManagement() {
             activeStock: 'Đống Đa, Hà Nội',
             vehicleInfo: 'Xe máy Honda 63B5-99999',
             role: 'Tài xế nội thành',
-            edit: (<BiEdit className="text-success" role="button" onClick={handleEdit}/>),
+            edit: (<BiEdit className="text-success" role="button" onClick={() => setEditPopup(employee)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
         }))];
         setData({...data, rows});
@@ -135,7 +147,7 @@ function AdminEmployeeManagement() {
                 <div className="row">
                     <div className="d-flex align-items-center">
                         <h2 className='fs-4'>Quản lí nhân viên</h2>
-                        <button className='btn btn-medium ms-3' onClick={() => setOpenPopup(true)}>
+                        <button className='btn btn-medium ms-3' onClick={() => setEditPopup(true)}>
                             <AiOutlinePlus className='me-2'/>
                             Thêm mới</button>
                     </div>
@@ -145,22 +157,22 @@ function AdminEmployeeManagement() {
                 </div>
             </div>
 
-            {openPopup && (
+            {editPopup && (
                 <GeneralConfirm 
-                    title="Thêm mới"
+                    title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                     cancelText="Đóng lại"
-                    onCancel={() => setOpenPopup(false)}
-                    onConfirm={handleConfirm}
+                    onCancel={() => setEditPopup(false)}
+                    onConfirm={editPopup ? handleEditEmployee : handleAddEmployee}
                     showForm={true}
                     formFields={[
-                        { name: "fullname", label: "Họ và tên", type: "text" },
-                        { name: "email", label: "Email", type: "email" },
-                        { name: "phone", label: "Số điện thoại", type: "text" },
-                        { name: "typeUser", label: "Quyền", type: "select", models: roleModels },
+                        { name: "fullname", label: "Họ và tên", type: "text", value: editPopup.fullname },
+                        { name: "email", label: "Email", type: "email", value: editPopup.email },
+                        { name: "phone", label: "Số điện thoại", type: "text", value: editPopup.phone },
+                        { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
                     ]}
-                    formSubmitText="Thêm mới"
+                    formValue={editPopup}
+                    formSubmitText={editPopup ? 'Chỉnh sửa' : 'Thêm mới'}
                 />
-               
             )}
 
             {deletePopup && (
@@ -173,8 +185,6 @@ function AdminEmployeeManagement() {
                     confirmText="Xác nhận"
                     onConfirm={handleDeleteEmployee}
                 />
-
-                
             )}
         </div>
     )
