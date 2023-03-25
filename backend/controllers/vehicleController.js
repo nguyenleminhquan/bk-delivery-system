@@ -3,6 +3,7 @@ import Drive from "../models/Drive.js"
 import User from "../models/User.js"
 import createError from 'http-errors'
 import Order from "../models/Order.js"
+import Delivery from "../models/Delivery.js"
 
 const getAllVehicle = async (req, res, next) => {
   try {
@@ -110,10 +111,41 @@ const getAllOrdersByVehicle = async (req, res, next) => {
   }
 }
 
+const getAvailableOrderForVehicle = async (req, res, next) => {
+  try {
+    const vehicle_id = req.params.id
+    const vehicle = await Vehicle.findById(vehicle_id)
+
+    const delivery = await Delivery.find({ 
+      area_code: vehicle.area_code, 
+      type: 'inner',
+      status: 'deliveried',
+    })
+
+    const listOrderIds = delivery.map(item => item.order._id)
+
+    const availOrders = await Order.aggregate([
+      {
+        $match: { 
+          $and: [
+            { _id: { $in: listOrderIds } },
+            { status: { $regex: /import/ } }
+          ]
+        }
+      }
+    ]).exec()
+
+    return res.json(availOrders)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
   deleteOrderFromVehicle,
-  getAllOrdersByVehicle
+  getAllOrdersByVehicle,
+  getAvailableOrderForVehicle
 }
