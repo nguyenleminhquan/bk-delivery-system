@@ -11,18 +11,15 @@ import { BiPencil } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
-import AddressForm from 'components/AddressForm';
 import { OrderStatus } from 'utils/enum';
 import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
+import SearchAddress from 'components/SearchAddress';
 
 const infoModel = {
     fullname: '',
     phone: '',
-    city: '',
-    district: '',
-    ward: '',
     address: '',
 }
 
@@ -49,13 +46,8 @@ function CreateOrder() {
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
     
     // address information
-    const [senderDistricts, setSenderDistricts] = useState([]);
-    const [receiverDistricts, setReceiverDistricts] = useState([]);
-    const [senderWards, setSenderWards] = useState([]);
-    const [receiverWards, setReceiverWards] = useState([]);
-    const [address, setAddress] = useState([]);
-
     const [senderAddress, setSenderAddress] = useState('');
+    const [receiverAddress, setReceiverAddress] = useState('');
 
     const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
@@ -70,10 +62,10 @@ function CreateOrder() {
 
     const socket = useContext(SocketContext);
 
-    const getAddress = () => {
-        axios.get('https://provinces.open-api.vn/api/?depth=3')
-            .then(res => setAddress(res.data))
-            .catch(error => console.log(error))
+    const handleChangeReceiverInfo = e => {
+        const name = e.target.name;
+        const value = e.target.value;
+        setReceiverInfo(prev => ({...prev, [name]: value}));
     }
 
     const handleUpdateProduct = (e, index, field) => {
@@ -111,23 +103,17 @@ function CreateOrder() {
             toast.error('Chưa điền đầy đủ thông tin.');
             return;
         } else {
-            const sender_address = `${user.fullname}, ${user.phone}, ${senderAddress}`;
-            const receiver_address = (
-                `${receiverInfo.fullname}, ` + 
-                `${receiverInfo.phone}, ` +
-                `${receiverInfo.address ?? receiverInfo.address}, ` + 
-                `${receiverInfo.ward ?? receiverInfo.ward}, ` +
-                `${receiverInfo.district ?? receiverInfo.district}, ` +
-                receiverInfo.city ?? receiverInfo.city
-            );
-
             const orderPayload = {
-                sender_address,
-                receiver_address,
+                sender_name: senderInfo.fullname,
+                sender_phone: senderInfo.phone,
+                sender_address: senderAddress,
+                receiver_name: receiverInfo.fullname,
+                receiver_phone: receiverInfo.phone,
+                receiver_address: receiverAddress,
                 payment_type: paymentMethod,
                 cod_amount: cod,
                 note,
-                status: OrderStatus.PROCESSING,
+                status: OrderStatus.WAITING,
                 shipping_fee: calculateTotalFee(),
                 user_id: user.id,
                 items: products.map(product => ({
@@ -136,12 +122,14 @@ function CreateOrder() {
                     type: product.type,
                     weight: product.weight,
                 }))
-            }
+            };
+
+            console.log(orderPayload);
             const deliveryPayload = {
-                status: 'waiting',
+                status: OrderStatus.WAITING,
                 area_code: user.area_code,
                 type: 'inner',
-                from: `${senderInfo.fullname}&${senderInfo.address}, ${senderInfo.ward}, ${senderInfo.district}, ${senderInfo.city}`,
+                from: `${senderInfo.fullname}&${senderInfo.address}, ${senderAddress}`,
                 to: `stock_${user.area_code}`
             }
             dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
@@ -154,7 +142,6 @@ function CreateOrder() {
             setPaymentMethod('cod');
         }
     }
-
 
     const calculateTotalFee = () => {
         let totalWeight = 0;
@@ -170,22 +157,20 @@ function CreateOrder() {
         }
     }
 
-    const handleSaveSenderInfo = () => {
-        if (editSender) {
-            const address = (
-                (senderInfo.address && `${senderInfo.address}, `) +
-                (senderInfo.ward && `${senderInfo.ward}, `) +
-                (senderInfo.district && `${senderInfo.district}, `) +
-                (senderInfo.city && senderInfo.city)
-            );
-            setSenderAddress(address);
-        }
-        setEditSender(!editSender);
-    }
-
     const handleRemoveProduct = (id) => {
         setProducts(prev => prev.filter((product, index) =>  index !== id));
     }
+
+    const handleUpdateSenderAddress = () => {
+        if (senderAddress !== '') {
+            setSenderInfo(prev => ({...prev, address: senderAddress}));
+        }
+        setEditSender(false);
+    }
+
+    useEffect(() => {
+        setReceiverInfo(prev => ({...prev, address: receiverAddress}));
+    }, [receiverAddress])
 
     useEffect(() => {
         if (products.at(-1).weight && products.at(-1).quantity) {
@@ -197,22 +182,16 @@ function CreateOrder() {
     }, [cod, products])
 
     useEffect(() => {
-        // Get sender info from user profile
-        const addressArr = user.address.split(',');
-        const reservedArr = [...addressArr].reverse();
-        setSenderAddress(reservedArr.map((str, index) => 
-            index === reservedArr.length - 1 ? str ?? '' : `${str ?? ''}, `
-        ));
-        setSenderInfo(prev => ({
-            ...prev,
-            city: addressArr[0] ?? '',
-            district: addressArr[1] ?? '',
-            ward: addressArr[2] ?? '',
-            address: addressArr[3] ?? '',
+        if (user?.address) {
+            setSenderAddress(user?.address);
+        } else {
+            setEditSender(true);
+        }
+        setSenderInfo({
             fullname: user.fullname,
             phone: user.phone,
-        }))
-        getAddress();
+            address: user?.address
+        });
     }, [])
 
     return (
@@ -236,7 +215,7 @@ function CreateOrder() {
                                 <div className="col-12">
                                     <div className={styles.title}>
                                         <span className='ms-2 me-3'>Bên gửi</span>
-                                        <button className={styles.editBtn} onClick={() => handleSaveSenderInfo()}>
+                                        <button className={styles.editBtn} onClick={() => setEditSender(!editSender)}>
                                             {!editSender && <BsPencilSquare />}
                                         </button>
                                     </div>
@@ -247,21 +226,15 @@ function CreateOrder() {
                                 </div>
                                 {editSender ? (
                                     <div className="col-6 mt-2">
-                                        <AddressForm 
-                                            stateInfo={senderInfo}
-                                            setStateInfo={setSenderInfo}
-                                            cities={address}
-                                            districts={senderDistricts}
-                                            setDistricts={setSenderDistricts}
-                                            wards={senderWards}
-                                            setWards={setSenderWards}
-                                            activeField={['city', 'district', 'province', 'address']}/>
+                                        <SearchAddress address={senderAddress} setAddress={setSenderAddress} />
                                         <div className="row mt-4">
                                             <div className="col-12 text-end">
-                                                <button className='btn btn-medium me-3' onClick={handleSaveSenderInfo}>Lưu</button>
+                                                {senderInfo?.address && (
+                                                    <button className='btn btn-medium outline me-3' onClick={() => setEditSender(false)}>Hủy</button>
+                                                )}
+                                                <button className='btn btn-medium me-3' onClick={handleUpdateSenderAddress}>Lưu</button>
                                             </div>
                                         </div>
-
                                     </div>
                                 ) : (
                                     <div className="col-6 mt-2">
@@ -285,15 +258,26 @@ function CreateOrder() {
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên nhận</span>
                                 </div>
-                                <AddressForm 
-                                    stateInfo={receiverInfo}
-                                    setStateInfo={setReceiverInfo}
-                                    cities={address}
-                                    districts={receiverDistricts}
-                                    setDistricts={setReceiverDistricts}
-                                    wards={receiverWards}
-                                    setWards={setReceiverWards}
-                                    activeField={['fullname', 'phone', 'city', 'district', 'province', 'address']}/>
+                                <form className='my-2'>
+                                    <div className="form-group">
+                                        <label>Họ và tên</label>
+                                        <input type="text"
+                                            name='fullname'
+                                            placeholder='Nhập họ tên'
+                                            value={receiverInfo.fullname}
+                                            onChange={handleChangeReceiverInfo}/>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Số điện thoại</label>
+                                        <input type="text"
+                                            name='phone'
+                                            placeholder='Nhập số điện thoại'
+                                            value={receiverInfo.phone}
+                                            onChange={handleChangeReceiverInfo}/>
+                                    </div>
+                                </form>
+                                <SearchAddress address={receiverAddress} setAddress={setReceiverAddress} />
                             </div>
 
                             <div className={styles.createOrderSection}>
@@ -434,7 +418,8 @@ function CreateOrder() {
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
                                     <h1 className={styles.importantLine}>{totalFee}đ</h1>
-                                    <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button>
+                                    <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
+                                    {/* <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button> */}
                                 </div>
                             </div>
                         </div>
