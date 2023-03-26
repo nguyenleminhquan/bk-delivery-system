@@ -47,7 +47,7 @@ const getOrderInStocks = async (req, res, next) => {
       item.orders.forEach(id => order_ids.push(id))
     })
 
-    let orders = await Order.find({ _id: {$in: order_ids }})
+    let orders = await Order.find({ _id: {$in: order_ids }, status: 'arrived_send_stock' })
     
     return res.json(orders)
   } catch (error) {
