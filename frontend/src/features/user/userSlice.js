@@ -183,6 +183,7 @@ const userSlice = createSlice({
         [deleteUser.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             // Update lai employee...
+            state.employees = state.employees.filter(employee => employee._id !== payload._id);
             toast.success('Xóa người dùng thành công.');
         }
     }

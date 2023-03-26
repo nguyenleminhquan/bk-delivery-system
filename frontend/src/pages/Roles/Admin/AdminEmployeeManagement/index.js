@@ -162,7 +162,7 @@ function AdminEmployeeManagement() {
                     title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                     cancelText="Đóng lại"
                     onCancel={() => setEditPopup(false)}
-                    onConfirm={editPopup ? handleEditEmployee : handleAddEmployee}
+                    onConfirm={editPopup?.email ? handleEditEmployee : handleAddEmployee}
                     showForm={true}
                     formFields={[
                         { name: "fullname", label: "Họ và tên", type: "text", value: editPopup.fullname },
@@ -171,7 +171,7 @@ function AdminEmployeeManagement() {
                         { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
                     ]}
                     formValue={editPopup}
-                    formSubmitText={editPopup ? 'Chỉnh sửa' : 'Thêm mới'}
+                    formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                 />
             )}
 
