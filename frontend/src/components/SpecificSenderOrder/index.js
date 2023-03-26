@@ -1,11 +1,34 @@
+import { SocketContext } from 'index'
 import moment from 'moment'
-import React from 'react'
+import React, { useContext } from 'react'
 import { FaCheck, FaTimes } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
 import { orderStatusList } from 'utils/constants'
+import { OrderStatus } from 'utils/enum'
 import './index.scss'
 
 function SpecificSenderOrder({ closeModal, order }) {
 	const tracking = order.tracking ? order.tracking : {};
+	const { user } = useSelector((state) => state.user);
+	const socket = useContext(SocketContext);
+
+	const handleRedelivery = () => {
+		console.log(order)
+		const deliveryPayload = {
+			status: OrderStatus.WAITING,
+			area_code: user.area_code,
+			type: 'inner',
+			from: `${order.sender_name}&${order.sender_address}`,
+			to: `stock_${user.area_code}`,
+			order_id: order._id
+		}
+		socket.emit('newDelivery', deliveryPayload);
+		socket.emit('updateOrderStatus', {
+            order_id: order._id,
+            status: 'waiting',
+            date: new Date()
+        })
+	}
 
 	return (
 		<div className='specific-sender-order'>
@@ -22,8 +45,15 @@ function SpecificSenderOrder({ closeModal, order }) {
 							order.status === 'cancel'
 								? 
 								<div className='order-canceled'>
-									<p>The order has been canceled</p>
-									<button>Redelivery</button>
+									<p>Đơn hàng đã bị hủy</p>
+									<button 
+										className='btn btn-medium' 
+										onClick={() => {
+											handleRedelivery();
+											closeModal();
+										}}>
+											Vận chuyển lại
+									</button>
 								</div>
 								:
 								<div className='order-track'>

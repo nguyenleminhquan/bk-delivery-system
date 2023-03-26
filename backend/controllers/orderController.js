@@ -140,6 +140,11 @@ const socketOrder = (io) => {
       await changedOrder.save();
       io.emit('updateOrderStatus', data);
     })
+    socket.on('deleteOrder', async(data) => {
+      const { order_id } = data;
+      await Order.findByIdAndDelete(order_id)
+      io.emit('deleteOrder', data);
+    })
   });
 }
 

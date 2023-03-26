@@ -217,6 +217,7 @@ function DriverHome() {
       setAllDeliveries(tempDeliveries);
     })
     socket.on('deleteDelivery', (delivery_id) => {
+      console.log('deliveryId', delivery_id)
       setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
     })
   }, [socket, allDeliveries])

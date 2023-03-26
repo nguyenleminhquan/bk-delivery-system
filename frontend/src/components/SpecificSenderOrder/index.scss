@@ -29,6 +29,16 @@
                 padding: 20px 20px;
             }
         }
+        .order-canceled {
+          p {
+            font-size: 20px;
+            font-weight: bold;
+            color: rgb(202, 46, 46);
+          }
+          button {
+            text-transform: none;
+          }
+        }
         .order-track {
             margin-top: 20px;
             padding: 0 10px;
