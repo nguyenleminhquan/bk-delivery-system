@@ -1,5 +1,5 @@
 export const OrderStatus  = {
-    WAITING: 'delivery',
+    WAITING: 'waiting',
     ACCEPTED: 'accepted',
     PICKED: 'picked',
     ARRIVED_SEND_STOCK: 'arrived_send_stock',
