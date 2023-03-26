@@ -123,8 +123,6 @@ function CreateOrder() {
                     weight: product.weight,
                 }))
             };
-
-            console.log(orderPayload);
             const deliveryPayload = {
                 status: OrderStatus.WAITING,
                 area_code: user.area_code,
