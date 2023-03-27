@@ -9,7 +9,7 @@ import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, getVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, getVehicleAvailableOrder, getVehicleOrders } from 'features/delivery/deliverySlice';
 
 const orderModels = [
     {
@@ -126,11 +126,12 @@ const ConfirmOrderLists = ({vehicle}) => {
 
 function LoadOrderToTruck() {
     const dispatch = useDispatch();
+    const delivery = useSelector(state => state.delivery);
     const location = useLocation();
     const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
-    const [orders, setOrders] = useState(() => orderModels.map(order => ({...order, checked: false})));
+    const [orders, setOrders] = useState({});
     const [selected, setSelected] = useState(0);
     const [totalWeight, setTotalWeight] = useState(0);
     const [toggleAll, setToggleAll] = useState(false);
@@ -235,6 +236,16 @@ function LoadOrderToTruck() {
         setToggleFilter(!toggleFilter);
     }
 
+    useEffect(() => {
+        setOrders(delivery.orders.map(order => ({...order, checked: false})));
+    }, [delivery.orders])
+
+    useEffect(() => {
+        if (truckInfo) {
+            dispatch(getVehicleAvailableOrder(truckInfo._id));
+        }
+    }, [])
+
     return (
         <div className={styles.wrapper}>
             <div className="container">
@@ -308,16 +319,18 @@ function LoadOrderToTruck() {
                                         </div>
                                     </div>
                                     <div className={styles.ordersWrap}>
-                                        {orders.map(order => (
-                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
-                                                <div className='col-1'><input type="checkbox"
-                                                    checked={order.checked}
-                                                    onChange={e => handleLoadOrder(order, e)}
-                                                /></div>
-                                                <div className="col-6">{order.id}</div>
-                                                <div className="col-5">{order.weight}</div>
-                                            </div>
-                                        ))}
+                                        {orders.length > 0 
+                                            ? (orders.map(order => (
+                                                <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                                    <div className='col-1'><input type="checkbox"
+                                                        checked={order.checked}
+                                                        onChange={e => handleLoadOrder(order, e)}
+                                                    /></div>
+                                                    <div className="col-6">{order.id}</div>
+                                                    <div className="col-5">{order.weight}</div>
+                                                </div>)))
+                                            : (<div className='p-2'>Không có đơn hàng nào</div>)
+                                        }
 
                                     </div>
                                 </div>

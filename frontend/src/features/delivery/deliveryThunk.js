@@ -76,3 +76,12 @@ export const postVehicleOrdersThunk = async(vehicle, thunkAPI) => {
         return checkForUnauthorizedResponse(error, thunkAPI);
     }
 }
+
+export const getVehicleAvailableOrderThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleAvailableOrder(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
