@@ -16,6 +16,9 @@ const vehicleSchema = mongoose.Schema({
   driver_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  area_code: {
+    type: Number
   }
 })
 

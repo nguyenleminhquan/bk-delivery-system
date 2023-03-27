@@ -6,6 +6,8 @@
 | /user/working-day | GET | Get working days | Authorization: Bearer <refresh_token> <access_token> | |
 | /user/working-day | POST | Update working day | Authorization: Bearer <refresh_token> <access_token> | time: string (recommend using Date.now()) |
 | /user/:id/update | POST | Update user info | Authorization: Bearer <refresh_token> <access_token> | information you want to update |
+| /user/:id | DELETE | Delete user | Authorization: Bearer <refresh_token> <access_token> | |
+| /user/employee | GET | Get all employee | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | GET | Get all order | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | POST | Create new order | Authorization: Bearer <refresh_token> <access_token> | sender_address: string <br /> receiver_address: string <br/>payment_type: string<br/> cod_amount: number<br/>note: string<br/>status: string<br/>shipping_fee: number<br/>user_id: objectId<br>items:<br> [{ <br/>name: string, <br>quantity: number, <br>type: string, <br>weight: number<br>}] |
 | /order/:id | GET | Get order by id | Authorization: Bearer <refresh_token> <access_token> | |
@@ -26,5 +28,6 @@
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/order | GET | Get all orders by vehicle id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
-| /vehicle/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string <br/> order_id: string |
+| /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | list_orders: [array of order_id] |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
+| /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
