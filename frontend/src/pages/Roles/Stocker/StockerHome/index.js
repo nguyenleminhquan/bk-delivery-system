@@ -4,10 +4,11 @@ import StockerHeader from 'components/StockerHeader';
 import Table from 'components/Table';
 import React, { useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import styles from './Stocker.module.scss'
+import './index.scss';
 import { Link } from 'react-router-dom';
 import { BiPencil } from 'react-icons/bi';
 import { TbFileExport } from 'react-icons/tb'
+import DatePickerComp from 'components/DatePickerComp';
 
 function StockerHome() {
 
@@ -144,9 +145,17 @@ function StockerHome() {
     ]
   }
 
+  const handleSearch = (startDate, endDate) => {
+    console.log('startDate', startDate);
+    console.log('endDate', endDate)
+  }
+
   return (
-    <div className={styles.stockerHome}>
+    <div className='stocker-home'>
       <StockerHeader title="Tổng quan" openImportPopup={() => setToggleImportPoup(true)} />
+      <div className='filter'>
+        <DatePickerComp handleSearch={handleSearch} />
+      </div>
       <Table data={data} />
       {toggleImportPopup && (
         <ConfirmPopup

@@ -10,6 +10,7 @@ import { orderStatusList } from 'utils/constants';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import moment from 'moment/moment';
 import { SocketContext } from 'index';
+import { toast } from 'react-toastify';
 
 const tabs = [
 	{
@@ -49,6 +50,21 @@ function SenderHome() {
 	const dispatch = useDispatch();
 	const socket = useContext(SocketContext);
 
+	const handleDeleteOrder = (order) => {
+		if (order.status === 'waiting') {
+			socket.emit('deleteOrder', {
+				order_id: order._id
+			})
+			socket.emit('deleteDelivery', {
+				order_id: order._id
+			})
+			toast.success('Xóa đơn hàng thành công')
+		}
+		else {
+			toast.warning('Đơn hàng đã được nhận, không thể xóa')
+		}
+	}
+
 	useEffect(() => {
 		dispatch(getOrdersByUserId(user.id))
 	}, [dispatch, user.id])
@@ -70,6 +86,11 @@ function SenderHome() {
 			})
 			setUpdatedOrders(tempOrders)
 		})
+		socket.on('deleteOrder', (data) => {
+			const { order_id } = data;
+			const tempOrders = updatedOrders.filter((item) => item._id !== order_id);
+			setUpdatedOrders(tempOrders)
+		}) 
 	}, [socket, updatedOrders])
 
 	useEffect(() => {
@@ -170,7 +191,7 @@ function SenderHome() {
 										<FaEdit />
 										<span>Chỉnh sửa</span>
 									</div>
-									<div className={`${styles.icon} ${styles.red}`}>
+									<div className={`${styles.icon} ${styles.red}`} onClick={() => handleDeleteOrder(order)}>
 										<FaTrashAlt />
 										<span>Xóa</span>
 									</div>

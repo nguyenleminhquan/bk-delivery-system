@@ -163,6 +163,23 @@ function DriverHome() {
           // dispatch(updateDeliveryStatus({ delivery_id: id, status: 'deliveried' }))
         }
       }
+    },
+    cancel: (delivery) => {
+      const { order } = delivery;
+      return {
+        id: 'cancel',
+        text: 'Hủy',
+        action() {
+          socket.emit('deleteDelivery', {
+            delivery_id: delivery._id
+          })
+          socket.emit('updateOrderStatus', {
+            order_id: order._id,
+            status: 'cancel',
+            date: new Date()
+          })
+        }
+      }
     }
   }
 
@@ -199,6 +216,10 @@ function DriverHome() {
       })
       setAllDeliveries(tempDeliveries);
     })
+    socket.on('deleteDelivery', (delivery_id) => {
+      console.log('deliveryId', delivery_id)
+      setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
+    })
   }, [socket, allDeliveries])
 
   useEffect(() => {
@@ -215,10 +236,10 @@ function DriverHome() {
 
   useEffect(() => {
     console.log('deliveries', deliveries)
-    const { accept, viewOrder, picked, deliveried } = btns;
+    const { accept, viewOrder, picked, deliveried, cancel } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item), cancel(item)] })
     }
     if (selectedTab.field === 'accepted') {
       tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })

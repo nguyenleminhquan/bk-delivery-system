@@ -18,7 +18,7 @@ const orderSchema = mongoose.Schema({
   status: {
     type: String,
     enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'on_vehicle', 'coming_dest_stock',
-          'arrived_dest_stock', 'delivering', 'success'],
+          'arrived_dest_stock', 'delivering', 'success', 'cancel'],
     default: 'waiting'
   },
   tracking: {
@@ -30,6 +30,7 @@ const orderSchema = mongoose.Schema({
     arrived_dest_stock: mongoose.Schema.Types.Date,
     delivering: mongoose.Schema.Types.Date,
     success: mongoose.Schema.Types.Date,
+    cancel: mongoose.Schema.Types.Date,
   },
   items: [{
     type: mongoose.Schema.Types.ObjectId,

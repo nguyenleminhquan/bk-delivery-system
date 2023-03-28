@@ -7,5 +7,6 @@ export const OrderStatus  = {
     COMING_DEST_STOCK: 'coming_dest_stock',
     ARRIVED_DEST_STOCK: 'arrived_dest_stock',
     DELIVERING: 'delivering',
-    SUCCESS: 'success'
+    SUCCESS: 'success',
+    CANCEL: 'cancel'
 }

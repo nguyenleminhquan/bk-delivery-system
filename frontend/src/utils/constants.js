@@ -374,4 +374,5 @@ export const orderStatusList = {
     "arrived_dest_stock": "Đã đến kho đích",
     "delivering": "Đang giao đến người nhận",
     "success": "Giao hàng đến người nhận thành công",
+    "cancel": "Đơn hàng bị hủy"
 }

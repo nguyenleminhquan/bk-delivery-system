@@ -1,0 +1,22 @@
+.date-picker {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    input, select {
+        padding: 10px;
+        border: 1px solid #9b9b9b;
+        border-radius: 5px;
+        height: 40px;
+    }
+    input::placeholder {
+        font-size: 14px;
+        font-family: var(--primary-font);
+    }
+    .date-input {
+        display: flex;
+    }
+    .date-range {
+        display: flex;
+        align-items: center;
+    }
+}
