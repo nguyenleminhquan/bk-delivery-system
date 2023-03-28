@@ -50,8 +50,8 @@ function DatePickerComp({ handleSearch }) {
               placeholderText='Chọn một tháng'
               selected={startDate}
               onChange={(date) => {
-                setStartDate(date.setDate(1))
-                setEndDate(date.setMonth(date.getMonth() + 1).setDate(date.getDate() - 1))
+                setStartDate(new Date(date.getFullYear(), date.getMonth(), 1))
+                setEndDate(new Date(date.getFullYear(), date.getMonth()+1, 0))
               }}
               dateFormat="MM/Y"
               showMonthYearPicker
