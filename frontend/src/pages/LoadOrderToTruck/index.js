@@ -8,6 +8,8 @@ import { TruckIcon } from 'components/Icons';
 import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteVehicleOrder, getVehicleAvailableOrder, getVehicleOrders } from 'features/delivery/deliverySlice';
 
 const orderModels = [
     {
@@ -60,8 +62,10 @@ const orderModels = [
     }
 ]
 
-const ConfirmOrderLists = ({orders}) => {
+const ConfirmOrderLists = ({vehicle}) => {
+    const dispatch = useDispatch();
     const [toggleFilter, setToggleFilter] = useState(false);
+    const { vehicleOrders } = useSelector(state => state.delivery);
     
     const handleSortCol = () => {
         /**
@@ -69,16 +73,24 @@ const ConfirmOrderLists = ({orders}) => {
          * order (false) ->  sort desc
          */
         if (!toggleFilter) {
-            orders.sort((a, b) => a.weight - b.weight);
+            vehicleOrders.sort((a, b) => a.weight - b.weight);
         } else {
-            orders.sort((a, b) => b.weight - a.weight);
+            vehicleOrders.sort((a, b) => b.weight - a.weight);
         }
         setToggleFilter(!toggleFilter);
     }
 
-    const handleDeleteOrder = () => {
-        
+    const handleDeleteOrder = id => {
+        const payload = {
+            order_id: id,
+            vehicle_id: vehicle._id
+        }
+        dispatch(deleteVehicleOrder(payload));
     }
+
+    useEffect(() => {
+        dispatch(getVehicleOrders(vehicle._id));
+    }, [])
 
     return (
         <div className={styles.customTableWrap}>
@@ -97,12 +109,12 @@ const ConfirmOrderLists = ({orders}) => {
                     <div className="col-1"></div>
                 </div>
                 <div className={styles.ordersWrap}>
-                    {orders.map(order => (
-                        <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
-                            <div className="col-6">{order.id}</div>
+                    {vehicleOrders.map(order => (
+                        <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
+                            <div className="col-6">{order._id}</div>
                             <div className="col-5">{order.weight}</div>
                             <div className="col-1">
-                                <div className={styles.deleteBtn} onClick={handleDeleteOrder}><RiDeleteBin6Fill /></div>
+                                <div className={styles.deleteBtn} role="button" onClick={() => handleDeleteOrder(order._id)}><RiDeleteBin6Fill /></div>
                             </div>
                         </div>
                     ))}
@@ -113,11 +125,13 @@ const ConfirmOrderLists = ({orders}) => {
 }
 
 function LoadOrderToTruck() {
+    const dispatch = useDispatch();
+    const delivery = useSelector(state => state.delivery);
     const location = useLocation();
     const {truckInfo} = location.state;
-    const [truckAvailable, setTruckAvailable] = useState(truckInfo.availability);
+    const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
-    const [orders, setOrders] = useState(() => orderModels.map(order => ({...order, checked: false})));
+    const [orders, setOrders] = useState({});
     const [selected, setSelected] = useState(0);
     const [totalWeight, setTotalWeight] = useState(0);
     const [toggleAll, setToggleAll] = useState(false);
@@ -178,7 +192,6 @@ function LoadOrderToTruck() {
             setOrders(updateOrderList());
             setTotalWeight(0);
             setSelected(0);
-
         }
     }
 
@@ -224,8 +237,14 @@ function LoadOrderToTruck() {
     }
 
     useEffect(() => {
-        console.log(truckLoad);
-    }, [truckLoad])
+        setOrders(delivery.orders.map(order => ({...order, checked: false})));
+    }, [delivery.orders])
+
+    useEffect(() => {
+        if (truckInfo) {
+            dispatch(getVehicleAvailableOrder(truckInfo._id));
+        }
+    }, [])
 
     return (
         <div className={styles.wrapper}>
@@ -250,20 +269,20 @@ function LoadOrderToTruck() {
                 </div>
                 <div className="row mt-3">
                     <div className="col-12">
-                        <span className={styles.truckLabel}>{truckInfo.label}, {truckInfo.id}</span>
+                        <span className={styles.truckLabel}>{truckInfo.from} - {truckInfo.to}, {truckInfo.license_plate_number}</span>
                     </div>
                 </div>
-                <div className="row mt-2 ">
+                <div className="row mt-2">
                     <div className="col-5">
                         <div className={styles.leftCol}>
                             <div className={styles.title}>Truck Load</div>
-                            <div className={handleSetStatus((truckInfo.net - truckAvailable) / truckInfo.net)}>{((truckInfo.net - truckAvailable) / truckInfo.net)*100}%</div>
+                            <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{(truckInfo.current_weight / truckInfo.max_weight)*100}%</div>
                             <div className="my-5">
                                 <TruckIcon 
                                     width="80%"
                                     height="100%" 
-                                    availability={(truckInfo.net - truckAvailable) / truckInfo.net}
-                                    color={handleChooseColor((truckInfo.net - truckAvailable)/ truckInfo.net)}
+                                    availability={truckInfo.current_weight / truckInfo.max_weight}
+                                    color={handleChooseColor(truckInfo.current_weight / truckInfo.max_weight)}
                                 />
                             </div>
                             <div className={styles.action}>
@@ -300,16 +319,18 @@ function LoadOrderToTruck() {
                                         </div>
                                     </div>
                                     <div className={styles.ordersWrap}>
-                                        {orders.map(order => (
-                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
-                                                <div className='col-1'><input type="checkbox"
-                                                    checked={order.checked}
-                                                    onChange={e => handleLoadOrder(order, e)}
-                                                /></div>
-                                                <div className="col-6">{order.id}</div>
-                                                <div className="col-5">{order.weight}</div>
-                                            </div>
-                                        ))}
+                                        {orders.length > 0 
+                                            ? (orders.map(order => (
+                                                <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                                    <div className='col-1'><input type="checkbox"
+                                                        checked={order.checked}
+                                                        onChange={e => handleLoadOrder(order, e)}
+                                                    /></div>
+                                                    <div className="col-6">{order.id}</div>
+                                                    <div className="col-5">{order.weight}</div>
+                                                </div>)))
+                                            : (<div className='p-2'>Không có đơn hàng nào</div>)
+                                        }
 
                                     </div>
                                 </div>
@@ -323,7 +344,7 @@ function LoadOrderToTruck() {
 
             {openPopup && (
                 <ConfirmPopup title="Danh sách đơn hàng"
-                    content={<ConfirmOrderLists orders={truckLoad}/>}
+                    content={<ConfirmOrderLists vehicle={truckInfo}/>}
                     okLabel="OK"
                     actionYes={() => setOpenPopup(false)}
                 />
