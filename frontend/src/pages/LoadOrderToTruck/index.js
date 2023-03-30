@@ -276,7 +276,7 @@ function LoadOrderToTruck() {
                     <div className="col-5">
                         <div className={styles.leftCol}>
                             <div className={styles.title}>Truck Load</div>
-                            <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{(truckInfo.current_weight / truckInfo.max_weight)*100}%</div>
+                            <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{((truckInfo.current_weight / truckInfo.max_weight)*100).toFixed(2)}%</div>
                             <div className="my-5">
                                 <TruckIcon 
                                     width="80%"
