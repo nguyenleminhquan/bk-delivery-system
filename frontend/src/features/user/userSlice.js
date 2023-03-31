@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { changePasswordThunk, checkInDayThunk, clearStoreThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, checkInDayThunk, clearStoreThunk, deleteUserThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
 const initialState = {
     user: getUserFromLocalStorage(),
+    employees: [],
     isLoading: false,
 }
 
@@ -42,6 +43,20 @@ export const checkInDay = createAsyncThunk(
     'user/checkInDay',
     async(time, thunkAPI) => {
         return checkInDayThunk(time, thunkAPI);
+    }
+)
+
+export const getAllEmployee = createAsyncThunk(
+    'user/getAllEmployee',
+    async(thunkAPI) => {
+        return getAllEmployeeThunk(thunkAPI);
+    }
+)
+
+export const deleteUser = createAsyncThunk(
+    'user/deleteUser',
+    async(id, thunkAPI) => {
+        return deleteUserThunk(id, thunkAPI);
     }
 )
 
@@ -146,6 +161,29 @@ const userSlice = createSlice({
         [checkInDay.fulfilled]: (state) => {
             state.isLoading = false;
             toast.success('Điểm danh thành công!');
+        },
+        [getAllEmployee.pending]: state => {
+            state.isLoading = true;
+        },
+        [getAllEmployee.fulfilled]: (state, {payload}) => {
+            state.employees = payload;
+            state.isLoading = false;
+        },
+        [getAllEmployee.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [deleteUser.pending]: state => {
+            state.isLoading = true;
+        },
+        [deleteUser.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [deleteUser.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            // Update lai employee...
+            toast.success('Xóa người dùng thành công.');
         }
     }
 })

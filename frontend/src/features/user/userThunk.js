@@ -63,3 +63,21 @@ export const checkInDayThunk = async(time, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const getAllEmployeeThunk = async(thunkAPI) => {
+    try {
+        const res = await UserService.getAllEmployee();
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
+
+export const deleteUserThunk = async(id, thunkAPI) => {
+    try {
+        const res = await UserService.deleteUser(id);
+        return res.data;    
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}

@@ -21,10 +21,20 @@ export const checkInDay = ({time}) => {
     return customFetch.post('/user/working-day', time);
 }
 
+export const getAllEmployee = () => {
+    return customFetch.get('/user/employee');
+}
+
+export const deleteUser = (userId) => {
+    return customFetch.delete(`/user/${userId}`);
+}
+
 const UserService = {
     updateUser,
     changePassword,
-    checkInDay
+    checkInDay,
+    getAllEmployee,
+    deleteUser
 }
 
 export default UserService
