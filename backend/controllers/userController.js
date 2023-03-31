@@ -289,6 +289,41 @@ const updateWorkingDays = async (req, res, next) => {
         return next(createError(404, "Can not update working day"))
     }
 }
+
+const createAccount = async (req, res, next) => {
+    const body = req.body
+    // Tim tai khoan ton tai voi email
+    let exist = ""
+    if (body.email) {
+        exist = await User.find({ email: body.email })
+    }
+    
+    // Neu tai khoan ton tai
+    if (exist != "" && exist) {
+        return next(createError(400, "Email is exist"))
+    }
+    else {
+        let newUser = new User(body)
+        try {
+            newUser = await newUser.save()
+            // Data tra ve
+            const data = {
+                id: newUser._id,
+                fullname: newUser.fullname,
+                email: newUser.email,
+                phone: newUser.phone,
+                typeUser: newUser.typeUser,
+                sender_address: newUser.sender_address,
+                address: newUser.address,
+                area_code: newUser.area_code,
+            } 
+            return res.json(data)
+        } catch (error) {
+            next(error)
+        }
+    }
+}
+
 export {
     userRegister,
     userLogin,
@@ -299,5 +334,6 @@ export {
     getWorkingDay,
     updateWorkingDays,
     deleteUser,
-    getAllEmployee
+    getAllEmployee,
+    createAccount
 }

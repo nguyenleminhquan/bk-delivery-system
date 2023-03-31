@@ -40,3 +40,48 @@ export const updateDeliveryStatusThunk = async(delivery, thunkAPI) => {
         return checkForUnauthorizedResponse(error, thunkAPI);
     }
 }
+
+export const getVehiclesThunk = async(thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicles();
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const getVehicleOrdersThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleOrders(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const deleteVehicleOrderThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.deleteVehicleOrder(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const postVehicleOrdersThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.postVehicleOrders(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const getVehicleAvailableOrderThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleAvailableOrder(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}

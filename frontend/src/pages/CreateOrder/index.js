@@ -127,7 +127,7 @@ function CreateOrder() {
                 status: OrderStatus.WAITING,
                 area_code: user.area_code,
                 type: 'inner',
-                from: `${senderInfo.fullname}&${senderInfo.address}, ${senderAddress}`,
+                from: `${senderInfo.fullname}&${senderAddress}`,
                 to: `stock_${user.area_code}`
             }
             dispatch(createOrder({ orderPayload, deliveryPayload, socket }));

@@ -26,11 +26,36 @@ const updateDeliveryStatus = ({ delivery_id, status }) => {
     )
 }
 
+const getVehicles = () => {
+    return customFetch.get('/vehicle');
+}
+
+const getVehicleOrders = (vehicle_id) => {
+    return customFetch.get(`/vehicle/${vehicle_id}/order`);
+}
+
+const postVehicleOrders = ({vehicle_id, order_ids}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/order`, order_ids);
+}
+
+const deleteVehicleOrder = ({order_id, vehicle_id}) => {
+    return customFetch.delete(`/vehicle/order/${order_id}`, {data: {vehicle_id}});
+}
+
+const getVehicleAvailableOrder = (vehicle_id) => {
+    return customFetch.get(`/vehicle/${vehicle_id}/avail-order`);
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
     updateDeliveryStatus,
-    acceptDelivery
+    acceptDelivery,
+    getVehicles,
+    getVehicleOrders,
+    deleteVehicleOrder,
+    postVehicleOrders,
+    getVehicleAvailableOrder
 }
 
 export default DeliveryService
