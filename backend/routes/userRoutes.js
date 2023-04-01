@@ -13,7 +13,8 @@ import {
     updateWorkingDays,
     deleteUser,
     getAllEmployee,
-    createAccount
+    createAccount,
+    editAccount
 } from '../controllers/userController.js'
 
 const route = express.Router()
@@ -22,6 +23,7 @@ route.get('/employee', verifyRefreshToken, verifyToken, verifyRoles(['admin']), 
 route.post('/login', userLogin)
 route.post('/register', userRegister)
 route.post('/create-account', verifyRefreshToken, verifyToken, verifyRoles(['admin']), createAccount)
+route.post('/edit-account/:id', verifyRefreshToken, verifyToken, verifyRoles(['admin']), editAccount)
 // Lay access token moi
 route.post('/token', verifyRefreshToken, refreshToken)
 // Test JWT 
