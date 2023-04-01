@@ -31,3 +31,5 @@
 | /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | list_orders: [array of order_id] |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
 | /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| /user/create-account | POST | Create account for stocker and driver | Authorization: Bearer <refresh_token> <access_token> | information you want to create |
+| /user/edit-account/:id | POST | Edit account for stocker and driver | Authorization: Bearer <refresh_token> <access_token>  | information you want to create |
