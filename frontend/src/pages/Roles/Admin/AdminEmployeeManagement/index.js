@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, getAllEmployee, registerUser, updateUser } from 'features/user/userSlice';
+import { createEmployee, deleteUser, editEmployee, getAllEmployee, registerUser, updateUser } from 'features/user/userSlice';
 
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -87,7 +87,7 @@ function AdminEmployeeManagement() {
     const handleAddEmployee = (formData) => {
         if (formData.fullname && formData.phone && formData.email && formData.typeUser) {
             // Create new employee with default password: 1234567890
-            dispatch(registerUser({
+            dispatch(createEmployee({
                 ...formData,
                 password: DEFAULT_PASSWORD
             }));
@@ -100,8 +100,9 @@ function AdminEmployeeManagement() {
     const handleEditEmployee = (formData) => {
         const updatedData = {...editPopup, ...formData};
         if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser) {
-            dispatch(updateUser({
-                userId: editPopup._id,
+            // toast.error('Tính năng chỉnh sửa thông tin nhân viên hiện chưa hoạt động.');
+            dispatch(editEmployee({
+                id: editPopup._id,
                 info: updatedData
             }));
             setEditPopup(false);
@@ -162,7 +163,7 @@ function AdminEmployeeManagement() {
                     title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                     cancelText="Đóng lại"
                     onCancel={() => setEditPopup(false)}
-                    onConfirm={editPopup ? handleEditEmployee : handleAddEmployee}
+                    onConfirm={editPopup?.email ? handleEditEmployee : handleAddEmployee}
                     showForm={true}
                     formFields={[
                         { name: "fullname", label: "Họ và tên", type: "text", value: editPopup.fullname },
@@ -171,7 +172,7 @@ function AdminEmployeeManagement() {
                         { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
                     ]}
                     formValue={editPopup}
-                    formSubmitText={editPopup ? 'Chỉnh sửa' : 'Thêm mới'}
+                    formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                 />
             )}
 
