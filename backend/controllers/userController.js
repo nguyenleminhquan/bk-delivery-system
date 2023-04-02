@@ -324,6 +324,34 @@ const createAccount = async (req, res, next) => {
     }
 }
 
+const editAccount = async (req, res, next) => {
+    try {
+        const accountId = req.params.id;
+        const info = req.body;
+        const data = await User.findByIdAndUpdate(
+            accountId,
+            info,
+            { new: true }
+        );
+        return res.json({ 
+            data: {
+                id: data._id,
+                fullname: data.fullname,
+                email: data.email,
+                phone: data.phone,
+                typeUser: data.typeUser,
+                sender_address: data.sender_address,
+                address: data.address,
+                area_code: data.area_code,
+            },
+            msg: "User updated!"
+        });
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+}
+
 export {
     userRegister,
     userLogin,
@@ -335,5 +363,6 @@ export {
     updateWorkingDays,
     deleteUser,
     getAllEmployee,
-    createAccount
+    createAccount,
+    editAccount
 }
