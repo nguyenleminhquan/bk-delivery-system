@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Import redux
 import { useDispatch, useSelector } from 'react-redux';
-import { createEmployee, deleteUser, getAllEmployee, registerUser, updateUser } from 'features/user/userSlice';
+import { createEmployee, deleteUser, editEmployee, getAllEmployee, registerUser, updateUser } from 'features/user/userSlice';
 
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
@@ -100,11 +100,11 @@ function AdminEmployeeManagement() {
     const handleEditEmployee = (formData) => {
         const updatedData = {...editPopup, ...formData};
         if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser) {
-            toast.error('Tính năng chỉnh sửa thông tin nhân viên hiện chưa hoạt động.');
-            // dispatch(createEmployee({
-            //     userId: editPopup._id,
-            //     info: updatedData
-            // }));
+            // toast.error('Tính năng chỉnh sửa thông tin nhân viên hiện chưa hoạt động.');
+            dispatch(editEmployee({
+                id: editPopup._id,
+                info: updatedData
+            }));
             setEditPopup(false);
         } else {
             return toast.error('Thiếu thông tin nhân viên.');

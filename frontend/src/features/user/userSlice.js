@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { changePasswordThunk, checkInDayThunk, clearStoreThunk, createEmployeeThunk, deleteUserThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, checkInDayThunk, clearStoreThunk, createEmployeeThunk, deleteUserThunk, editEmployeeThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 
@@ -57,6 +57,13 @@ export const createEmployee = createAsyncThunk(
     'user/createEmployee',
     async(employee, thunkAPI) => {
         return createEmployeeThunk(employee, thunkAPI);
+    }
+)
+
+export const editEmployee = createAsyncThunk(
+    'user/editEmployee',
+    async(employee, thunkAPI) => {
+        return editEmployeeThunk(employee, thunkAPI);
     }
 )
 
@@ -190,6 +197,23 @@ const userSlice = createSlice({
         [createEmployee.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             state.employees.push(payload);
+        },
+        [editEmployee.pending]: state => {
+            state.isLoading = true;
+        },
+        [editEmployee.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [editEmployee.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.employees = state.employees.map(employee => {
+                if (employee._id === payload.data.id) {
+                    return {...payload.data, _id: payload.data.id};
+                }
+                return employee;
+            });
+            toast.success('Cập nhật thông tin thành công.');
         },
         [deleteUser.pending]: state => {
             state.isLoading = true;

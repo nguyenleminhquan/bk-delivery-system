@@ -29,6 +29,10 @@ export const createEmployee = (payload) => {
     return customFetch.post('/user/create-account', payload);
 }
 
+export const editEmployee = ({id, info}) => {
+    return customFetch.post(`/user/edit-account/${id}`, info);
+}
+
 export const deleteUser = (userId) => {
     return customFetch.delete(`/user/${userId}`);
 }
@@ -39,6 +43,7 @@ const UserService = {
     checkInDay,
     getAllEmployee,
     createEmployee,
+    editEmployee,
     deleteUser
 }
 
