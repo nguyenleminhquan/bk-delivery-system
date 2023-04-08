@@ -1,7 +1,7 @@
 import { AiOutlineHistory } from 'react-icons/ai'
 import { BiLogOut } from 'react-icons/bi'
 import { BsPersonCircle } from 'react-icons/bs'
-import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
+import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import {CODMethodIcon, MomoMethodIcon, ATMMethodIcon } from '../components/Icons';
 
@@ -349,6 +349,7 @@ export const paymentMethods = [
     { code: 'cod', label: 'Thanh toán trực tiếp', icon: <CODMethodIcon /> },
     { code: 'momo', label: 'Momo', icon: <MomoMethodIcon /> },
     { code: 'atm', label: 'Thẻ ATM nội địa', icon: <ATMMethodIcon /> },
+    { code: 'paypal', label: 'Paypal', icon: <FaPaypal /> },
 ]
 
 export const paymentOptions = [

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './store'
 import Styles from './styles';
 import socketIO from 'socket.io-client';
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const socket = socketIO.connect('http://localhost:5000');
 console.log('socket', socket)
@@ -15,7 +16,9 @@ root.render(
   <Provider store={store}>
     <Styles>
       <SocketContext.Provider value={socket}>
-        <App />
+        <PayPalScriptProvider options={{ "client-id": `${process.env.REACT_APP_PAYPAL_ID}` }}>
+          <App />
+        </PayPalScriptProvider>
       </SocketContext.Provider>
     </Styles>
   </Provider>

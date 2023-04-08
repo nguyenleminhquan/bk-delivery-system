@@ -16,6 +16,8 @@ import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
+import GeneralConfirm from 'components/GeneralConfirm';
+import Paypal from 'components/Paypal';
 
 const infoModel = {
     fullname: '',
@@ -62,6 +64,8 @@ function CreateOrder() {
 
     const socket = useContext(SocketContext);
 
+    const [paypalPopup, setPaypalPopup] = useState(false);
+
     const handleChangeReceiverInfo = e => {
         const name = e.target.name;
         const value = e.target.value;
@@ -98,39 +102,51 @@ function CreateOrder() {
         return isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct;
     }
 
+    const clearOrderState = () => {
+        setReceiverInfo(infoModel);
+        setProducts([productModel]);
+        setReceiverAddress('');
+    }
+
+    const handleCreateOrder = () => {
+        const orderPayload = {
+            sender_name: senderInfo.fullname,
+            sender_phone: senderInfo.phone,
+            sender_address: senderAddress,
+            receiver_name: receiverInfo.fullname,
+            receiver_phone: receiverInfo.phone,
+            receiver_address: receiverAddress,
+            payment_type: paymentMethod,
+            cod_amount: cod,
+            note,
+            status: OrderStatus.WAITING,
+            shipping_fee: calculateTotalFee(),
+            user_id: user.id,
+            items: products.map(product => ({
+                name: product.name,
+                quantity: product.quantity,
+                type: product.type,
+                weight: product.weight,
+            }))
+        };
+        const deliveryPayload = {
+            status: OrderStatus.WAITING,
+            area_code: user.area_code,
+            type: 'inner',
+            from: `${senderInfo.fullname}&${senderAddress}`,
+            to: `stock_${user.area_code}`
+        }
+        dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
+        clearOrderState();
+    }
+
     const handleSubmit = () => {
         if (isDisabledSubmit()) {
             toast.error('Chưa điền đầy đủ thông tin.');
-            return;
+        } else if (paymentMethod === 'paypal') {
+            setPaypalPopup(true);
         } else {
-            const orderPayload = {
-                sender_name: senderInfo.fullname,
-                sender_phone: senderInfo.phone,
-                sender_address: senderAddress,
-                receiver_name: receiverInfo.fullname,
-                receiver_phone: receiverInfo.phone,
-                receiver_address: receiverAddress,
-                payment_type: paymentMethod,
-                cod_amount: cod,
-                note,
-                status: OrderStatus.WAITING,
-                shipping_fee: calculateTotalFee(),
-                user_id: user.id,
-                items: products.map(product => ({
-                    name: product.name,
-                    quantity: product.quantity,
-                    type: product.type,
-                    weight: product.weight,
-                }))
-            };
-            const deliveryPayload = {
-                status: OrderStatus.WAITING,
-                area_code: user.area_code,
-                type: 'inner',
-                from: `${senderInfo.fullname}&${senderAddress}`,
-                to: `stock_${user.area_code}`
-            }
-            dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
+            handleCreateOrder();
         }
     }
 
@@ -424,6 +440,16 @@ function CreateOrder() {
                     </div>  
                 </div>
             </div>
+            {
+                paypalPopup &&
+                <GeneralConfirm
+                    title="Paypal"
+                    message={<Paypal money_amount={totalFee} handleCreateOrder={handleCreateOrder} closePopup={() => setPaypalPopup(false)} />}
+                    showConfirmButton={false}
+                    cancelText="Đóng lại"
+                    onCancel={() => setPaypalPopup(false)}
+                />
+            }
         </div>
     )
 }
