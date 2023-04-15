@@ -3,6 +3,7 @@
 
 @import './normalize.css';
 @import './variables.scss';
+@import './variabless';
 
 * {
     padding: 0;
@@ -122,13 +123,14 @@ body {
 }
 
 .protected-route {
-    display: grid;
-    grid-template-columns: auto 1fr;
+    // display: grid;
+    // grid-template-columns: auto 1fr;
+    display: flex;
 }
 
 .wrapper {
-    width: 300px;
-    height: 100%;
+    // width: 300px;
+    // height: 100%;
     min-height: 100vh;
     background-color: var(--white-color);
     box-shadow: 2px 8px 2px #BEBEBE;
@@ -137,6 +139,8 @@ body {
 
 .routes {
     padding: 15px;
+    width: calc(100% - $sidebar-width);
+    overflow-y: auto;
 }
 
 // Check in button for driver, stocker
@@ -194,4 +198,45 @@ body {
             background-color: red;
         }
     }
+}
+
+// Setup for img, icon,... size
+img.icon-md, div.icon-md, div.icon-md svg {
+  width: $icon-md;
+  height: $icon-md;
+  min-width: $icon-md;
+  min-height: $icon-md;
+}
+span.icon-md {
+  font-size: $icon-md;
+}
+
+img.icon-sm, div.icon-sm, div.icon-sm svg {
+    width: $icon-sm;
+    height: $icon-sm;
+    min-width: $icon-sm;
+    min-height: $icon-sm;
+}
+span.icon-sm {
+    font-size: $icon-sm;
+}
+
+img.icon-lg, div.icon-lg, div.icon-lg svg {
+    width: $icon-lg;
+    height: $icon-lg;
+    min-width: $icon-lg;
+    min-height: $icon-lg;
+}
+span.icon-lg {
+    font-size: $icon-lg;
+}
+
+img.icon-xlg, div.icon-xlg, div.icon-xlg svg {
+    width: $icon-xlg;
+    height: $icon-xlg;
+    min-width: $icon-xlg;
+    min-height: $icon-xlg;
+}
+span.icon-xlg {
+    font-size: $icon-xlg;
 }
