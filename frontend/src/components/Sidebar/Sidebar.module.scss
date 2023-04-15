@@ -1,24 +1,21 @@
+@import '../../styles/variabless';
+
 .sidebar {
     position: sticky;
     top: 0px;
     padding: 12px;
+    width: $sidebar-width;
 }
 
 .userInfo {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
+    font-size: $fs-sm;
     margin-bottom: 16px;
-
-    img {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-    }
-
-    p {
-        margin-bottom: 0;
+    .name {
+        font-weight: $fw-600;
+        font-size: $fs-lg;
     }
 }
 
@@ -27,39 +24,39 @@
 }
 
 .menuLink {
-    color: var(--text-color);
+    color: $text-color;
     display: flex;
     align-items: center;
-    font-size: 18px;
+    font-size: $fs-lg;
     padding: 12px;
     &.active {
-        background-color: var(--secondary-color);
-        color: var(--header-text-color);
-        font-weight: 500;
+        background-color: $secondary-color;
+        color: $header-text-color;
+        font-weight: $fw-500;
         margin-left: -12px;
         padding-left: 24px;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
         &:hover {
-            color: var(--white-color);
+            color: $white-color;
         }
     }
 
     &:hover {
-        color: var(--primary-color);
+        color: $primary-color;
     }
 }
 
 .notiCount {
-    color: var(--header-text-color);
-    background-color: var(--secondary-color);
+    color: $header-text-color;
+    background-color: $secondary-color;
     display: inline-block;
     padding: 2px 10px;
     position: absolute;
     right: 0;
     top: 40%;
     transform: translateY(-50%);
-    font-weight: bold;
+    font-weight: $fw-600;
     border-radius: 10px;
 }   
 

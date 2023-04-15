@@ -248,96 +248,94 @@ function LoadOrderToTruck() {
 
     return (
         <div className={styles.wrapper}>
-            <div className="container">
-                <div className="row">
-                    <header className='d-flex justify-content-between align-items-center'>
-                        <h2 className='fs-4'>Xuất kho</h2>
+            <div className="row">
+                <header className='d-flex justify-content-between align-items-center'>
+                    <h2 className='fs-4'>Xuất kho</h2>
+                    <div className={styles.action}>
+                        <Link className={`btn ${styles.customBtn}`} to="/">
+                            <TbFileExport className='me-3'/> Xuất Excel
+                        </Link>
+
+                        <Link className={`btn ${styles.customBtn} ${styles.active}`} to="/export-order">
+                            <BiPencil className='me-3'/> Xuất Kho
+                        </Link>
+
+                        <Link className={`btn ${styles.customBtn}`} to="/create-order">
+                            <BiPencil className='me-3'/> Nhập Kho
+                        </Link>
+                    </div>
+                </header>
+            </div>
+            <div className="row mt-3">
+                <div className="col-12">
+                    <span className={styles.truckLabel}>{truckInfo.from} - {truckInfo.to}, {truckInfo.license_plate_number}</span>
+                </div>
+            </div>
+            <div className="row mt-2">
+                <div className="col-5">
+                    <div className={styles.leftCol}>
+                        <div className={styles.title}>Truck Load</div>
+                        <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{((truckInfo.current_weight / truckInfo.max_weight)*100).toFixed(2)}%</div>
+                        <div className="my-5">
+                            <TruckIcon 
+                                width="80%"
+                                height="100%" 
+                                availability={truckInfo.current_weight / truckInfo.max_weight}
+                                color={handleChooseColor(truckInfo.current_weight / truckInfo.max_weight)}
+                            />
+                        </div>
                         <div className={styles.action}>
-                            <Link className={`btn ${styles.customBtn}`} to="/">
-                                <TbFileExport className='me-3'/> Xuất Excel
-                            </Link>
-
-                            <Link className={`btn ${styles.customBtn} ${styles.active}`} to="/export-order">
-                                <BiPencil className='me-3'/> Xuất Kho
-                            </Link>
-
-                            <Link className={`btn ${styles.customBtn}`} to="/create-order">
-                                <BiPencil className='me-3'/> Nhập Kho
-                            </Link>
-                        </div>
-                    </header>
-                </div>
-                <div className="row mt-3">
-                    <div className="col-12">
-                        <span className={styles.truckLabel}>{truckInfo.from} - {truckInfo.to}, {truckInfo.license_plate_number}</span>
-                    </div>
-                </div>
-                <div className="row mt-2">
-                    <div className="col-5">
-                        <div className={styles.leftCol}>
-                            <div className={styles.title}>Truck Load</div>
-                            <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{((truckInfo.current_weight / truckInfo.max_weight)*100).toFixed(2)}%</div>
-                            <div className="my-5">
-                                <TruckIcon 
-                                    width="80%"
-                                    height="100%" 
-                                    availability={truckInfo.current_weight / truckInfo.max_weight}
-                                    color={handleChooseColor(truckInfo.current_weight / truckInfo.max_weight)}
-                                />
-                            </div>
-                            <div className={styles.action}>
-                                <button className='btn customBtn m-0 mb-2'
-                                    onClick={handleOpenTruckOrders}>
-                                    <BiPackage className='me-2'/>
-                                    Danh sách đơn hàng</button>
-                                <button className='btn customBtn active m-0'>
-                                    <TbTruckDelivery className='me-2'/>
-                                    Hoàn tất xuất kho
-                                </button>
-                            </div>
+                            <button className='btn customBtn m-0 mb-2'
+                                onClick={handleOpenTruckOrders}>
+                                <BiPackage className='me-2'/>
+                                Danh sách đơn hàng</button>
+                            <button className='btn customBtn active m-0'>
+                                <TbTruckDelivery className='me-2'/>
+                                Hoàn tất xuất kho
+                            </button>
                         </div>
                     </div>
-                    <div className="col-7">
-                        <div className={styles.rightCol}>
-                            <div className={styles.title}>
-                                <h5 className='fw-semibold'>Danh sách đơn hàng</h5>
-                                <span>Đã chọn: {selected}, KL(kg): {totalWeight}</span>
-                            </div>
-                            <div className={styles.customTableWrap}>
-                                <div className={styles.customTable}>
-                                    <div className={`row p-2 ${styles.ordersHeader}`}>
-                                        <div className='col-1'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
-                                        <div className='col-6'>Mã đơn hàng</div>
-                                        <div className='col-5'>
-                                            <div className="d-flex">
-                                                Khối lượng
-                                                <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
-                                                    <span className={styles.leftBar}></span>
-                                                    <span className={styles.rightBar}></span>
-                                                </a>
-                                            </div>
+                </div>
+                <div className="col-7">
+                    <div className={styles.rightCol}>
+                        <div className={styles.title}>
+                            <h5 className='fw-semibold'>Danh sách đơn hàng</h5>
+                            <span>Đã chọn: {selected}, KL(kg): {totalWeight}</span>
+                        </div>
+                        <div className={styles.customTableWrap}>
+                            <div className={styles.customTable}>
+                                <div className={`row p-2 ${styles.ordersHeader}`}>
+                                    <div className='col-1'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
+                                    <div className='col-6'>Mã đơn hàng</div>
+                                    <div className='col-5'>
+                                        <div className="d-flex">
+                                            Khối lượng
+                                            <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
+                                                <span className={styles.leftBar}></span>
+                                                <span className={styles.rightBar}></span>
+                                            </a>
                                         </div>
                                     </div>
-                                    <div className={styles.ordersWrap}>
-                                        {orders.length > 0 
-                                            ? (orders.map(order => (
-                                                <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
-                                                    <div className='col-1'><input type="checkbox"
-                                                        checked={order.checked}
-                                                        onChange={e => handleLoadOrder(order, e)}
-                                                    /></div>
-                                                    <div className="col-6">{order.id}</div>
-                                                    <div className="col-5">{order.weight}</div>
-                                                </div>)))
-                                            : (<div className='p-2'>Không có đơn hàng nào</div>)
-                                        }
-
-                                    </div>
                                 </div>
+                                <div className={styles.ordersWrap}>
+                                    {orders.length > 0 
+                                        ? (orders.map(order => (
+                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                                <div className='col-1'><input type="checkbox"
+                                                    checked={order.checked}
+                                                    onChange={e => handleLoadOrder(order, e)}
+                                                /></div>
+                                                <div className="col-6">{order.id}</div>
+                                                <div className="col-5">{order.weight}</div>
+                                            </div>)))
+                                        : (<div className='p-2'>Không có đơn hàng nào</div>)
+                                    }
 
+                                </div>
                             </div>
-                            <button className='mt-2 p-2' onClick={handleAddToTruck}>Import to truck</button>
+
                         </div>
+                        <button className='mt-2 p-2' onClick={handleAddToTruck}>Import to truck</button>
                     </div>
                 </div>
             </div>

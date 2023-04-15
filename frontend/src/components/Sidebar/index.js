@@ -31,14 +31,14 @@ function Sidebar({ sidebarItems }) {
 
 			<div className={styles.menu}>
 				<div className={styles.userInfo}>
-					<img src={avatar} alt="User Avatar" />
-					<div>
-						{/* {username} */}
-						<h3>{user.fullname}</h3>
-						{/* {email} */}
-						<p>{user.email}</p>
+					<div className="d-flex align-items-center">
+						<img src={avatar} alt="User Avatar" className='icon-xlg rounded-circle me-2' />
+						<div className='d-flex flex-column'>
+							<span className={styles.name}>{user.fullname}</span>
+							<span className={styles.email}>{user.email}</span>
+						</div>
 					</div>
-					<BsThreeDots className='fs-2' role='button' />
+					<BsThreeDots className='fs-5' role='button' />
 				</div>
 
 				<div className={styles.userMenu}>
@@ -51,7 +51,7 @@ function Sidebar({ sidebarItems }) {
 										className={`${styles.menuLink} ${activeTab === item.id && styles.active}`}
 										onClick={() => setActiveTab(item.id)}
 									>
-										<div className="d-flex align-items-center me-3">
+										<div className="d-flex align-items-center me-2 icon-md">
 											{item.icon}
 										</div>
 										{item.text}
@@ -74,7 +74,7 @@ function Sidebar({ sidebarItems }) {
 										className={`${styles.menuLink} ${activeTab === item.id && styles.active}`}
 										onClick={() => setActiveTab(item.id)}
 									>
-										<div className="d-flex align-items-center me-3">
+										<div className="d-flex align-items-center me-2 icon-md">
 											{item.icon}
 										</div>
 										{item.text}
