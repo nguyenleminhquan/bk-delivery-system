@@ -5,9 +5,6 @@ import Table from 'components/Table';
 import React, { useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import './index.scss';
-import { Link } from 'react-router-dom';
-import { BiPencil } from 'react-icons/bi';
-import { TbFileExport } from 'react-icons/tb'
 import DatePickerComp from 'components/DatePickerComp';
 
 function StockerHome() {

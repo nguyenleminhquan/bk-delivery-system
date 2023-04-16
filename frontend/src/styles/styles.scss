@@ -240,3 +240,15 @@ img.icon-xlg, div.icon-xlg, div.icon-xlg svg {
 span.icon-xlg {
     font-size: $icon-xlg;
 }
+
+// Align vertical center
+.vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+.block-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

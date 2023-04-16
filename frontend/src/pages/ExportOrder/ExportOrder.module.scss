@@ -1,3 +1,5 @@
+@import '../../styles/variabless';
+
 .wrapper {
     .action {
         a {
@@ -36,6 +38,17 @@
             }
         }
     }
+
+    .tab {
+        font-size: $fs_xl;
+        font-weight: $fw_600;
+        padding: 0 14px;
+        cursor: pointer;
+        &.active {
+            color: $primary-color;
+            border-bottom: 2px solid $primary-color;
+        }
+    }
     .blockItem {
         border-radius: 5px;
         background-color: var(--white-color);
@@ -43,21 +56,34 @@
         padding: 18px;
         font-size: 14px;
         cursor: pointer;
-        .label {
-            font-size: 18px;
-            font-weight: bold;
+        .left, .right {
+            display: flex;
+            flex-direction: column;
         }
-        .status {
-            font-size: 24px;
+        .left {
+            width: 60%;
+            // span { line-height: 14px; }
+            .label {
+                font-size: 18px;
+                font-weight: bold;
+                min-height: 54px;
+            }
+            .status {
+                font-size: 24px;
+            }
         }
-        .goodStatus {
-            color: #008000;
-        }
-        .normalStatus {
-            color: #ffa500;
-        }
-        .dangerStatus {
-            color: #ff0000;
+        .right {
+            width: 40%;
+            align-items: flex-end;
+            .goodStatus {
+                color: #008000;
+            }
+            .normalStatus {
+                color: #ffa500;
+            }
+            .dangerStatus {
+                color: #ff0000;
+            }
         }
         &:hover {
             background-color: #f8f8f8;
