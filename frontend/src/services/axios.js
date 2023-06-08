@@ -2,10 +2,10 @@ import axios from "axios";
 import { clearStore } from "features/user/userSlice";
 import { getLocalAccessToken, getLocalRefreshToken, getUserFromLocalStorage, updateLocalAccessToken } from "utils/localStorage";
 import AuthService from "./auth.service";
+const envConfig = require('../config/.env.json')
 
 const customFetch = axios.create({
-	// baseURL: 'http://34.124.177.159:2376',
-	baseURL: 'http://localhost:5000'
+	baseURL: envConfig.baseURL
 })
 
 customFetch.interceptors.request.use(

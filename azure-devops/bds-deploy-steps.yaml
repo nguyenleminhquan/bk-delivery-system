@@ -1,0 +1,19 @@
+parameters:
+  flavor: 'required'
+
+steps:
+  - task: Bash@3
+    displayName: 'Docker: Pull new image'
+    inputs: 
+      targetType: inline
+      script: |
+        source ./init.sh ${{ parameters.flavor }}
+        bash ./pull.sh
+
+  - task: Bash@3
+    displayName: 'DockerCompose: Update services'
+    inputs:
+      targetType: inline
+      script: |
+        source ./init.sh ${{ parameters.flavor }}
+        bash ./update.sh

@@ -1,197 +1,93 @@
-trigger: none 
-
-pr:
-  - master
-  - develop
+trigger: 
+  branches:
+    include:
+      - develop
+      - master
+  paths:
+    include:
+      - backend/*
+      - frontend/*
   
 variables:
-  - group: docker-repo
+  - group: 'BK Delivery System'
 
 stages:
-  - stage: Build
-    displayName: Build and deploy 
-    pool:
-      name: VM-CPU12195
-    jobs:
-      - job: checkVersion
-        displayName: Check node and npm version
-        steps:
-          - task: Bash@3
-            displayName: Check node and npm version
-            inputs:
-              targetType: inline
-              script: |
-                echo "-------------------------------"
-                echo "Node version"
-                node -v
-                echo "-------------------------------"
-                echo "npm version"
-                npm -v
-                echo "-------------------------------"
-      - job: build_be_image
-        displayName: Build Backend image
-        steps:
-          - task: Bash@3
-            displayName: Copy .env to build directory
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/copy-env.sh
-                . ./azure-devops/copy-env.sh
-          - task: Docker@2
-            displayName: Login to Docker Hub
-            inputs:
-              command: login
-              containerRegistry: $(containerRegistry)
-          - task: Docker@2
-            displayName: Build image
-            inputs:
-              command: build
-              repository: $(repoBackend)
-              Dockerfile: backend/Dockerfile
-              buildContext: backend/
-              tags:
-                $(tag)
-          - task: Bash@3
-            displayName: Create an container for testing
-            inputs:
-              targetType: inline
-              script: docker container run -d --name healthcheck -p 5001:5000 $(repoBackend):$(tag) 
-          - task: Bash@3
-            displayName: Health check
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/healthcheck.sh 
-                . ./azure-devops/healthcheck.sh
-          - task: Bash@3
-            displayName: Remove container health check
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/rm-healthcheck.sh
-                . ./azure-devops/rm-healthcheck.sh
-          - task: Bash@3
-            displayName: Retag image to latest
-            inputs:
-              targetType: inline
-              script: |
-                docker tag $(repoBackend):$(tag) $(repoBackend):latest
-          - task: Docker@2  
-            displayName: Push image with latest tag
-            inputs:
-              command: push
-              repository: $(repoBackend)
-              tags: latest
-          - task: Bash@3
-            displayName: Remove image with tag number
-            inputs:
-              targetType: inline 
-              script: |
-                docker image rm -f $(repoBackend):$(tag)
-          - task: Bash@3
-            displayName: Remove image with tag latest
-            inputs:
-              targetType: inline
-              script: |
-                docker image rm -f $(repoBackend):latest
-          - task: Bash@3
-            displayName: Remove older Backend container
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/rm-old-be-container.sh
-                . ./azure-devops/rm-old-be-container.sh
+- stage: Build_Docker_Images
+  pool:
+    name: CPU13085
+  jobs:
+  - job: Build_Linux_Alpha
+    displayName: 'Linux: Build DockerImages Alpha'
+    condition: |
+      or
+      (
+        and( eq(variables['Build.Reason'], 'Manual'), eq(variables['Flavor'], 'dev') ),
+        and
+        (
+          ne(variables['Build.Reason'], 'Manual'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+        )
+      )
+    steps:
+    - template: azure-devops/bds-build-steps.yaml
+      parameters:
+        flavor: dev
 
-      - job: run_be
-        displayName: Run Backend container
-        dependsOn: build_be_image
-        condition: succeeded()
-        steps:
-          - task: Bash@3
-            displayName: Run Backend image
-            inputs:
-              targetType: inline
-              script: |
-                docker run -d -p 5000:5000 --name backend $(repoBackend):latest
-            
-      - job: build_fe_image
-        displayName: Build Frontend image
-        dependsOn: run_be
-        condition: succeeded()
-        steps:
-          - task: Docker@2
-            displayName: Login to Docker Hub
-            inputs:
-              command: login
-              containerRegistry: $(containerRegistry)
-          - task: Docker@2
-            displayName: Build image
-            inputs:
-              command: build
-              repository: $(repoFrontend)
-              Dockerfile: frontend/Dockerfile
-              buildContext: frontend/
-              tags:
-                $(tag)
-          - task: Bash@3
-            displayName: Create an container for testing
-            inputs:
-              targetType: inline
-              script: docker container run -d --name healthcheck -p 3001:3000 $(repoFrontend):$(tag) 
-          - task: Bash@3
-            displayName: Health check
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/healthcheck.sh 
-                . ./azure-devops/healthcheck.sh
-          - task: Bash@3
-            displayName: Remove container health check
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/rm-healthcheck.sh
-                . ./azure-devops/rm-healthcheck.sh
-          - task: Bash@3
-            displayName: Retag image to latest
-            inputs:
-              targetType: inline
-              script: |
-                docker tag $(repoFrontend):$(tag) $(repoFrontend):latest
-          - task: Docker@2  
-            displayName: Push image with latest tag
-            inputs:
-              command: push
-              repository: $(repoFrontend)
-              tags: latest
-          - task: Bash@3
-            displayName: Remove image with tag number
-            inputs:
-              targetType: inline 
-              script: |
-                docker image rm -f $(repoFrontend):$(tag)
-          - task: Bash@3
-            displayName: Remove image with tag latest
-            inputs:
-              targetType: inline
-              script: |
-                docker image rm -f $(repoFrontend):latest
-          - task: Bash@3
-            displayName: Remove older Frontend container
-            inputs:
-              targetType: inline
-              script: |
-                chmod +x azure-devops/rm-old-fe-container.sh
-                . ./azure-devops/rm-old-fe-container.sh
-      - job: run_fe
-        displayName: Run Frontend container
-        dependsOn: build_fe_image
-        condition: succeeded()
-        steps:
-          - task: Bash@3
-            displayName: Run Frontend image
-            inputs:
-              targetType: inline
-              script: |
-                docker run -d -p 3000:3000 --name frontend $(repoFrontend):latest
+  - job: Build_Linux_Stable
+    displayName: 'Linux: Build DockerImages Stable'
+    condition: |
+      or
+      (
+        and( eq(variables['Build.Reason'], 'Manual'), eq(variables['Flavor'], 'live') ),
+        and
+        (
+          ne(variables['Build.Reason'], 'Manual'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        )
+      )
+    steps:
+    - template: azure-devops/bds-build-steps.yaml
+      parameters:
+        flavor: live
+  
+- stage: Deploy_Services
+  dependsOn: Build_Docker_Images
+  condition: succeeded()
+  pool:
+    name: CPU13085
+  jobs:
+  - job: Deploy_Services_Alpha
+    displayName: 'Linux: Deploy Services - Alpha'
+    condition: |
+      or
+      (
+        and( eq(variables['Build.Reason'], 'Manual'), in(variables['Flavor'], 'dev', 'deploy-dev') ),
+        and
+        (
+          ne(variables['Build.Reason'], 'Manual'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+        )
+      )
+    steps:
+    - checkout: self
+    - template: azure-devops/bds-deploy-steps.yaml
+      parameters:
+        flavor: dev
+
+  - job: Deploy_Services_Stable
+    displayName: 'Linux: Deploy Services - Stable'
+    condition: |
+      or
+      (
+        and( eq(variables['Build.Reason'], 'Manual'), in(variables['Flavor'], 'live', 'deploy-live') ),
+        and
+        (
+          ne(variables['Build.Reason'], 'Manual'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        )
+      )
+    steps:
+    - checkout: self
+    - template: azure-devops/bds-deploy-steps.yaml
+      parameters:
+        flavor: live
