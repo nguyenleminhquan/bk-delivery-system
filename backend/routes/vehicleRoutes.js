@@ -8,7 +8,6 @@ import {
   pushOrderToVehicle,
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
-  getAvailableOrderForVehicle,
   getVehicleByRegion
 }  from '../controllers/vehicleController.js'
 
