@@ -6,8 +6,11 @@ const vehicleSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
-  from: String,
-  to: String,
+  current_address_code: Number,
+  from: Number,
+  to: Number,
+  from_string: String,
+  to_string: String,
   license_plate_number: String,
   orders: [{
     type: mongoose.Schema.Types.ObjectId,

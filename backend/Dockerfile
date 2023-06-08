@@ -6,7 +6,7 @@ COPY . .
 
 EXPOSE 5000
 
-RUN npm install && npm install dotenv --save-dev
+RUN npm install
 
 CMD [ "npm", "start" ]
 
