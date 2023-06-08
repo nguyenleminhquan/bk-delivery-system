@@ -141,11 +141,23 @@ const getAvailableOrderForVehicle = async (req, res, next) => {
   }
 }
 
+const getVehicleByRegion = async (req, res, next) => {
+  try {
+    const region = req.params.id
+
+    const allVehicleByRegion = await Vehicle.find({ current_address_code: region })
+
+    return res.json(allVehicleByRegion)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
-  getAvailableOrderForVehicle
+  getVehicleByRegion
 }
