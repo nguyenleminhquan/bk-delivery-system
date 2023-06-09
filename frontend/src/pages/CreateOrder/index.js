@@ -18,6 +18,7 @@ import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
 import GeneralConfirm from 'components/GeneralConfirm';
 import Paypal from 'components/Paypal';
+import AddressForm from 'components/AddressForm';
 
 const infoModel = {
     fullname: '',
@@ -48,8 +49,15 @@ function CreateOrder() {
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
     
     // address information
+    // Comment for Google Map API
     const [senderAddress, setSenderAddress] = useState('');
     const [receiverAddress, setReceiverAddress] = useState('');
+
+    const [senderDistricts, setSenderDistricts] = useState([]);
+    const [receiverDistricts, setReceiverDistricts] = useState([]);
+    const [senderWards, setSenderWards] = useState([]);
+    const [receiverWards, setReceiverWards] = useState([]);
+    const [addressData, setAddressData] = useState([]);
 
     const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
@@ -112,10 +120,10 @@ function CreateOrder() {
         const orderPayload = {
             sender_name: senderInfo.fullname,
             sender_phone: senderInfo.phone,
-            sender_address: senderAddress,
+            sender_address: senderAddress ?? generateFinalAddress(senderInfo),
             receiver_name: receiverInfo.fullname,
             receiver_phone: receiverInfo.phone,
-            receiver_address: receiverAddress,
+            receiver_address: generateFinalAddress(receiverInfo),
             payment_type: paymentMethod,
             cod_amount: cod,
             note,
@@ -150,6 +158,12 @@ function CreateOrder() {
         }
     }
 
+    function generateFinalAddress(object) {
+        if (object?.addressDetail && object?.ward && object?.district && object?.city) {
+            return `${object?.addressDetail}, ${object?.ward}, ${object?.district}, ${object?.city}`;
+        }
+    }
+
     const handleChangePaymentOption = e => {
         setPaymentOption(e.target.value);
         if (e.target.value === 'receiver') {
@@ -176,11 +190,24 @@ function CreateOrder() {
     }
 
     const handleUpdateSenderAddress = () => {
-        if (senderAddress !== '') {
-            setSenderInfo(prev => ({...prev, address: senderAddress}));
-        }
+        // if (senderAddress !== '') {
+        //     setSenderInfo(prev => ({...prev, address: senderAddress}));
+        // }
+        const updatedAddress = generateFinalAddress(senderInfo);
+        console.log(updatedAddress);
+        setSenderAddress(generateFinalAddress(senderInfo));
         setEditSender(false);
     }
+
+    const getAddressData = () => {
+        axios.get('https://provinces.open-api.vn/api/?depth=3')
+            .then((res) => setAddressData(res.data))
+            .catch((err) => console.log(err))
+    }
+
+    useEffect(() => {
+        getAddressData();
+    }, []);
 
     useEffect(() => {
         setReceiverInfo(prev => ({...prev, address: receiverAddress}));
@@ -240,7 +267,15 @@ function CreateOrder() {
                                 </div>
                                 {editSender ? (
                                     <div className="col-6 mt-2">
-                                        <SearchAddress address={senderAddress} setAddress={setSenderAddress} />
+                                        <AddressForm 
+                                            stateInfo={senderInfo}
+                                            setStateInfo={setSenderInfo}
+                                            cities={addressData}
+                                            districts={senderDistricts}
+                                            setDistricts={setSenderDistricts}
+                                            wards={senderWards}
+                                            setWards={setSenderWards}
+                                            activeField={['city', 'district', 'province', 'addressDetail']}/>
                                         <div className="row mt-4">
                                             <div className="col-12 text-end">
                                                 {senderInfo?.address && (
@@ -272,26 +307,15 @@ function CreateOrder() {
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên nhận</span>
                                 </div>
-                                <form className='my-2'>
-                                    <div className="form-group">
-                                        <label>Họ và tên</label>
-                                        <input type="text"
-                                            name='fullname'
-                                            placeholder='Nhập họ tên'
-                                            value={receiverInfo.fullname}
-                                            onChange={handleChangeReceiverInfo}/>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Số điện thoại</label>
-                                        <input type="text"
-                                            name='phone'
-                                            placeholder='Nhập số điện thoại'
-                                            value={receiverInfo.phone}
-                                            onChange={handleChangeReceiverInfo}/>
-                                    </div>
-                                </form>
-                                <SearchAddress address={receiverAddress} setAddress={setReceiverAddress} />
+                                <AddressForm 
+                                    stateInfo={receiverInfo}
+                                    setStateInfo={setReceiverInfo}
+                                    cities={addressData}
+                                    districts={receiverDistricts}
+                                    setDistricts={setReceiverDistricts}
+                                    wards={receiverWards}
+                                    setWards={setReceiverWards}
+                                    activeField={['fullname', 'phone', 'city', 'district', 'province', 'addressDetail']}/>
                             </div>
 
                             <div className={styles.createOrderSection}>

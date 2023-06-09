@@ -130,13 +130,13 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                     </div>
                 )}
 
-                {isActiveField('address') && (
+                {isActiveField('addressDetail') && (
                     <div className={styles.formGroup}>
                         <label>Địa chỉ</label>
                         <input type="text"
                             placeholder='Nhập địa chỉ'
-                            value={stateInfo?.address}
-                            name='address'
+                            value={stateInfo?.addressDetail}
+                            name='addressDetail'
                             onChange={e => handleChangeInfo(e)}/>
                     </div>
                 )}
