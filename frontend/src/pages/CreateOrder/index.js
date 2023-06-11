@@ -11,13 +11,14 @@ import { BiPencil } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
-import { OrderStatus } from 'utils/enum';
+import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
 import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
 import GeneralConfirm from 'components/GeneralConfirm';
 import Paypal from 'components/Paypal';
+import AddressForm from 'components/AddressForm';
 
 const infoModel = {
     fullname: '',
@@ -48,8 +49,15 @@ function CreateOrder() {
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
     
     // address information
+    // Comment for Google Map API
     const [senderAddress, setSenderAddress] = useState('');
     const [receiverAddress, setReceiverAddress] = useState('');
+
+    const [senderDistricts, setSenderDistricts] = useState([]);
+    const [receiverDistricts, setReceiverDistricts] = useState([]);
+    const [senderWards, setSenderWards] = useState([]);
+    const [receiverWards, setReceiverWards] = useState([]);
+    const [addressData, setAddressData] = useState([]);
 
     const [editSender, setEditSender] = useState(false);
     const [products, setProducts] = useState([productModel]);
@@ -66,12 +74,6 @@ function CreateOrder() {
 
     const [paypalPopup, setPaypalPopup] = useState(false);
 
-    const handleChangeReceiverInfo = e => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setReceiverInfo(prev => ({...prev, [name]: value}));
-    }
-
     const handleUpdateProduct = (e, index, field) => {
         const value = e.target.value;
         setProducts(products.map((product, idx) => {
@@ -87,7 +89,7 @@ function CreateOrder() {
         if (!checkEmptyProductInfo(lastProduct)) {
             setProducts(prev => [...prev, productModel])
         } else {
-            toast.error('Vui lòng điền đủ thông tin sản phẩm trước khi điền sản phẩm mới.')
+            toast.error(CreateOrderErrorToast.ENTER_NEW_PRODUCT_WITHOUT_COMPLETED_PREV);
         }
     }
 
@@ -99,7 +101,11 @@ function CreateOrder() {
         const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
         const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
         const isEmptyProduct = Object.values(products.at(-1)).some(value => value === '');
-        return isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct;
+        return isEmptySenderInfo 
+            ? CreateOrderSection.SENDER
+            : isEmptyReceiverInfo
+                ? CreateOrderSection.RECEIVER
+                : isEmptyProduct ? CreateOrderSection.PRODUCT : false;
     }
 
     const clearOrderState = () => {
@@ -112,10 +118,10 @@ function CreateOrder() {
         const orderPayload = {
             sender_name: senderInfo.fullname,
             sender_phone: senderInfo.phone,
-            sender_address: senderAddress,
+            sender_address: senderAddress ?? generateFinalAddress(senderInfo),
             receiver_name: receiverInfo.fullname,
             receiver_phone: receiverInfo.phone,
-            receiver_address: receiverAddress,
+            receiver_address: generateFinalAddress(receiverInfo),
             payment_type: paymentMethod,
             cod_amount: cod,
             note,
@@ -141,12 +147,21 @@ function CreateOrder() {
     }
 
     const handleSubmit = () => {
-        if (isDisabledSubmit()) {
-            toast.error('Chưa điền đầy đủ thông tin.');
+        senderInfo.address = generateFinalAddress(senderInfo) ?? senderInfo?.address;
+        receiverInfo.address = generateFinalAddress(receiverInfo);
+        const missingInputField = isDisabledSubmit();
+        if (missingInputField) {
+            toast.error(CreateOrderErrorToast.SUBMIT_FORM_WITHOUT_COMPLETED_SECTION(missingInputField));
         } else if (paymentMethod === 'paypal') {
             setPaypalPopup(true);
         } else {
             handleCreateOrder();
+        }
+    }
+
+    function generateFinalAddress(object) {
+        if (object?.addressDetail && object?.ward && object?.district && object?.city) {
+            return `${object?.addressDetail}, ${object?.ward}, ${object?.district}, ${object?.city}`;
         }
     }
 
@@ -176,11 +191,28 @@ function CreateOrder() {
     }
 
     const handleUpdateSenderAddress = () => {
-        if (senderAddress !== '') {
-            setSenderInfo(prev => ({...prev, address: senderAddress}));
+        /** Validate input field for sender
+         *  Satisfied: Set new address
+         *  Not satisfied: show toast notified that: "You have not been complete this form" 
+         */
+        if (senderInfo?.city && senderInfo?.district && senderInfo?.ward && senderInfo?.addressDetail) {
+            const updatedAddress = generateFinalAddress(senderInfo);
+            setSenderAddress(updatedAddress);
+            setEditSender(false);
+        } else {
+            toast.error(CreateOrderErrorToast.SAVE_SENDER_INFO_MISSING);
         }
-        setEditSender(false);
     }
+
+    const getAddressData = () => {
+        axios.get('https://provinces.open-api.vn/api/?depth=3')
+            .then((res) => setAddressData(res.data))
+            .catch((err) => console.log(err))
+    }
+
+    useEffect(() => {
+        getAddressData();
+    }, []);
 
     useEffect(() => {
         setReceiverInfo(prev => ({...prev, address: receiverAddress}));
@@ -206,7 +238,7 @@ function CreateOrder() {
             phone: user.phone,
             address: user?.address
         });
-    }, [])
+    }, []);
 
     return (
         <div className={styles.wrapper}>
@@ -240,7 +272,15 @@ function CreateOrder() {
                                 </div>
                                 {editSender ? (
                                     <div className="col-6 mt-2">
-                                        <SearchAddress address={senderAddress} setAddress={setSenderAddress} />
+                                        <AddressForm 
+                                            stateInfo={senderInfo}
+                                            setStateInfo={setSenderInfo}
+                                            cities={addressData}
+                                            districts={senderDistricts}
+                                            setDistricts={setSenderDistricts}
+                                            wards={senderWards}
+                                            setWards={setSenderWards}
+                                            activeField={['city', 'district', 'province', 'addressDetail']}/>
                                         <div className="row mt-4">
                                             <div className="col-12 text-end">
                                                 {senderInfo?.address && (
@@ -272,26 +312,15 @@ function CreateOrder() {
                                 <div className={styles.title}>
                                     <span className='ms-2 me-3'>Bên nhận</span>
                                 </div>
-                                <form className='my-2'>
-                                    <div className="form-group">
-                                        <label>Họ và tên</label>
-                                        <input type="text"
-                                            name='fullname'
-                                            placeholder='Nhập họ tên'
-                                            value={receiverInfo.fullname}
-                                            onChange={handleChangeReceiverInfo}/>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Số điện thoại</label>
-                                        <input type="text"
-                                            name='phone'
-                                            placeholder='Nhập số điện thoại'
-                                            value={receiverInfo.phone}
-                                            onChange={handleChangeReceiverInfo}/>
-                                    </div>
-                                </form>
-                                <SearchAddress address={receiverAddress} setAddress={setReceiverAddress} />
+                                <AddressForm 
+                                    stateInfo={receiverInfo}
+                                    setStateInfo={setReceiverInfo}
+                                    cities={addressData}
+                                    districts={receiverDistricts}
+                                    setDistricts={setReceiverDistricts}
+                                    wards={receiverWards}
+                                    setWards={setReceiverWards}
+                                    activeField={['fullname', 'phone', 'city', 'district', 'province', 'addressDetail']}/>
                             </div>
 
                             <div className={styles.createOrderSection}>
