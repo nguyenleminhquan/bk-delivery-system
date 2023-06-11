@@ -5,6 +5,8 @@ import createError from 'http-errors'
 import Order from "../models/Order.js"
 import Delivery from "../models/Delivery.js"
 
+
+
 const getAllVehicle = async (req, res, next) => {
   try {
     let allVehicle = await Vehicle.find({}).populate('orders').populate('driver_id')
@@ -153,11 +155,37 @@ const getVehicleByRegion = async (req, res, next) => {
   }
 }
 
+async function searchWithSpecificRegion(region_code, queries) {
+  let result = []
+
+  if ("exported" in queries) {
+    let vehicles = await 
+            Vehicle.find({ current_address_code: region_code, exported: queries['exported']})
+    result.push(vehicles)
+  }
+  
+  return result.flat()
+}
+
+const searchVehicleWithCondition = async (req, res, next) => {
+  try {
+    const queries = req.query 
+    const region_code = req.params.id
+
+    const result = await searchWithSpecificRegion(region_code, queries)
+
+    return res.json(result)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
-  getVehicleByRegion
+  getVehicleByRegion,
+  searchVehicleWithCondition
 }

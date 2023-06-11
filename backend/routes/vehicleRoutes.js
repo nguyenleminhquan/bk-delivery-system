@@ -8,7 +8,8 @@ import {
   pushOrderToVehicle,
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
-  getVehicleByRegion
+  getVehicleByRegion,
+  searchVehicleWithCondition
 }  from '../controllers/vehicleController.js'
 
 const router = express.Router()
@@ -19,5 +20,6 @@ router.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker'
 router.post('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), pushOrderToVehicle)
 router.delete('/order/:order_id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), deleteOrderFromVehicle)
 router.get('/region/:id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getVehicleByRegion)
+router.get('/region/:id/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), searchVehicleWithCondition)
 
 export default router
