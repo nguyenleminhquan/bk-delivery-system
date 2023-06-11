@@ -11,7 +11,7 @@ import { BiPencil } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
-import { OrderStatus } from 'utils/enum';
+import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
 import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
@@ -74,12 +74,6 @@ function CreateOrder() {
 
     const [paypalPopup, setPaypalPopup] = useState(false);
 
-    const handleChangeReceiverInfo = e => {
-        const name = e.target.name;
-        const value = e.target.value;
-        setReceiverInfo(prev => ({...prev, [name]: value}));
-    }
-
     const handleUpdateProduct = (e, index, field) => {
         const value = e.target.value;
         setProducts(products.map((product, idx) => {
@@ -95,7 +89,7 @@ function CreateOrder() {
         if (!checkEmptyProductInfo(lastProduct)) {
             setProducts(prev => [...prev, productModel])
         } else {
-            toast.error('Vui lòng điền đủ thông tin sản phẩm trước khi điền sản phẩm mới.')
+            toast.error(CreateOrderErrorToast.ENTER_NEW_PRODUCT_WITHOUT_COMPLETED_PREV);
         }
     }
 
@@ -107,7 +101,11 @@ function CreateOrder() {
         const isEmptySenderInfo = Object.values(senderInfo).some(value => value === '');
         const isEmptyReceiverInfo = Object.values(receiverInfo).some(value => value === '');
         const isEmptyProduct = Object.values(products.at(-1)).some(value => value === '');
-        return isEmptySenderInfo || isEmptyReceiverInfo || isEmptyProduct;
+        return isEmptySenderInfo 
+            ? CreateOrderSection.SENDER
+            : isEmptyReceiverInfo
+                ? CreateOrderSection.RECEIVER
+                : isEmptyProduct ? CreateOrderSection.PRODUCT : false;
     }
 
     const clearOrderState = () => {
@@ -149,8 +147,11 @@ function CreateOrder() {
     }
 
     const handleSubmit = () => {
-        if (isDisabledSubmit()) {
-            toast.error('Chưa điền đầy đủ thông tin.');
+        senderInfo.address = generateFinalAddress(senderInfo) ?? senderInfo?.address;
+        receiverInfo.address = generateFinalAddress(receiverInfo);
+        const missingInputField = isDisabledSubmit();
+        if (missingInputField) {
+            toast.error(CreateOrderErrorToast.SUBMIT_FORM_WITHOUT_COMPLETED_SECTION(missingInputField));
         } else if (paymentMethod === 'paypal') {
             setPaypalPopup(true);
         } else {
@@ -190,13 +191,17 @@ function CreateOrder() {
     }
 
     const handleUpdateSenderAddress = () => {
-        // if (senderAddress !== '') {
-        //     setSenderInfo(prev => ({...prev, address: senderAddress}));
-        // }
-        const updatedAddress = generateFinalAddress(senderInfo);
-        console.log(updatedAddress);
-        setSenderAddress(generateFinalAddress(senderInfo));
-        setEditSender(false);
+        /** Validate input field for sender
+         *  Satisfied: Set new address
+         *  Not satisfied: show toast notified that: "You have not been complete this form" 
+         */
+        if (senderInfo?.city && senderInfo?.district && senderInfo?.ward && senderInfo?.addressDetail) {
+            const updatedAddress = generateFinalAddress(senderInfo);
+            setSenderAddress(updatedAddress);
+            setEditSender(false);
+        } else {
+            toast.error(CreateOrderErrorToast.SAVE_SENDER_INFO_MISSING);
+        }
     }
 
     const getAddressData = () => {
@@ -233,7 +238,7 @@ function CreateOrder() {
             phone: user.phone,
             address: user?.address
         });
-    }, [])
+    }, []);
 
     return (
         <div className={styles.wrapper}>

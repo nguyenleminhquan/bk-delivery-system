@@ -1,4 +1,6 @@
-export const OrderStatus  = {
+export * from './enums';
+
+export const OrderStatus = {
     WAITING: 'waiting',
     ACCEPTED: 'accepted',
     PICKED: 'picked',
@@ -9,4 +11,12 @@ export const OrderStatus  = {
     DELIVERING: 'delivering',
     SUCCESS: 'success',
     CANCEL: 'cancel'
+}
+
+export const CreateOrderSection = {
+    SENDER: 'Người gửi',
+    RECEIVER: 'Người nhận',
+    PRODUCT: 'Sản phẩm',
+    PAYMENT: 'Thanh toán',
+    NOTE: 'Ghi chú'
 }

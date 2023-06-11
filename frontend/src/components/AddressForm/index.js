@@ -135,7 +135,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         <label>Địa chỉ</label>
                         <input type="text"
                             placeholder='Nhập địa chỉ'
-                            value={stateInfo?.addressDetail}
+                            value={stateInfo?.addressDetail ? stateInfo.addressDetail : ''}
                             name='addressDetail'
                             onChange={e => handleChangeInfo(e)}/>
                     </div>
