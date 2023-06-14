@@ -4,6 +4,7 @@ import { BsPersonCircle } from 'react-icons/bs'
 import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import {CODMethodIcon, MomoMethodIcon, ATMMethodIcon } from '../components/Icons';
+export * from './consts';
 
 export const loginFields = (values) => [
     {
