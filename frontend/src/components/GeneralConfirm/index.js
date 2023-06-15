@@ -120,6 +120,7 @@ function GeneralConfirm(props) {
                   <label>{field.label}</label>
                   {field.type === 'select' ? (
                     <select name={field.name} onChange={handleInputChange}>
+                    <option value="">Chọn {field.label}</option>
                     {field.models.map(item => (
                       <option value={item.code} key={item.code}>{item.label}</option>
                     ))}

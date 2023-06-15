@@ -19,6 +19,8 @@ import GeneralConfirm from 'components/GeneralConfirm';
 
 // Import scss
 import styles from './AdminEmployeeManagement.module.scss';
+import { AreaDelivery } from 'utils/consts/Delivery.const';
+import { EmployeeManagementToast, EmployeeRole } from 'utils/enums';
 
 const employeeModels = {
     columns: [
@@ -64,50 +66,51 @@ const employeeModels = {
 const roleModels = [
     {
         label: 'Tài xế nội thành',
-        code: 'driver_inner'
+        code: EmployeeRole.DRIVER_INNER
     },
     {
         label: 'Tài xế liên tỉnh',
-        code: 'driver_inter'
+        code: EmployeeRole.DRIVER_INTER
     },
     {
         label: 'Quản lí kho',
-        code: 'stocker'
+        code: EmployeeRole.STOCKER
     }
-]
+];
+
+const initPopupData = {
+    fullname: '',
+    email: '',
+    phone: '',
+    typeUser: roleModels.find(role => role?.code === EmployeeRole.DRIVER_INNER),
+    areaCode: AreaDelivery.find(area => area?.code === 79)
+}
 const DEFAULT_PASSWORD = '1234567890';
 
 function AdminEmployeeManagement() {
     const dispatch = useDispatch();
     const { employees } = useSelector(state => state.user);
     const [data, setData] = useState(employeeModels);
-    const [editPopup, setEditPopup] = useState();
-    const [deletePopup, setDeletePopup] = useState(''); 
+    const [editPopup, setEditPopup] = useState(initPopupData);
+    const [deletePopup, setDeletePopup] = useState('');
 
     const handleAddEmployee = (formData) => {
-        if (formData.fullname && formData.phone && formData.email && formData.typeUser) {
+        if (formData.fullname && formData.phone && formData.email && formData.typeUser && formData.areaCode) {
             // Create new employee with default password: 1234567890
-            dispatch(createEmployee({
-                ...formData,
-                password: DEFAULT_PASSWORD
-            }));
+            dispatch(createEmployee({ ...formData, password: DEFAULT_PASSWORD }));
             setEditPopup(false);
         } else {
-            return toast.error('Thiếu thông tin nhân viên.');
+            return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
         }
     }
 
     const handleEditEmployee = (formData) => {
         const updatedData = {...editPopup, ...formData};
-        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser) {
-            // toast.error('Tính năng chỉnh sửa thông tin nhân viên hiện chưa hoạt động.');
-            dispatch(editEmployee({
-                id: editPopup._id,
-                info: updatedData
-            }));
+        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.areaCode) {
+            dispatch(editEmployee({ id: editPopup._id, info: updatedData }));
             setEditPopup(false);
         } else {
-            return toast.error('Thiếu thông tin nhân viên.');
+            return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
         }
     }
 
@@ -170,6 +173,7 @@ function AdminEmployeeManagement() {
                         { name: "email", label: "Email", type: "email", value: editPopup.email },
                         { name: "phone", label: "Số điện thoại", type: "text", value: editPopup.phone },
                         { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
+                        { name: "area_code", label: "Khu vực", type: "select", models: AreaDelivery, value: editPopup.areaCode},
                     ]}
                     formValue={editPopup}
                     formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
