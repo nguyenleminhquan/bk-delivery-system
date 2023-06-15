@@ -78,24 +78,18 @@ const roleModels = [
     }
 ];
 
-const initPopupData = {
-    fullname: '',
-    email: '',
-    phone: '',
-    typeUser: roleModels.find(role => role?.code === EmployeeRole.DRIVER_INNER),
-    areaCode: AreaDelivery.find(area => area?.code === 79)
-}
 const DEFAULT_PASSWORD = '1234567890';
 
 function AdminEmployeeManagement() {
     const dispatch = useDispatch();
     const { employees } = useSelector(state => state.user);
     const [data, setData] = useState(employeeModels);
-    const [editPopup, setEditPopup] = useState(initPopupData);
+    const [editPopup, setEditPopup] = useState();
     const [deletePopup, setDeletePopup] = useState('');
 
     const handleAddEmployee = (formData) => {
-        if (formData.fullname && formData.phone && formData.email && formData.typeUser && formData.areaCode) {
+        console.log(formData);
+        if (formData.fullname && formData.phone && formData.email && formData.typeUser && formData.area_code) {
             // Create new employee with default password: 1234567890
             dispatch(createEmployee({ ...formData, password: DEFAULT_PASSWORD }));
             setEditPopup(false);
@@ -106,7 +100,8 @@ function AdminEmployeeManagement() {
 
     const handleEditEmployee = (formData) => {
         const updatedData = {...editPopup, ...formData};
-        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.areaCode) {
+        console.log(updatedData);
+        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.area_code) {
             dispatch(editEmployee({ id: editPopup._id, info: updatedData }));
             setEditPopup(false);
         } else {
@@ -132,14 +127,14 @@ function AdminEmployeeManagement() {
                         <IoMdCall className='me-2'/> {employee.phone}</div>
                 </div>
             ),
-            activeStock: 'Đống Đa, Hà Nội',
+            activeStock: AreaDelivery.find(area => area.code === employee?.area_code)?.label ?? '',
             vehicleInfo: 'Xe máy Honda 63B5-99999',
-            role: 'Tài xế nội thành',
+            role: roleModels.find(role => role.code === employee?.typeUser)?.label,
             edit: (<BiEdit className="text-success" role="button" onClick={() => setEditPopup(employee)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
         }))];
         setData({...data, rows});
-    }, [employees])
+    }, [employees]);
 
     useEffect(() => {
         dispatch(getAllEmployee());
@@ -173,7 +168,7 @@ function AdminEmployeeManagement() {
                         { name: "email", label: "Email", type: "email", value: editPopup.email },
                         { name: "phone", label: "Số điện thoại", type: "text", value: editPopup.phone },
                         { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
-                        { name: "area_code", label: "Khu vực", type: "select", models: AreaDelivery, value: editPopup.areaCode},
+                        { name: "area_code", label: "Khu vực", type: "select", models: AreaDelivery, value: editPopup.area_code},
                     ]}
                     formValue={editPopup}
                     formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}

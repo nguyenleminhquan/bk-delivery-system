@@ -119,11 +119,11 @@ function GeneralConfirm(props) {
                 <div className={styles.formGroup} key={field.name}>
                   <label>{field.label}</label>
                   {field.type === 'select' ? (
-                    <select name={field.name} onChange={handleInputChange}>
-                    <option value="">Chọn {field.label}</option>
-                    {field.models.map(item => (
-                      <option value={item.code} key={item.code}>{item.label}</option>
-                    ))}
+                    <select name={field.name} defaultValue={field.value} onChange={handleInputChange}>
+                      <option value="">Chọn {field.label}</option>
+                      {field.models.map(({code, label}) => (
+                        <option value={code} key={code}>{label}</option>
+                      ))}
                     </select>
                   ) : (
                     <input type={field.type} 
