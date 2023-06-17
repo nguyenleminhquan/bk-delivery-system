@@ -11,6 +11,7 @@ import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import moment from 'moment/moment';
 import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
+import ConfirmPopup from 'components/ConfirmPopup';
 
 const tabs = [
 	{
@@ -47,6 +48,7 @@ function SenderHome() {
 	const [showSpecificOrder, setShowSpecificOrder] = useState(false);
 	const [specificOrder, setSpecificOrder]= useState('');
 	const [selectedTab, setSelectedTab] = useState(tabs[0]);
+	const [toggleDeletePopup, setToggleDeletePopup] = useState(false);
 	const dispatch = useDispatch();
 	const socket = useContext(SocketContext);
 
@@ -125,14 +127,14 @@ function SenderHome() {
 
 			{/* General */}
 			<div className='mb-3'>
-				<h2 className='pt-5 pb-3 fs-3'>Tổng quan</h2>
+				<h2 className='pt-5 pb-3 fs-5'>Tổng quan</h2>
 				<div className="filter d-flex align-items-center">
-					<div className={`${styles.orderFilter} ${styles.orderFilterActive}`}>
+					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
 						<p className='font-weight-bold fs-1'>2</p>
 						<p>Đã lấy hàng</p>
 					</div>
 
-					<div className={styles.orderFilter}>
+					<div className={`${styles.orderFilter} ${styles.orderFilter2}`}>
 						<p className='font-weight-bold fs-1'>1</p>
 						<p>Chưa lấy hàng</p>
 					</div>
@@ -140,7 +142,7 @@ function SenderHome() {
 				</div>
 			</div>
 
-			<h2 className='pt-5 pb-3 fs-3'>Danh sách đơn hàng</h2>
+			<h2 className='pt-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
 			<ul className={styles.tabHeader}>
 				{tabs.map(tab => (
 				<li key={tab.name} 
@@ -159,6 +161,23 @@ function SenderHome() {
 					{
 						ordersByStatus.map((order) => (
 							<div key={order._id} className={styles.order}>
+								<div className={styles.orderOverlay}></div>
+								<ul className={styles.orderIcons}>
+									<li className={styles.orderIcon} onClick={() => {
+										setShowSpecificOrder(true)
+										setSpecificOrder(order)}}>
+										<FaEye />
+									</li>
+									<li className={styles.orderIcon}>
+										<FaEdit />
+									</li>
+									<li className={styles.orderIcon} onClick={() => {
+										setToggleDeletePopup(true);
+										setSpecificOrder(order);
+									}}>
+										<FaTrashAlt />
+									</li>
+								</ul>
 								<div className={styles.orderInfo}>
 									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
@@ -179,7 +198,7 @@ function SenderHome() {
 										}
 									</div>
 								</div>
-								<div className={styles.iconList}>
+								{/* <div className={styles.iconList}>
 									<div className={`${styles.icon} ${styles.green}`} onClick={() => {
 										setShowSpecificOrder(true)
 										setSpecificOrder(order)
@@ -195,7 +214,7 @@ function SenderHome() {
 										<FaTrashAlt />
 										<span>Xóa</span>
 									</div>
-								</div>
+								</div> */}
 							</div>
 						))
 					}
@@ -204,6 +223,20 @@ function SenderHome() {
 
 			{
 				showSpecificOrder && <SpecificSenderOrder order={specificOrder} closeModal={() => setShowSpecificOrder(false)} />
+			}
+			{
+				toggleDeletePopup && (
+					<ConfirmPopup
+						title="Bạn có chắc muốn xóa đơn hàng này chứ?"
+						actionNo={() => setToggleDeletePopup(false)}
+						actionYes={() => {
+							handleDeleteOrder(specificOrder);
+							setToggleDeletePopup(false);
+						}}
+						cancelLabel="Đóng lại"
+						okLabel="Xóa"
+					/>
+				)
 			}
 
 		</div>

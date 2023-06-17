@@ -26,14 +26,14 @@
     margin-right: 24px;
     box-shadow: 1px 0 4px #BEBEBE;
     color: #000;
-    background-color: var(--white-color);
     cursor: pointer;
-    &.orderFilterActive,
-    &:hover {
-        background-color: var(--primary-color);
-        color: var(--white-color);
-        p:first-child { color: var(--white-color); }
+    &.orderFilter1 {
+        background: linear-gradient(to right bottom, #c1d6fc, #f4cdff);
     }
+    &.orderFilter2 {
+        background: linear-gradient(to right bottom, #a4e6f6, #bef0ef);
+    }
+    &.orderFilterActive,
     p:first-child {
         margin: 0;
         color: #000;
@@ -43,7 +43,8 @@
 .orderList {
     display: grid;
     gap: 20px;
-    font-size: 16px;
+    font-size: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
     p {
         margin-bottom: 0;
     }
@@ -57,15 +58,67 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        &:hover .orderOverlay {
+            opacity: 0.9;
+            visibility: visible;
+        }
+        &:hover .orderIcons {
+            opacity: 1;
+            visibility: visible;
+        }
     }
     .orderTitles {
         font-weight: bold;
         margin-bottom: 0;
         color: #0f5455;
     }
+    .orderOverlay {
+        position: absolute;
+        background-color: #2a2a2a;
+        border-radius: 3px;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        opacity: 0;
+        visibility: hidden;
+        transition: all .3s;
+    }
+    .orderIcons {
+        position: absolute;
+        z-index: 11;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        transition: all .5s;
+        opacity: 0;
+        visibility: hidden;
+    }
+    .orderIcon {
+        display: inline-block;
+        margin: 0px 5px;
+        width: 40px;
+        height: 40px;
+        background-color: #fff;
+        color: #2a2a2a;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        display: inline-block;
+        transition: all .5s;
+        cursor: pointer;
+        &:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+    }
     .orderInfo {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 10px;
         // margin-bottom: 10px;
     }
     .itemList {
@@ -116,16 +169,21 @@
 .tabHeader {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
-    font-size: 16px;
+    margin-top: 8px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    background-color: rgba(68, 226, 228, 0.1);
     .tabHeaderItem {
         min-width: 150px;
         text-align: center;
         font-weight: 600;
         cursor: pointer;
         border-bottom: 4px solid transparent;
-        color: #848484;
+        color: #4e4848;
         & ~ .tabHeaderItem {
             margin-left: 12px;
         }
