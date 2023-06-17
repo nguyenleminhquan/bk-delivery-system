@@ -50,6 +50,15 @@ export const getVehiclesThunk = async(thunkAPI) => {
     }
 }
 
+export const getVehicleByRegionThunk = async(region, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleByRegion(region);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
 export const getVehicleOrdersThunk = async(vehicle, thunkAPI) => {
     try {
         const res = await DeliveryService.getVehicleOrders(vehicle);
