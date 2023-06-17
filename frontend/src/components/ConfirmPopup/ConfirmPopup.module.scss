@@ -31,6 +31,12 @@
         }
         .footer {
             text-align: right;
+            button {
+                margin: 0;
+                box-shadow: none;
+                border-radius: 8px;
+            }
+              
         }
     }
 }

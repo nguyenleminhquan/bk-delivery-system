@@ -58,7 +58,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 								:
 								<div className='order-track'>
 									{
-										Object.entries(orderStatusList).map(([key, value]) => (
+										Object.entries(orderStatusList).filter(([key, value]) => key !== 'cancel').map(([key, value]) => (
 											<div className={key in tracking ? 'order-track-step completed' : 'order-track-step'} key={key}>
 												<div className='order-track-status'>
 													<span className="order-track-status-dot">
@@ -103,12 +103,12 @@ function SpecificSenderOrder({ closeModal, order }) {
 							</div>
 						</div>
 					</div>
-					<table className='table'>
+					<table className='order-table'>
 						<thead>
 							<tr>
-								<td>Sản phẩm</td>
-								<td>Số lượng</td>
-								<td>Khối lượng</td>
+								<th>Sản phẩm</th>
+								<th>Số lượng</th>
+								<th>Khối lượng</th>
 							</tr>
 						</thead>
 						<tbody>
