@@ -12,7 +12,7 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -95,7 +95,7 @@ function CreateOrder() {
     }
 
     const checkEmptyProductInfo = (product) => {
-        return product.name === '' || product.weight === '' || product.quantity === '';
+        return product.name === '' || product.weight === '' || product.type === '';
     }
 
     const isDisabledSubmit = () => {
@@ -341,61 +341,45 @@ function CreateOrder() {
                                             </div> */}
 
                                             <div className={styles.info}>
-                                                <span className='fw-semibold'>{index+1}.&nbsp;</span>
-                                                <div className="row d-flex align-items-center">
-                                                    <div className="col-4">
-                                                        <div className='d-flex'>
-                                                            <label className='fw-semibold me-1'>Tên</label>
-                                                            <input type="text"
-                                                                placeholder='Tên sản phẩm'
-                                                                value={product.name}
-                                                                onChange={e => handleUpdateProduct(e.target.value, index, 'name')}/>
-                                                        </div>
+                                                <div className="d-flex align-items-center">
+                                                    <span className='fw-semibold'>{index+1}.&nbsp;</span>
+                                                    <div className='d-flex'>
+                                                        <label className='fw-semibold me-1'>Tên</label>
+                                                        <input type="text"
+                                                            placeholder='Tên sản phẩm'
+                                                            value={product.name}
+                                                            onChange={e => handleUpdateProduct(e.target.value, index, 'name')}/>
                                                     </div>
-                                                    <div className="col-3">
-                                                        <div className='d-flex'>
-                                                            <label className='fw-semibold me-1'>KL(gram)</label>
-                                                            <input type="text" 
-                                                                placeholder='0' 
-                                                                value={product.weight}
-                                                                onChange={e => handleUpdateProduct(e.target.value, index, 'weight')}/>
-                                                        </div>
+                                                    <div className='d-flex'>
+                                                        <label className='fw-semibold me-1'>KL(Kilogram)</label>
+                                                        <input type="text" 
+                                                            placeholder='0' 
+                                                            value={product.weight}
+                                                            onChange={e => handleUpdateProduct(e.target.value, index, 'weight')}/>
                                                     </div>
-                                                    <div className="col-1">
-                                                        <div className='d-flex'>
-                                                            <label className='fw-semibold me-1'>SL</label>
-                                                            <input type="text" 
-                                                                placeholder='0'
-                                                                value={product.quantity}
-                                                                onChange={e => handleUpdateProduct(e.target.value, index, 'quantity')}/>
-                                                        </div>
+                                                    <div className='d-flex align-items-center'>
+                                                        <label className='fw-semibold me-1'>Loại</label>
+                                                        <SelectOption
+                                                            value={product?.type ? product.type.value : ''}
+                                                            options={orderTypes}
+                                                            onChange={selectedProductType => handleUpdateProduct(selectedProductType, index, 'type')}
+                                                            placeholder="Loại hàng"
+                                                        />
                                                     </div>
-                                                    <div className="col-3">
-                                                        <div className='d-flex align-items-center'>
-                                                            <label className='fw-semibold me-1'>Loại</label>
-                                                            <SelectOption
-                                                                value={product?.type ? product.type.value : ''}
-                                                                options={orderTypes}
-                                                                onChange={selectedProductType => handleUpdateProduct(selectedProductType, index, 'type')}
-                                                                placeholder="Loại hàng"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-1">
-                                                        <div className='d-flex flex-column'>
-                                                            {products.length > 1 && (
-                                                                <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
-                                                                    <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
-                                                                </button>
-                                                            )}
-                                                            {index === products.length - 1 && (
-                                                                <button className='flex-fill bg-white' onClick={handleAddProduct}>
-                                                                    <AiOutlinePlusCircle className={styles.addItemBtn}/>
-                                                                </button>
-                                                            )}
-                                                            <button></button>
-                                                        </div>
-                                                    </div>
+                                                </div>
+                                                
+                                                <div className='d-flex'>
+                                                    {products.length > 1 && (
+                                                        <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
+                                                            <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
+                                                        </button>
+                                                    )}
+                                                    {index === products.length - 1 && (
+                                                        <button className='flex-fill bg-white ms-1' onClick={handleAddProduct}>
+                                                            <AiOutlinePlusCircle className={styles.addItemBtn}/>
+                                                        </button>
+                                                    )}
+                                                    <button></button>
                                                 </div>
                                             </div>
                                         </div> 
