@@ -50,6 +50,10 @@ const getVehicleAvailableOrder = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}/avail-order`);
 }
 
+const exportOrderOnVehicle = ({vehicle_id, stocker_id}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/export-order`, { stocker_id });
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
@@ -60,7 +64,8 @@ const DeliveryService = {
     getVehicleOrders,
     deleteVehicleOrder,
     postVehicleOrders,
-    getVehicleAvailableOrder
+    getVehicleAvailableOrder,
+    exportOrderOnVehicle
 }
 
 export default DeliveryService
