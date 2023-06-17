@@ -240,3 +240,22 @@ img.icon-xlg, div.icon-xlg, div.icon-xlg svg {
 span.icon-xlg {
     font-size: $icon-xlg;
 }
+
+// Select option (Custom)
+.select-control-wrapper {
+    .select__control {
+        border: 1px solid $border-color;
+        min-height: unset;
+        height:$input-height;
+        &.select__control--is-focused {
+            box-shadow: unset;
+            border-color: var(--secondary-color);
+        }
+        .select__indicators {
+            height: 100%;
+            .select__indicator-separator {
+                display: none;
+            }
+        }
+    }
+}
