@@ -12,6 +12,7 @@ import orderRoutes from './routes/orderRoutes.js'
 import deliveryRoutes from './routes/deliveryRoutes.js'
 import stockRoutes from './routes/stockRoutes.js'
 import vehicleRoutes from './routes/vehicleRoutes.js'
+import exportInfoRoutes from './routes/exportInfoRoutes.js'
 import { socketOrder } from './controllers/orderController.js'
 
 connectDB()
@@ -30,6 +31,7 @@ app.use('/order', orderRoutes)
 app.use('/delivery', deliveryRoutes)
 app.use('/stock', stockRoutes)
 app.use('/vehicle', vehicleRoutes)
+app.use('/exportinfo', exportInfoRoutes)
 
 app.get('/', (req, res, next) => {
     res.send('API is running!')

@@ -28,7 +28,7 @@
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/order | GET | Get all orders by vehicle id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
-| /vehicle/search?from=<number>&to=<number> | GET | Filter vehicle by route | Authorization: Bearer <refresh_token> <access_token> | |
+| /vehicle/search?from=`number`&to=`number` | GET | Filter vehicle by route | Authorization: Bearer <refresh_token> <access_token> | |
 | /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | list_orders: [array of order_id] |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
 | /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
@@ -37,3 +37,4 @@
 | /vehicle/region/:id/search?exported=<true\|false> | GET | Get all vehicle by region and status | Authorization: Bearer <refresh_token> <access_token> |  |
 | /user/create-account | POST | Create account for stocker and driver | Authorization: Bearer <refresh_token> <access_token> | information you want to create |
 | /user/edit-account/:id | POST | Edit account for stocker and driver | Authorization: Bearer <refresh_token> <access_token>  | information you want to create |
+| /exportinfo/:id/download | GET | Get export information | Authorization: Bearer <refresh_token> <access_token> |  |
