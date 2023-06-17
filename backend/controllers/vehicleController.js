@@ -167,12 +167,32 @@ async function searchWithSpecificRegion(region_code, queries) {
   return result.flat()
 }
 
+async function searchVehicle(queries) {
+  let result = []
+
+  if ("from" in queries && "to" in queries) {
+    let vehicles = await Vehicle.find({ from: queries['from'], to: queries['to'] })
+    result.push(vehicles)
+  }
+
+  return result.flat()
+}
+
 const searchVehicleWithCondition = async (req, res, next) => {
   try {
-    const queries = req.query 
     const region_code = req.params.id
 
-    const result = await searchWithSpecificRegion(region_code, queries)
+    const result = await searchWithSpecificRegion(region_code, req.query)
+
+    return res.json(result)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const filterVehicleByRoute = async (req, res, next) => {
+  try {
+    let result = await searchVehicle(req.query)    
 
     return res.json(result)
   } catch (error) {
@@ -187,5 +207,6 @@ export {
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
   getVehicleByRegion,
-  searchVehicleWithCondition
+  searchVehicleWithCondition,
+  filterVehicleByRoute
 }

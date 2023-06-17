@@ -9,13 +9,15 @@ import {
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
   getVehicleByRegion,
-  searchVehicleWithCondition
+  searchVehicleWithCondition,
+  filterVehicleByRoute
 }  from '../controllers/vehicleController.js'
 
 const router = express.Router()
 
 router.get('/', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker']), getAllVehicle)
 router.post('/', verifyRefreshToken, verifyToken, verifyRoles(['admin']), addVehicle)
+router.get('/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), filterVehicleByRoute)
 router.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
 router.post('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), pushOrderToVehicle)
 router.delete('/order/:order_id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), deleteOrderFromVehicle)
