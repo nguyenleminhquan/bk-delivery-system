@@ -9,7 +9,7 @@
 | /user/:id | DELETE | Delete user | Authorization: Bearer <refresh_token> <access_token> | |
 | /user/employee | GET | Get all employee | Authorization: Bearer <refresh_token> <access_token> | |
 | /order | GET | Get all order | Authorization: Bearer <refresh_token> <access_token> | |
-| /order | POST | Create new order | Authorization: Bearer <refresh_token> <access_token> | sender_address: string <br /> receiver_address: string <br/>payment_type: string<br/> cod_amount: number<br/>note: string<br/>status: string<br/>shipping_fee: number<br/>user_id: objectId<br>items:<br> [{ <br/>name: string, <br>quantity: number, <br>type: string, <br>weight: number<br>}] |
+| /order | POST | Create new order | Authorization: Bearer <refresh_token> <access_token> | sender_address: string <br /> receiver_address: string <br/>payment_type: string<br/> cod_amount: number<br/>note: string<br/>status: string<br/>shipping_fee: number<br/>user_id: objectId<br>items:<br> [{ <br/>name: string, <br>type: string, <br>weight: number<br>}] |
 | /order/:id | GET | Get order by id | Authorization: Bearer <refresh_token> <access_token> | |
 | /order/:id | DELETE | Delete order by id | Authorization: Bearer <refresh_token> <access_token> | |
 | /order/:id | PATCH | Edit order by id | Authorization: Bearer <refresh_token> <access_token> | Data |
@@ -28,9 +28,12 @@
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/order | GET | Get all orders by vehicle id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
+| /vehicle/search?from=<number>&to=<number> | GET | Filter vehicle by route | Authorization: Bearer <refresh_token> <access_token> | |
 | /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | list_orders: [array of order_id] |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
 | /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle/:id/export-order | POST | Export order on vehicle | Authorization: Bearer <refresh_token> <access_token> | { stocker_id: id } |
 | /vehicle/region/:id | GET | Get all vehicle by rgion | Authorization: Bearer <refresh_token> <access_token> |  |
+| /vehicle/region/:id/search?exported=<true\|false> | GET | Get all vehicle by region and status | Authorization: Bearer <refresh_token> <access_token> |  |
 | /user/create-account | POST | Create account for stocker and driver | Authorization: Bearer <refresh_token> <access_token> | information you want to create |
 | /user/edit-account/:id | POST | Edit account for stocker and driver | Authorization: Bearer <refresh_token> <access_token>  | information you want to create |

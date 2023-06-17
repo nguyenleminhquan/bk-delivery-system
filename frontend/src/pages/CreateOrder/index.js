@@ -19,6 +19,7 @@ import SearchAddress from 'components/SearchAddress';
 import GeneralConfirm from 'components/GeneralConfirm';
 import Paypal from 'components/Paypal';
 import AddressForm from 'components/AddressForm';
+import SelectOption from 'components/SelectOption';
 
 const infoModel = {
     fullname: '',
@@ -73,12 +74,12 @@ function CreateOrder() {
     const socket = useContext(SocketContext);
 
     const [paypalPopup, setPaypalPopup] = useState(false);
+    // const [selectedProductType, setSelectedProductType] = useState(null);
 
-    const handleUpdateProduct = (e, index, field) => {
-        const value = e.target.value;
+    const handleUpdateProduct = (newValue, index, field) => {
         setProducts(products.map((product, idx) => {
             if (index === idx) {
-                return {...product, [field]: value};
+                return {...product, [field]: field === 'type' ? newValue.value : newValue};
             }
             return product;
         }));
@@ -142,6 +143,8 @@ function CreateOrder() {
             from: `${senderInfo.fullname}&${senderAddress}`,
             to: `stock_${user.area_code}`
         }
+
+        console.log(orderPayload);
         dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         clearOrderState();
     }
@@ -338,34 +341,33 @@ function CreateOrder() {
                                             </div> */}
 
                                             <div className={styles.info}>
-                                                <div class="d-flex align-items-center">
+                                                <div className="d-flex align-items-center">
                                                     <span className='fw-semibold'>{index+1}.&nbsp;</span>
                                                     <div className='d-flex'>
                                                         <label className='fw-semibold me-1'>Tên</label>
                                                         <input type="text"
                                                             placeholder='Tên sản phẩm'
                                                             value={product.name}
-                                                            onChange={e => handleUpdateProduct(e, index, 'name')}/>
+                                                            onChange={e => handleUpdateProduct(e.target.value, index, 'name')}/>
                                                     </div>
                                                     <div className='d-flex'>
                                                         <label className='fw-semibold me-1'>KL(Kilogram)</label>
                                                         <input type="text" 
                                                             placeholder='0' 
                                                             value={product.weight}
-                                                            onChange={e => handleUpdateProduct(e, index, 'weight')}/>
+                                                            onChange={e => handleUpdateProduct(e.target.value, index, 'weight')}/>
                                                     </div>
-                                                    <div className='d-flex'>
+                                                    <div className='d-flex align-items-center'>
                                                         <label className='fw-semibold me-1'>Loại</label>
-                                                        <select value={product.type}
-                                                            onChange={e => handleUpdateProduct(e, index, 'type')}>
-                                                            {product?.type 
-                                                                ? <option value={product.type}>{product.type}</option>
-                                                                : <option value="">--Loại--</option>
-                                                            }
-                                                            {ProductTypes.map(item => (<option key={item} value={item}>{item}</option>))}
-                                                        </select>
+                                                        <SelectOption
+                                                            value={product?.type ? product.type.value : ''}
+                                                            options={orderTypes}
+                                                            onChange={selectedProductType => handleUpdateProduct(selectedProductType, index, 'type')}
+                                                            placeholder="Loại hàng"
+                                                        />
                                                     </div>
                                                 </div>
+                                                
                                                 <div className='d-flex'>
                                                     {products.length > 1 && (
                                                         <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>

@@ -1,10 +1,39 @@
 import Vehicle from "../models/Vehicle.js"
 import Drive from "../models/Drive.js"
-import User from "../models/User.js"
+import ExportInfo from "../models/ExportInfo.js"
 import createError from 'http-errors'
 import Order from "../models/Order.js"
 import Delivery from "../models/Delivery.js"
 
+// --------------------
+// Utils
+// --------------------
+async function searchWithSpecificRegion(region_code, queries) {
+  let result = []
+
+  if ("exported" in queries) {
+    let vehicles = await 
+            Vehicle.find({ current_address_code: region_code, exported: queries['exported']})
+    result.push(vehicles)
+  }
+  
+  return result.flat()
+}
+
+async function searchVehicle(queries) {
+  let result = []
+
+  if ("from" in queries && "to" in queries) {
+    let vehicles = await Vehicle.find({ from: queries['from'], to: queries['to'] })
+    result.push(vehicles)
+  }
+
+  return result.flat()
+}
+
+// ----------------------
+// Controllers
+// ----------------------
 const getAllVehicle = async (req, res, next) => {
   try {
     let allVehicle = await Vehicle.find({}).populate('orders').populate('driver_id')
@@ -153,11 +182,56 @@ const getVehicleByRegion = async (req, res, next) => {
   }
 }
 
+
+const searchVehicleWithCondition = async (req, res, next) => {
+  try {
+    const region_code = req.params.id
+
+    const result = await searchWithSpecificRegion(region_code, req.query)
+
+    return res.json(result)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const filterVehicleByRoute = async (req, res, next) => {
+  try {
+    let result = await searchVehicle(req.query)    
+
+    return res.json(result)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
+const exportOrder = async (req, res, next) => {
+  try {
+    const body = req.body
+    const vehicle_id = req.params.id
+    // Send: vehicle_id, stocker_id
+    const vehicle = await Vehicle.findById(vehicle_id)
+
+    console.debug("vehicle")
+    console.log(vehicle)
+
+    let exportInfo = 
+      new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, orders: vehicle.orders })
+
+    return res.json(exportInfo)
+  } catch (error) {
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
   pushOrderToVehicle,
   deleteOrderFromVehicle,
   getAllOrdersByVehicle,
-  getVehicleByRegion
+  getVehicleByRegion,
+  searchVehicleWithCondition,
+  filterVehicleByRoute,
+  exportOrder
 }

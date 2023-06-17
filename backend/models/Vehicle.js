@@ -22,6 +22,10 @@ const vehicleSchema = mongoose.Schema({
   },
   area_code: {
     type: Number
+  },
+  exported: {
+    type: Boolean,
+    default: false
   }
 })
 
