@@ -45,7 +45,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 							order.status === 'cancel'
 								? 
 								<div className='order-canceled'>
-									<p>Đơn hàng đã bị hủy</p>
+									<p>Đơn hàng đã bị hủy do không tìm được tài xế</p>
 									<button 
 										className='btn btn-medium' 
 										onClick={() => {

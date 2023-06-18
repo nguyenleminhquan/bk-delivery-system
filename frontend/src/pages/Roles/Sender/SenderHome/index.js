@@ -62,6 +62,12 @@ function SenderHome() {
 			})
 			toast.success('Xóa đơn hàng thành công')
 		}
+		else if (order.status === 'cancel') {
+			socket.emit('deleteOrder', {
+				order_id: order._id
+			})
+			toast.success('Xóa đơn hàng thành công')
+		}
 		else {
 			toast.warning('Đơn hàng đã được nhận, không thể xóa')
 		}
@@ -182,7 +188,10 @@ function SenderHome() {
 									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
-									<div><p className={styles.orderTitles}>Trạng thái</p> {orderStatusList[order.status]}</div>
+									<div>
+										<p className={styles.orderTitles}>Trạng thái</p> 
+										<span className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status]}</span>
+									</div>
 								</div>
 								<div className=''>
 									<p className={styles.orderTitles}>Địa chỉ người nhận</p> 

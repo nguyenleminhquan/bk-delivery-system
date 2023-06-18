@@ -140,8 +140,8 @@ function CreateOrder() {
             status: OrderStatus.WAITING,
             area_code: user.area_code,
             type: 'inner',
-            from: `${senderInfo.fullname}&${senderAddress}`,
-            to: `stock_${user.area_code}`
+            from: `${senderInfo.fullname}&${generateFinalAddress(senderInfo)}`,
+            to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`
         }
 
         console.log(orderPayload);
