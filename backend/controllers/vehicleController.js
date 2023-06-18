@@ -142,13 +142,13 @@ const getAllOrdersByVehicle = async (req, res, next) => {
 
 const getAvailableOrderForVehicle = async (req, res, next) => {
   try {
-    const vehicle = await Vehicle.findById(req.params.id)
+    const vehicle_id = req.params.id
+    const vehicle = await Vehicle.findById(vehicle_id)
 
     const delivery = await Delivery.find({ 
-      from: vehicle.from,
-      to: vehicle.to,
+      area_code: vehicle.area_code, 
       type: 'inner',
-      status: 'deliveried'
+      status: 'deliveried',
     })
 
     const listOrderIds = delivery.map(item => item.order._id)
@@ -235,6 +235,5 @@ export {
   getVehicleByRegion,
   searchVehicleWithCondition,
   filterVehicleByRoute,
-  exportOrder,
-  getAvailableOrderForVehicle
+  exportOrder
 }
