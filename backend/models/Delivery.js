@@ -14,14 +14,13 @@ const deliverySchema = mongoose.Schema({
     enum: ['waiting', 'accepted', 'picked', 'deliveried'],
     default: 'waiting'
   },
-  area_code: {
-    type: Number
-  },
-  from: {
-    type: String
-  },
-  to: {
-    type: String
+  from: Number,
+  to: Number,
+  from_string: String,
+  to_string: String,
+  previous_type: {
+    type: String,
+    default: 'none'
   },
   type: {
     type: String,
