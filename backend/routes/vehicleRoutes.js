@@ -11,8 +11,7 @@ import {
   getVehicleByRegion,
   searchVehicleWithCondition,
   filterVehicleByRoute,
-  exportOrder,
-  getAvailableOrderForVehicle
+  exportOrder
 }  from '../controllers/vehicleController.js'
 
 const router = express.Router()
@@ -22,7 +21,6 @@ router.get('/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker'])
 router.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
 router.get('/region/:id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getVehicleByRegion)
 router.get('/region/:id/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), searchVehicleWithCondition)
-router.get('/:id/avail-order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAvailableOrderForVehicle)
 router.post('/', verifyRefreshToken, verifyToken, verifyRoles(['admin']), addVehicle)
 router.post('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), pushOrderToVehicle)
 router.post('/:id/export-order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), exportOrder)
