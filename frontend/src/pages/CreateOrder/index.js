@@ -30,7 +30,7 @@ const infoModel = {
 const productModel = {
     name: '',
     weight: '',
-    quantity: '',
+    // quantity: '',
     // imgUrl: '',
     type: '',
 }
