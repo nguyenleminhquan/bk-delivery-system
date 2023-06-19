@@ -217,6 +217,8 @@ const exportOrder = async (req, res, next) => {
 
     let exportInfo = 
       new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, orders: vehicle.orders })
+    
+    await exportInfo.save()
 
     return res.json(exportInfo)
   } catch (error) {
