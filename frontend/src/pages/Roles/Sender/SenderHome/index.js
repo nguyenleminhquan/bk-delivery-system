@@ -202,7 +202,7 @@ function SenderHome() {
 									<div className={styles.itemList}>
 										{
 											order.items.map((item) => (
-												<p key={item._id} className={styles.item} > {item.name} x {item.quantity} </p>
+												<p key={item._id} className={styles.item} > {item.name} </p>
 											))
 										}
 									</div>

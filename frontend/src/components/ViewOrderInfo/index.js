@@ -41,14 +41,14 @@ function ViewOrderInfo({ orderInfo }) {
 				<h4 className='fs-6'>Chi tiết đơn hàng</h4>
 				<div>
 					<p>Mã đơn: {orderInfo.id}</p>
-					<p>Số lượng: {orderInfo.quantity}</p>
+					{/* <p>Số lượng: {orderInfo.quantity}</p> */}
 					<p>Khối lượng: {orderInfo.weight}</p>
 				</div>
 				<table className='order-table'>
 					<thead>
 						<tr>
 							<th>Sản phẩm</th>
-							<th>Số lượng</th>
+							{/* <th>Số lượng</th> */}
 							<th>Khối lượng</th>
 						</tr>
 					</thead>
@@ -56,7 +56,7 @@ function ViewOrderInfo({ orderInfo }) {
 						{orderInfo.items.map((item) => (
 							<tr key={item._id}>
 								<td> {item.name} </td>
-								<td> {item.quantity} </td>
+								{/* <td> {item.quantity} </td> */}
 								<td> {item.weight} kg </td>
 							</tr>
 						))}
