@@ -89,7 +89,7 @@ function DriverHome() {
         id: 'viewOrder',
         text: 'Xem đơn hàng',
         action: () => {
-          setToggleViewOrderPopup(true)
+          // setToggleViewOrderPopup(true)
           setOrderInfo(orderPopop)
         }
       }
@@ -265,7 +265,7 @@ function DriverHome() {
           okLabel="Check-in"
       />
       )}
-      <h2 className='pb-3 fs-3'>Đơn hàng thực hiện</h2>
+      <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
       
       <ul className={styles.tabHeader}>
         {tabs.map(tab => (
@@ -287,14 +287,14 @@ function DriverHome() {
         ))}
       </div>
 
-      {toggleViewOrderPopup && (
+      {/* {toggleViewOrderPopup && (
 				<ConfirmPopup 
 					title='Thông tin đơn hàng'
 					content={<ViewOrderInfo orderInfo={orderInfo} />}
 					actionNo={() => setToggleViewOrderPopup(false)}
 					cancelLabel="Đóng lại"
 				/>
-			)}	
+			)}	 */}
 
     </div>
   )
