@@ -134,7 +134,9 @@ function CreateOrder() {
                 quantity: product.quantity,
                 type: product.type,
                 weight: product.weight,
-            }))
+            })),
+            weight: getTotalProductWeight(products)
+
         };
         const deliveryPayload = {
             status: OrderStatus.WAITING,
@@ -166,6 +168,10 @@ function CreateOrder() {
         if (object?.addressDetail && object?.ward && object?.district && object?.city) {
             return `${object?.addressDetail}, ${object?.ward}, ${object?.district}, ${object?.city}`;
         }
+    }
+
+    function getTotalProductWeight(products) {
+        return products.reduce((acc, curr) => acc + Number(curr.weight), 0);
     }
 
     const handleChangePaymentOption = e => {
