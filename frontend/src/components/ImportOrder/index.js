@@ -1,11 +1,12 @@
 import FormInput from 'components/FormInput'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai';
 import { FaSearch } from 'react-icons/fa';
 import './index.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { importOrderToStock } from 'features/stock/stockSlice';
 import { getOrderById } from 'features/user/orderSlice';
+import { SocketContext } from 'index';
 
 function ImportOrder() {
 	const { user } = useSelector(state => state.user);
@@ -13,6 +14,7 @@ function ImportOrder() {
 	const dispatch = useDispatch();
 	const [orderId, setOrderId] = useState('');
 	const [orderInfo, setOrderInfo] = useState('');
+	const socket = useContext(SocketContext);
 
 	const handleSearch = (e) => {
 		e.preventDefault();
@@ -26,6 +28,11 @@ function ImportOrder() {
 			stocker_id: user?._id,
 		}
 		dispatch(importOrderToStock(payload));
+		socket.emit('updateOrderStatus', {
+            order_id: payload.order_id,
+            status: 'import',
+            date: new Date()
+        })
 		setOrderId('');
 		setOrderInfo('');
 	}
