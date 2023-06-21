@@ -12,6 +12,15 @@ export const getOrderThunk = async(thunkAPI) => {
     }
 }
 
+export const getOrderByIdThunk = async(orderId, thunkAPI) => {
+    try {
+        const res = await OrderService.getOrderById(orderId);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI)
+    }
+}
+
 export const getOrdersByUserIdThunk = async(userId, thunkAPI) => {
     try {
         const res = await OrderService.getOrdersByUserId(userId);

@@ -4,6 +4,7 @@ import { BsPersonCircle } from 'react-icons/bs'
 import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import {CODMethodIcon, MomoMethodIcon, ATMMethodIcon } from '../components/Icons';
+export * from './consts';
 
 export const loginFields = (values) => [
     {
@@ -358,11 +359,11 @@ export const paymentOptions = [
 ]
 
 export const orderTypes = [
-    { code: 'electronic', label: 'Điện tử' },
-    { code: 'fragile', label: 'Dễ vỡ' },
-    { code: 'food', label: 'Thức ăn' },
-    { code: 'cloth', label: 'Quần áo' },
-    { code: 'others', label: 'Còn lại' }
+    { value: 'electronic', label: 'Điện tử' },
+    { value: 'fragile', label: 'Dễ vỡ' },
+    { value: 'food', label: 'Thức ăn' },
+    { value: 'cloth', label: 'Quần áo' },
+    { value: 'others', label: 'Còn lại' }
 ];
 
 export const orderStatusList = {

@@ -50,6 +50,15 @@ export const getVehiclesThunk = async(thunkAPI) => {
     }
 }
 
+export const getVehicleByRegionThunk = async(region, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleByRegion(region);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
 export const getVehicleOrdersThunk = async(vehicle, thunkAPI) => {
     try {
         const res = await DeliveryService.getVehicleOrders(vehicle);
@@ -80,6 +89,15 @@ export const postVehicleOrdersThunk = async(vehicle, thunkAPI) => {
 export const getVehicleAvailableOrderThunk = async(vehicle, thunkAPI) => {
     try {
         const res = await DeliveryService.getVehicleAvailableOrder(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
+export const exportOrderOnVehicleThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await DeliveryService.exportOrderOnVehicle(payload);
         return res.data;
     } catch(error) {
         return checkForUnauthorizedResponse(error, thunkAPI);

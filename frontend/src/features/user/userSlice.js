@@ -4,6 +4,7 @@ import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStor
 import { changePasswordThunk, checkInDayThunk, clearStoreThunk, createEmployeeThunk, deleteUserThunk, editEmployeeThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
+import { EmployeeManagementToast } from "utils/enums";
 
 const initialState = {
     user: getUserFromLocalStorage(),
@@ -197,6 +198,7 @@ const userSlice = createSlice({
         [createEmployee.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             state.employees.push(payload);
+            toast.success(EmployeeManagementToast.CREATE_EMPLOYEE_SUCCESSFUL);
         },
         [editEmployee.pending]: state => {
             state.isLoading = true;
@@ -213,7 +215,7 @@ const userSlice = createSlice({
                 }
                 return employee;
             });
-            toast.success('Cập nhật thông tin thành công.');
+            toast.success(EmployeeManagementToast.UPDATE_EMPLOYEE_SUCCESSFUL);
         },
         [deleteUser.pending]: state => {
             state.isLoading = true;
@@ -226,7 +228,7 @@ const userSlice = createSlice({
             state.isLoading = false;
             // Update lai employee...
             state.employees = state.employees.filter(employee => employee._id !== payload._id);
-            toast.success('Xóa người dùng thành công.');
+            toast.success(EmployeeManagementToast.DELETE_EMPLOYEE_SUCCESSFUL);
         }
     }
 })

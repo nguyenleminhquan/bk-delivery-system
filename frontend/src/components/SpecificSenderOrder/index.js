@@ -45,7 +45,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 							order.status === 'cancel'
 								? 
 								<div className='order-canceled'>
-									<p>Đơn hàng đã bị hủy</p>
+									<p>Đơn hàng đã bị hủy do không tìm được tài xế</p>
 									<button 
 										className='btn btn-medium' 
 										onClick={() => {
@@ -107,7 +107,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 						<thead>
 							<tr>
 								<th>Sản phẩm</th>
-								<th>Số lượng</th>
+								{/* <th>Số lượng</th> */}
 								<th>Khối lượng</th>
 							</tr>
 						</thead>
@@ -115,7 +115,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 							{order.items.map((item) => (
 								<tr key={item._id}>
 									<td> {item.name} </td>
-									<td> {item.quantity} </td>
+									{/* <td> {item.quantity} </td> */}
 									<td> {item.weight} kg </td>
 								</tr>
 							))}

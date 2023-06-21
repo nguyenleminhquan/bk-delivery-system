@@ -23,6 +23,12 @@ const deliverySchema = mongoose.Schema({
   to: {
     type: String
   },
+  from_code: Number,
+  to_code: Number,
+  previous_type: {
+    type: String,
+    default: 'none'
+  },
   type: {
     type: String,
     enum: ['inner', 'inter']

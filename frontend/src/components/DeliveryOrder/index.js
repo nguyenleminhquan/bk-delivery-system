@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import './index.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import ViewOrderInfo from 'components/ViewOrderInfo';
+import { toast } from 'react-toastify';
 
 function DeliveryOrder({ delivery }) {
 	const { from, to, btns } = delivery;
@@ -30,14 +31,14 @@ function DeliveryOrder({ delivery }) {
 				<div className='address'>
 					<div className='circle circle-1'></div>
 					<div className='text'>
-						<p>Lấy: { from.split('&')[0] } </p>
+						<p>Bên gửi: { from.split('&')[0] } </p>
 						<p> { from.split('&')[1] } </p>
 					</div>
 				</div>
 				<div className='address'>
 					<div className='circle circle-2'></div>
 					<div className='text'>
-						<p>Giao: { to.split('&')[0] } </p>
+						<p>Bên nhận: { to.split('&')[0] } </p>
 						<p> { to.split('&')[1] } </p>
 					</div>
 				</div>
@@ -81,7 +82,12 @@ function DeliveryOrder({ delivery }) {
 						actionNo={() => setTogglePopup(false)}
 						actionYes={() => {
 							selectedBtn.action();
-							setTogglePopup(false)
+							setTogglePopup(false);
+							if (selectedBtn.id === 'cancel') {
+								toast.success('Đã hủy đơn hàng')
+							} else {
+								toast.success('Đã cập nhật trạng thái đơn hàng')
+							}
 						}}
 						cancelLabel="Đóng lại"
 						okLabel="Xác nhận"

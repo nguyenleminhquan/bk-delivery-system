@@ -30,12 +30,16 @@ const getVehicles = () => {
     return customFetch.get('/vehicle');
 }
 
+const getVehicleByRegion = (region_id) => {
+    return customFetch.get(`/vehicle/region/${region_id}`);
+}
+
 const getVehicleOrders = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}/order`);
 }
 
-const postVehicleOrders = ({vehicle_id, order_ids}) => {
-    return customFetch.post(`/vehicle/${vehicle_id}/order`, order_ids);
+const postVehicleOrders = ({vehicle_id, list_orders}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders});
 }
 
 const deleteVehicleOrder = ({order_id, vehicle_id}) => {
@@ -46,16 +50,22 @@ const getVehicleAvailableOrder = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}/avail-order`);
 }
 
+const exportOrderOnVehicle = ({vehicle_id, stocker_id}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/export-order`, { stocker_id });
+}
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
     updateDeliveryStatus,
     acceptDelivery,
     getVehicles,
+    getVehicleByRegion,
     getVehicleOrders,
     deleteVehicleOrder,
     postVehicleOrders,
-    getVehicleAvailableOrder
+    getVehicleAvailableOrder,
+    exportOrderOnVehicle
 }
 
 export default DeliveryService

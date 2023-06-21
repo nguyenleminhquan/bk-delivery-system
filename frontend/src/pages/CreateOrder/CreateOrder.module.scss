@@ -81,7 +81,9 @@
                 }
                 .info {
                     display: flex;
+                    align-items: center;
                     flex: 1;
+                    justify-content: space-between;
                     input {
                         border-bottom: 1px solid var(--border-color);
                         width: 100%;

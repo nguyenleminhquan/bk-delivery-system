@@ -1,8 +1,13 @@
+import SelectOption from 'components/SelectOption';
 import styles from './AddressForm.module.scss'
+import { useEffect, useState } from 'react';
 
 // Props contains: [stateInfo, setStateInfo], cities, districts, wards
 function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, wards, setWards, activeField, combination}) {
-    const TagName = combination ? 'div' : 'form'
+    const TagName = combination ? 'div' : 'form';
+    const [citiesData, setCitiesData] = useState([]);
+    const [districtsData, setDistrictsData] = useState([]);
+    const [wardsData, setWardsData] = useState([]);
     const handleChangeInfo = (event) => {
         const key = event.target.name;
         const value = event.target.value;
@@ -10,36 +15,36 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
     }
 
     const findDistricts = city => {
-        const result = cities.find(item => item.name === city);
+        const result = cities.find(item => item.name === city.value);
         setDistricts(result.districts);
     }
 
     const findWards = district => {
-        const result = districts.find(item => item.name === district);
+        const result = districts.find(item => item.name === district.value);
         setWards(result.wards);
     }
 
-    const handleChangeCity = event => {
-        findDistricts(event.target.value);
+    const handleChangeCity = city => {
+        findDistricts(city);
         setStateInfo(prev => ({
             ...prev, 
-            city: event.target.value,
+            city: city.value,
             district: '',
             ward: ''
         }))
     }
 
-    const handleChangeDistrict = event => {
-        findWards(event.target.value);
+    const handleChangeDistrict = district => {
+        findWards(district);
         setStateInfo(prev => ({
             ...prev,
-            district: event.target.value,
+            district: district.value,
             ward: '',
         }))
     }
 
-    const handleChangeWard = event => {
-        setStateInfo(prev => ({...prev, ward: event.target.value }))
+    const handleChangeWard = ward => {
+        setStateInfo(prev => ({...prev, ward: ward.value }));
     }
 
     const isActiveField = (fieldName) => {
@@ -53,6 +58,28 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                 ? 'col-6' 
                 : 'col-12';
     }
+
+    function convertSelectOptions(data) {
+        return data.map(item => ({label: item.name, value: item.name}));
+    }
+
+    useEffect(() => {
+        if (cities) {
+            setCitiesData(convertSelectOptions(cities));
+        }
+    }, [cities]);
+
+    useEffect(() => {
+        if (districts) {
+            setDistrictsData(convertSelectOptions(districts));
+        }
+    }, [districts]);
+
+    useEffect(() => {
+        if (wards) {
+            setWardsData(convertSelectOptions(wards));
+        }
+    }, [wards])
 
     return (
         <TagName className={`mt-2 ${!combination && 'row'}`}>
@@ -84,59 +111,46 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                 {isActiveField('city') && (
                     <div className={styles.formGroup}>
                         <label>Tỉnh/Thành phố</label>
-                        <select
-                            value={stateInfo?.city ? stateInfo.city : ''}
-                            onChange={handleChangeCity}
-                        >
-                            {stateInfo?.city
-                                ? <option value={stateInfo.city}>{stateInfo.city}</option>
-                                : <option value="">--Chọn tỉnh/thành phố--</option>}
-                            {cities.map(item => (
-                                <option key={item.code} value={item.name}>{item.name}</option>
-                            ))}
-                        </select>
+                        <SelectOption
+                            options={citiesData}
+                            value={stateInfo?.city ? stateInfo.city.value : ''}
+                            onChange={selectedCity => handleChangeCity(selectedCity)}
+                            placeholder='Chọn thành phố'
+                        />
                     </div>
                 )}
 
                 {isActiveField('district') && (
                     <div className={styles.formGroup}>
                         <label>Quận/Huyện</label>
-                        <select
-                            value={stateInfo?.district ? stateInfo.district : ''}
-                            onChange={handleChangeDistrict}>
-                            {stateInfo.district
-                                ? <option value={stateInfo.district}>{stateInfo.district}</option>
-                                : <option value="">--Chọn quận/huyện--</option>}
-                            {districts.map(item => (
-                                <option key={item.code} value={item.name}>{item.name}</option>
-                            ))} 
-                        </select>
+                        <SelectOption
+                            options={districtsData}
+                            value={stateInfo?.district ? stateInfo.district.value : ''}
+                            onChange={selectedDistrict => handleChangeDistrict(selectedDistrict)}
+                            placeholder='Chọn quận/huyện'
+                        />
                     </div>
                 )}
 
                 {isActiveField('province') && (
                     <div className={styles.formGroup}>
                         <label>Phường/Xã</label>
-                        <select
-                            value={stateInfo?.ward ? stateInfo.ward : ''}
-                            onChange={handleChangeWard}>
-                            {stateInfo.ward
-                                ? <option value={stateInfo.ward}>{stateInfo.ward}</option>
-                                : <option value="">--Chọn phường/xã--</option>}
-                            {wards.map(item => (
-                                <option key={item.code} value={item.name}>{item.name}</option>
-                            ))}
-                        </select>
+                        <SelectOption
+                            options={wardsData}
+                            value={stateInfo?.ward ? stateInfo.ward.value : ''}
+                            onChange={selectedWard => handleChangeWard(selectedWard)}
+                            placeholder='Chọn phường/xã'
+                        />
                     </div>
                 )}
 
-                {isActiveField('address') && (
+                {isActiveField('addressDetail') && (
                     <div className={styles.formGroup}>
-                        <label>Địa chỉ</label>
+                        <label>Số nhà, đường</label>
                         <input type="text"
                             placeholder='Nhập địa chỉ'
-                            value={stateInfo?.address}
-                            name='address'
+                            value={stateInfo?.addressDetail ? stateInfo.addressDetail : ''}
+                            name='addressDetail'
                             onChange={e => handleChangeInfo(e)}/>
                     </div>
                 )}

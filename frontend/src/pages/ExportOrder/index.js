@@ -5,7 +5,7 @@ import { TbFileExport } from 'react-icons/tb'
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { TruckIcon } from 'components/Icons';
-import { getVehicles } from 'features/delivery/deliverySlice';
+import { getVehicleByRegion, getVehicles } from 'features/delivery/deliverySlice';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -72,6 +72,7 @@ const truckRoutesModels = [
 
 function ExportOrder() {
     const { vehicles } = useSelector(state => state.delivery);
+    const { user } = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [truckRoutes, setTruckRoutes] = useState(truckRoutesModels);
@@ -112,8 +113,8 @@ function ExportOrder() {
 
     useEffect(() => {
         // Get truck routes by stocker location -> compare stocker location with source field
-        dispatch(getVehicles());
-    }, []);
+        dispatch(getVehicleByRegion(user?.area_code));
+    }, [user]);
 
     return (
         <div className={styles.wrapper}>
@@ -158,7 +159,7 @@ function ExportOrder() {
                         <div className={styles.blockItem}>
                             <div className="d-flex">
                                 <div className="d-flex flex-column">
-                                    <span className={styles.label}>{route.from} - {route.to}</span>
+                                    <span className={styles.label}>{route.from_string} - {route.to_string}</span>
                                     <span className='mt-2'>Khả dụng, Kg:</span>
                                     <span className={styles.status}>
                                         <span className='fw-semibold'>{route.max_weight - route.current_weight}</span>
