@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { TbFileExport } from 'react-icons/tb';
 import { BiPencil, BiPackage } from 'react-icons/bi';
@@ -9,58 +9,8 @@ import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
 
-const orderModels = [
-    {
-        id: 781263,
-        weight: 123,
-    },
-    {
-        id: 87123,
-        weight: 234,
-    },
-    {
-        id: 8713145,
-        weight: 283,
-    },
-    {
-        id: 123123123,
-        weight: 134,
-    },
-    {
-        id: 182371823,
-        weight: 594,
-    },
-    {
-        id: 19823,
-        weight: 895,
-    },
-    {
-        id: 1343154,
-        weight: 345,
-    },
-    {
-        id: 940123,
-        weight: 857,
-    },
-    {
-        id: 123456,
-        weight: 938,
-    },
-    {
-        id: 654345,
-        weight: 453,
-    },
-    {
-        id: 234234,
-        weight: 300,
-    },
-    {
-        id: 456765,
-        weight: 847,
-    }
-]
 
 const ConfirmOrderLists = ({vehicle}) => {
     const dispatch = useDispatch();
@@ -127,6 +77,8 @@ const ConfirmOrderLists = ({vehicle}) => {
 function LoadOrderToTruck() {
     const dispatch = useDispatch();
     const delivery = useSelector(state => state.delivery);
+    const { user } = useSelector(state => state.user); 
+    const navigate = useNavigate();
     const location = useLocation();
     const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
@@ -139,6 +91,8 @@ function LoadOrderToTruck() {
 
     const [toggleFilter, setToggleFilter] = useState(false);
     const [openPopup, setOpenPopup] = useState(false);
+    const [openExportOrderPopup, setOpenExportOrderPopup] = useState(null);
+    const [exportPopupObject, setExportPopupObject] = useState({});
 
     const handleLoadOrder = (order, e) => {
         const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
@@ -240,15 +194,46 @@ function LoadOrderToTruck() {
         setToggleFilter(!toggleFilter);
     }
 
+    const handleExportOrder = () => {
+        setOpenExportOrderPopup(true);
+        if (truckInfo.current_weight < truckInfo.max_weight) {
+            const availableWeight = truckInfo.max_weight - truckInfo.current_weight;
+            setExportPopupObject({
+                title: 'Xe tải vẫn còn khả dụng',
+                content: `Hiện tải xe tải vẫn còn trống ${availableWeight}kg, bạn có muốn chọn thêm đơn hàng vào xe không?`,
+                okLabel: 'OK',
+                actionYes: () => setOpenExportOrderPopup(false),
+                cancelLabel: 'Tiếp tục xuất kho',
+                actionNo: confirmExportOrder
+            });
+        } else {
+            setExportPopupObject({
+                title: 'Xác nhận xuất kho',
+                content: `Bạn chắc chắn xuất hàng trên xe tải từ ${truckInfo.from_string} đến ${truckInfo.to_string} không?`,
+                okLabel: 'OK',
+                actionYes: confirmExportOrder,
+                cancelLabel: 'Hủy',
+                actionNo: () => setOpenExportOrderPopup(false)
+            });
+        }
+    }
+
+    function confirmExportOrder() {
+        const payload = { vehicle_id: truckInfo._id, stocker_id: user.id };
+        dispatch(exportOrderOnVehicle(payload));
+        setOpenExportOrderPopup(false);
+        navigate('/export-order');
+    }
+
     useEffect(() => {
         setOrders(delivery.orders.map(order => ({...order, checked: false})));
     }, [delivery.orders])
 
     useEffect(() => {
         if (truckInfo) {
-            dispatch(getVehicleAvailableOrder(truckInfo._id));
+            // dispatch(getVehicleAvailableOrder(truckInfo._id));
         }
-    }, [])
+    }, []);
 
     return (
         <div className={styles.wrapper}>
@@ -272,7 +257,7 @@ function LoadOrderToTruck() {
             </div>
             <div className="row mt-3">
                 <div className="col-12">
-                    <span className={styles.truckLabel}>{truckInfo.from} - {truckInfo.to}, {truckInfo.license_plate_number}</span>
+                    <span className={styles.truckLabel}>{truckInfo.from_string} - {truckInfo.to_string}, {truckInfo.license_plate_number}</span>
                 </div>
             </div>
             <div className="row mt-2">
@@ -293,7 +278,8 @@ function LoadOrderToTruck() {
                                 onClick={handleOpenTruckOrders}>
                                 <BiPackage className='me-2'/>
                                 Danh sách đơn hàng</button>
-                            <button className='btn customBtn active m-0'>
+                            <button className='btn customBtn active m-0'
+                                onClick={handleExportOrder}>
                                 <TbTruckDelivery className='me-2'/>
                                 Hoàn tất xuất kho
                             </button>
@@ -350,7 +336,9 @@ function LoadOrderToTruck() {
                     okLabel="OK"
                     actionYes={() => setOpenPopup(false)}
                 />
-            )}                
+            )}
+        
+            {openExportOrderPopup && <ConfirmPopup {...exportPopupObject}/> }
         </div>
     );
 }

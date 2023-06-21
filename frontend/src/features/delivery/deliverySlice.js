@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, deleteVehicleOrderThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleAvailableOrderThunk, getVehicleByRegionThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleAvailableOrderThunk, getVehicleByRegionThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -79,6 +79,13 @@ export const getVehicleAvailableOrder = createAsyncThunk(
     'delivery/getVehicleAvailableOrder',
     async(vehicle, thunkAPI) => {
         return getVehicleAvailableOrderThunk(vehicle, thunkAPI);
+    }
+)
+
+export const exportOrderOnVehicle = createAsyncThunk(
+    'delivery/exportOrderOnVehicle',
+    async(payload, thunkAPI) => {
+        return exportOrderOnVehicleThunk(payload, thunkAPI);
     }
 )
 
@@ -193,6 +200,18 @@ const deliverySlice = createSlice({
         [getVehicleAvailableOrder.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             state.orders = payload;
+        },
+        [exportOrderOnVehicle.pending]: state => {
+            state.isLoading = true;
+        }, 
+        [exportOrderOnVehicle.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [exportOrderOnVehicle.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.success('Xuất đơn hàng lên xe tải thành công');
+            // Save order data...
         }
     }
 })
