@@ -78,8 +78,7 @@ const orderSlice = createSlice({
         },
         [getOrderById.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
-            console.log(payload);
-            state.order = {...payload}
+            state.order = {...payload[0]}
         }
     }
 })
