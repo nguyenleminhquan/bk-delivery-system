@@ -142,7 +142,7 @@ function CreateOrder() {
             status: OrderStatus.WAITING,
             area_code: user.area_code,
             type: 'inner',
-            from: `${senderInfo.fullname}&${generateFinalAddress(senderInfo)}`,
+            from: `${senderInfo.fullname}&${senderAddress ?? generateFinalAddress(senderInfo)}`,
             to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`,
             from_code: senderInfo?.city ? AreaDelivery.find(area => area.label === senderInfo.city).code : user.area_code,
             to_code: AreaDelivery.find(area => area.label === receiverInfo.city).code
