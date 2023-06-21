@@ -231,7 +231,7 @@ function LoadOrderToTruck() {
 
     useEffect(() => {
         if (truckInfo) {
-            // dispatch(getVehicleAvailableOrder(truckInfo._id));
+            dispatch(getVehicleAvailableOrder(truckInfo._id));
         }
     }, []);
 
