@@ -190,7 +190,7 @@ function SenderHome() {
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
 									<div>
 										<p className={styles.orderTitles}>Trạng thái</p> 
-										<span className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status]}</span>
+										<span className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status === 'on_vehicle' ? 'import' : order.status]}</span>
 									</div>
 								</div>
 								<div className=''>
