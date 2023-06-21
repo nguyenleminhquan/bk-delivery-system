@@ -35,3 +35,12 @@ export const editStockThunk = async(payload, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const importOrderToStockThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.importOrderToStock(payload);
+        return res.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
