@@ -19,17 +19,12 @@ function ImportOrder() {
 	const handleSearch = (e) => {
 		e.preventDefault();
 		dispatch(getOrderById(orderId));
-		setOrderInfo({
-			id: '123123123',
-			name: 'Phước Tài',
-			price: '123.000đ'
-		})
 	}
 
 	const handleImport = () => {
 		const payload = {
 			order_id: orderId,
-			stock_id: '',
+			stock_id: '63f43b33d9e57fe8e2bb63bc',
 			stocker_id: user?._id,
 		}
 		dispatch(importOrderToStock(payload));
@@ -43,11 +38,10 @@ function ImportOrder() {
 	}
 
 	useEffect(() => {
-		if (order?._id) {
-			console.log(order);
-			setOrderInfo({ id: order._id, name: order?.name, price: order?.price })
+		if (order) {
+			setOrderInfo({ id: order._id, name: order?.sender_name, price: order?.shipping_fee })
 		}
-	}, [order])
+	}, [order]);
 
 	return (
 		<div className='import-order'>
