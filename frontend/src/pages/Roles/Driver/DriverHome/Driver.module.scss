@@ -1,20 +1,24 @@
 .wrapper {
-    font-size: 16px;
     .tabHeader {
         display: flex;
         justify-content: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border: 1px solid var(--primary-color);
+        border-radius: 5px;
+        background-color: rgba(68, 226, 228, 0.1);
         .tabHeaderItem {
             min-width: 150px;
             text-align: center;
             font-weight: 600;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            border-bottom: 4px solid transparent;
             & ~ .tabHeaderItem {
                 margin-left: 12px;
             }
 
             &.active {
-                border-bottom: 2px solid var(--primary-color);
+                border-bottom: 4px solid var(--primary-color);
                 color: var(--primary-color);
             }
         }
@@ -26,6 +30,6 @@
     margin-top: 20px;
     margin-bottom: 20px;
     display: grid;
-    grid-template-columns: repeat( auto-fit, minmax(400px, 1fr) );
+    grid-template-columns: repeat( auto-fit, minmax(420px, 1fr) );
     gap: 20px;
 }

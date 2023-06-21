@@ -19,7 +19,8 @@
         padding: 20px;
         border-bottom: 1px solid #E5E5E5;
         .address {
-            display: flex;
+            display: grid;
+            grid-template-columns: 12px auto;
             gap: 10px;
             align-items: flex-start;
             .circle {
@@ -57,6 +58,7 @@
         justify-content: center;
         .btn {
             text-transform: none;
+            font-size: 14px;
         }
     }
 }

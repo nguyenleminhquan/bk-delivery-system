@@ -45,7 +45,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 							order.status === 'cancel'
 								? 
 								<div className='order-canceled'>
-									<p>Đơn hàng đã bị hủy</p>
+									<p>Đơn hàng đã bị hủy do không tìm được tài xế</p>
 									<button 
 										className='btn btn-medium' 
 										onClick={() => {
@@ -58,7 +58,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 								:
 								<div className='order-track'>
 									{
-										Object.entries(orderStatusList).map(([key, value]) => (
+										Object.entries(orderStatusList).filter(([key, value]) => key !== 'cancel').map(([key, value]) => (
 											<div className={key in tracking ? 'order-track-step completed' : 'order-track-step'} key={key}>
 												<div className='order-track-status'>
 													<span className="order-track-status-dot">
@@ -103,19 +103,19 @@ function SpecificSenderOrder({ closeModal, order }) {
 							</div>
 						</div>
 					</div>
-					<table className='table'>
+					<table className='order-table'>
 						<thead>
 							<tr>
-								<td>Sản phẩm</td>
-								<td>Số lượng</td>
-								<td>Khối lượng</td>
+								<th>Sản phẩm</th>
+								{/* <th>Số lượng</th> */}
+								<th>Khối lượng</th>
 							</tr>
 						</thead>
 						<tbody>
 							{order.items.map((item) => (
 								<tr key={item._id}>
 									<td> {item.name} </td>
-									<td> {item.quantity} </td>
+									{/* <td> {item.quantity} </td> */}
 									<td> {item.weight} kg </td>
 								</tr>
 							))}

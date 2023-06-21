@@ -9,7 +9,7 @@ import {useState, useEffect} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -142,6 +142,10 @@ function LoadOrderToTruck() {
             // setTruckLoad([]);
         } else {
             setTruckAvailable(truckAvailable - totalClickedWeight);
+            dispatch(postVehicleOrders({
+                vehicle_id: truckInfo._id,
+                list_orders: orders.filter(order => order.checked).map(item => item._id),
+            }));
             // Update order list (remove) after load order to truck
             setOrders(updateOrderList());
             setTotalWeight(0);
@@ -311,7 +315,7 @@ function LoadOrderToTruck() {
                                                     checked={order.checked}
                                                     onChange={e => handleLoadOrder(order, e)}
                                                 /></div>
-                                                <div className="col-6">{order.id}</div>
+                                                <div className="col-6">{order._id}</div>
                                                 <div className="col-5">{order.weight}</div>
                                             </div>)))
                                         : (<div className='p-2'>Không có đơn hàng nào</div>)

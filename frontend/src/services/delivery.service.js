@@ -38,8 +38,8 @@ const getVehicleOrders = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}/order`);
 }
 
-const postVehicleOrders = ({vehicle_id, order_ids}) => {
-    return customFetch.post(`/vehicle/${vehicle_id}/order`, order_ids);
+const postVehicleOrders = ({vehicle_id, list_orders}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders});
 }
 
 const deleteVehicleOrder = ({order_id, vehicle_id}) => {
