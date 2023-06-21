@@ -12,7 +12,7 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -143,10 +143,10 @@ function CreateOrder() {
             area_code: user.area_code,
             type: 'inner',
             from: `${senderInfo.fullname}&${generateFinalAddress(senderInfo)}`,
-            to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`
+            to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`,
+            from_code: senderInfo?.city ? AreaDelivery.find(area => area.label === senderInfo.city).code : user.area_code,
+            to_code: AreaDelivery.find(area => area.label === receiverInfo.city).code
         }
-
-        console.log(orderPayload);
         dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         clearOrderState();
     }
