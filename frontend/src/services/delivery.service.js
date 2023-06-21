@@ -51,7 +51,7 @@ const getVehicleAvailableOrder = (vehicle_id) => {
 }
 
 const getVehicleByRoute = ({from, to}) => {
-    return customFetch.get(`/vehicle/search?from=${from}&to${to}`);
+    return customFetch.get(`/vehicle/search?from=${from}&to=${to}`);
 }
 
 const DeliveryService = {

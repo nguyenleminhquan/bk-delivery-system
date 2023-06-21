@@ -5,78 +5,28 @@ import { TbFileExport } from 'react-icons/tb'
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { TruckIcon } from 'components/Icons';
-import { getVehicleByRegion, getVehicles } from 'features/delivery/deliverySlice';
+import { getVehicleByRegion, getVehicleByRoute, getVehicles } from 'features/delivery/deliverySlice';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
  *     - Stocker ở kho tỉnh -> hiển thị các xe tải về kho tổng Hồ Chí Minh   
  */
-const routeModels = [
-    {
-        source: '',
-        destination: '',
-        label: 'Tất cả'
-    },
-    {
-        source: 'hochiminh',
-        destination: 'soctrang',
-        label: 'HCM - Sóc Trăng'
-    },
-    {
-        source: 'hochiminh',
-        destination: 'tiengiang',
-        label: 'HCM - Tiền Giang'
-    },
-    {
-        source: 'hochiminh',
-        destination: 'daklak',
-        label: 'HCM - Đắk Lắk'
-    }
-]
-
-const truckRoutesModels = [
-    {
-        id: 'SGST1',
-        source: 'hochiminh',
-        destination: 'soctrang',
-        label: 'HCM - Sóc Trăng',
-        net: 1000,
-        driver: 'Nguyễn Văn A',
-        availability: 100,
-    },
-    {
-        id: 'SGST2',
-        source: 'hochiminh',
-        destination: 'soctrang',
-        label: 'HCM - Sóc Trăng',
-        net: 1000,
-        driver: 'Nguyễn Văn B',
-        availability: 500,
-    },
-    {
-        id: 'SGTG1',
-        source: 'hochiminh',
-        destination: 'tiengiang',
-        label: 'HCM - Tiền Giang',
-        net: 1000,
-        driver: 'Trần Văn A',
-        availability: 700,
-    }
-]
-
+const routeModels = {
+    source: '',
+    destination: '',
+    label: 'Tất cả'
+}
 /** Truck info:
  * 0 <= available < 50% -> #008000 (Green)
  * 50% <= available < 80% -> #ffa500 (Yellow)
  * 80% <= available < 100% -> #ff0000 (Red)
  */
-
 function ExportOrder() {
     const { vehicles } = useSelector(state => state.delivery);
     const { user } = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [truckRoutes, setTruckRoutes] = useState(truckRoutesModels);
-    const [routeFilters,  setRouteFilters] = useState(routeModels);
+    const [routeFilters,  setRouteFilters] = useState([routeModels]);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
 
     const handleChooseColor = (percent) => {
@@ -100,21 +50,37 @@ function ExportOrder() {
     }
 
     // Filter
-    // useEffect(() => {
-    //     // call api get truck route by route -> set state for truck route
-    //     setTruckRoutes(() => {
-    //         if (selectedRouteFilter === 'Tất cả') {
-    //             return truckRoutesModels
-    //         } else {
-    //             return truckRoutesModels.filter(route => route.label === selectedRouteFilter)
-    //         }
-    //     });
-    // }, [selectedRouteFilter])
+    useEffect(() => {
+        // call api get truck route by route -> set state for truck route
+        if (selectedRouteFilter === 'Tất cả' && user) {
+            dispatch(getVehicleByRegion(user?.area_code));
+        } else {
+            const selectedRoute = routeFilters.find(route => route.label === selectedRouteFilter);
+            dispatch(getVehicleByRoute({ from: selectedRoute.source, to: selectedRoute.destination }));
+        }
+    }, [selectedRouteFilter]);
+
+    function generateVehicleFilter() {
+        const filters = vehicles.map(vehicle => ({
+            source: vehicle.from,
+            destination: vehicle.to,
+            label: `${vehicle.from_string} - ${vehicle.to_string}`
+        }));
+        // Filtered filter data
+        const uniqueFilters = filters.filter((value, index) => {
+            const _value = JSON.stringify(value);
+            return index === filters.findIndex(obj => {
+              return JSON.stringify(obj) === _value;
+            });
+        });
+        setRouteFilters(prev => [routeModels, ...uniqueFilters]);
+    }
 
     useEffect(() => {
-        // Get truck routes by stocker location -> compare stocker location with source field
-        dispatch(getVehicleByRegion(user?.area_code));
-    }, [user]);
+        if (vehicles) {
+            generateVehicleFilter();
+        }
+    }, [vehicles]);
 
     return (
         <div className={styles.wrapper}>
