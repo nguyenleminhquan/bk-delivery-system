@@ -24,7 +24,7 @@ const getDeliveryByStatus = async (req, res, next) => {
 
 const createDelivery = async (req, res, next) => {
     try {
-        let { order_id, driver_id, status, area_code, from, to, type } = req.body;
+        let { order_id, driver_id, status, area_code, from, to, type, from_code, to_code } = req.body;
         if (from.includes('stock_')) {
             let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
             from = stock.name + '&'  + stock.address
@@ -40,7 +40,9 @@ const createDelivery = async (req, res, next) => {
             area_code: area_code,
             from: from,
             to: to,
-            type: type
+            type: type,
+            from_code: from_code,
+            to_code: to_code
         })
         await newDelivery.save();
         return res.json(newDelivery);
@@ -109,7 +111,7 @@ const socketDelivery = (io) => {
         socket.on('newDelivery', async(data) => {
             console.log('data', data)
             // config data received
-            let { status, area_code, order_id, driver_id, type, from, to } = data;
+            let { status, area_code, order_id, driver_id, type, from, to, from_code, to_code } = data;
             if (from.includes('stock_')) {
                 let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
                 from = stock.name + '&'  + stock.address
@@ -126,7 +128,9 @@ const socketDelivery = (io) => {
                 area_code: area_code,
                 from: from,
                 to: to,
-                type: type
+                type: type,
+                from_code: from_code,
+                to_code: to_code
             })
             const res = await newDelivery.save();
             const delivery =  await Delivery
