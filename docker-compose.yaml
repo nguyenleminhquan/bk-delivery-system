@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  backend:
+    container_name: ${BE_NAME}
+    image: ${REPO_BACKEND}:${BE_IMAGE_TAG}
+    ports:
+      - ${BE_PORT}
+    networks:
+      - network
+  frontend:
+    container_name: ${FE_NAME}
+    image: ${REPO_FRONTEND}:${FE_IMAGE_TAG}
+    environment:
+      WDS_SOCKET_PORT: 0
+    ports:
+      - ${FE_PORT}
+    networks:
+      - network
+    depends_on:
+      - backend
+
+networks:
+  network:
+    external: true
+    name: ${BDS_NETWORK}

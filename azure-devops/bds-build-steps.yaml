@@ -1,0 +1,50 @@
+parameters:
+  flavor: 'required'
+
+steps:
+  - task: Docker@2
+    displayName: Login to Docker Hub
+    inputs:
+      command: login
+      containerRegistry: $(containerRegistry)
+
+  - task: DownloadSecureFile@1
+    displayName: 'Download .env file for building Backend'
+    name: backendConfiguration
+    inputs:
+      secureFile: .env
+
+  - task: Bash@3
+    displayName: 'Copy .env to backend folder'
+    inputs:
+      targetType: inline
+      script: |
+        cp -f $(backendConfiguration.secureFilePath) backend/
+
+  - task: Bash@3
+    displayName: 'Generate base URL for frontend'
+    inputs:
+      targetType: inline
+      script: |
+        chmod +x *.sh
+        bash ./generate.sh ${{ parameters.flavor }}
+
+  - task: Docker@2
+    displayName: 'Docker: Build Backend'
+    inputs:
+      command: buildAndPush
+      repository: $(REPO_BACKEND)
+      Dockerfile: backend/Dockerfile
+      buildContext: backend/
+      tags: |
+        ${{ parameters.flavor }}
+
+  - task: Docker@2
+    displayName: 'Docker: Build Frontend'
+    inputs:
+      command: buildAndPush
+      repository: $(REPO_FRONTEND)
+      Dockerfile: frontend/Dockerfile
+      buildContext: frontend/
+      tags: |
+        ${{ parameters.flavor }}
