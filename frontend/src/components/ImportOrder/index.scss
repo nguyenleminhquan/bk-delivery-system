@@ -1,14 +1,27 @@
+@import '../../styles/variabless';
+
 .import-order {
-    .order-info {
-        height: 50px;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr auto;
+    .order-info, .order-info-header {
+        display: flex;
+        align-items: center;
         align-content: center;
-        margin-top: 20px;
-        padding-left: 20px;
-        padding-right: 20px;
+        margin-top: 5px;
+        padding: 15px;
         background-color: rgb(198, 147, 1, 0.08);
         border-radius: 5px;
+
+        .order-info-wrapper {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            span {
+                flex: 1;
+                & ~ span {
+                    margin-left: 12px;
+                    text-align: center;
+                }
+            }
+        }
 
         span {
             max-width: 50%;
@@ -16,6 +29,10 @@
             text-overflow: ellipsis;
             overflow: hidden;
         }
+    }
+
+    .order-info-header {
+        font-weight: $fw-600;
     }
     .import-btn {
         color: #fff;
