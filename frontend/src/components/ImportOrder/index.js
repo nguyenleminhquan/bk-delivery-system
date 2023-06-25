@@ -25,7 +25,7 @@ function ImportOrder() {
 	const handleImport = () => {
 		const payload = {
 			order_id: orderId,
-			stock_id: '63f43b33d9e57fe8e2bb63bc',
+			stock_id: user?.stock_id,
 			stocker_id: user?._id,
 		}
 		dispatch(importOrderToStock(payload));

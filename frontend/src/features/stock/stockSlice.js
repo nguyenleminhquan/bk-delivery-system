@@ -110,8 +110,8 @@ const stockSlice = createSlice({
             toast.error(payload);
         },
         [importOrderToStock.fulfilled]: (state, {payload}) => {
-            console.log(payload);
             state.isLoading = false;
+            toast.success('Nhập kho thành công!');
         }
     }
 })
