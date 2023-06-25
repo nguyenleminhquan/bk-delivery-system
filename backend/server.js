@@ -18,6 +18,8 @@ import { socketOrder } from './controllers/orderController.js'
 connectDB()
 dotenv.config()
 
+import baseURLFrontend from './config/.env.json' assert { type: "json" }
+
 const port = 5000
 const app = express() 
 // Fix cors error
@@ -46,7 +48,7 @@ const server = app.listen(port, () => {
 })
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: baseURLFrontend.baseURLFrontend,
         methods: ["GET", "POST"]
     }
 });

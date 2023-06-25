@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import generateToken from '../middlewares/generateToken.js'
+import Stock from '../models/Stock.js'
 
 const userRegister = async (req, res, next) => {
     const body = req.body
@@ -74,6 +75,7 @@ const userLogin = async (req, res, next) => {
                 bank_account: exist.bank_account,
                 working_days: exist.working_days,
                 area_code: exist.area_code,
+                stock_id: exist.stock_id,
                 token, refresh_token 
             }
             
@@ -303,8 +305,10 @@ const createAccount = async (req, res, next) => {
         return next(createError(400, "Email is exist"))
     }
     else {
-        let newUser = new User(body)
         try {
+            let stock = await Stock.find({area_code: body.area_code});
+            const userInfo = {...body, stock_id: stock[0]._id};
+            let newUser = new User(userInfo);
             newUser = await newUser.save()
             // Data tra ve
             const data = {
