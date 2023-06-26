@@ -307,7 +307,7 @@ const createAccount = async (req, res, next) => {
     else {
         try {
             let stock = await Stock.find({area_code: body.area_code});
-            const userInfo = {...body, stock_id: stock[0]._id};
+            const userInfo = {...body, stock_id: stock[0]?._id};
             let newUser = new User(userInfo);
             newUser = await newUser.save()
             // Data tra ve
