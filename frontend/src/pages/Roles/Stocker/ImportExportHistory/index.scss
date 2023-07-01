@@ -1,0 +1,43 @@
+.import-export-history {
+    .tabHeader {
+        display: flex;
+        justify-content: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border: 1px solid var(--primary-color);
+        border-radius: 5px;
+        background-color: rgba(68, 226, 228, 0.1);
+        .tabHeaderItem {
+            min-width: 150px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 4px solid transparent;
+            & ~ .tabHeaderItem {
+                margin-left: 12px;
+            }
+
+            &.active {
+                border-bottom: 4px solid var(--primary-color);
+                color: var(--primary-color);
+            }
+        }
+    }
+    svg {
+        color: #616161;
+        margin-right: 10px;
+    }
+    .download-icon {
+        font-size: 20px;
+        color: #d60000;
+    }
+    table {
+        .click-here {
+            color: #0000ee;
+            cursor: pointer;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

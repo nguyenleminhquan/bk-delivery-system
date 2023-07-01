@@ -5,7 +5,9 @@ import {
   getAllStock,
   addStock,
   deleteStock,
-  editStock
+  editStock,
+  getImportHistory,
+  getExportHistory
 } from '../controllers/stockController.js'
 import verifyToken from '../middlewares/verifyToken.js'
 import verifyRefreshToken from '../middlewares/verifyRefreshToken.js'
@@ -19,5 +21,7 @@ route.delete('/:id', verifyRefreshToken, verifyToken, verifyRoles(['admin']), de
 route.patch('/:id', verifyRefreshToken, verifyToken, verifyRoles(['admin']), editStock)
 route.post('/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), importOrderToStock)
 route.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getOrderInStocks)
+route.get('/:stockId/import-history', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getImportHistory)
+route.get('/:stockId/export-history', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getExportHistory)
 
 export default route

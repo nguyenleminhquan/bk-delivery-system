@@ -12,6 +12,7 @@ import DriverHistory from './Roles/Driver/DriverHistory';
 import LoadOrderToTruck from './LoadOrderToTruck';
 import AdminEmployeeManagement from './Roles/Admin/AdminEmployeeManagement';
 import AdminStockManagement from './Roles/Admin/AdminStockManagement';
+import ImportExportHistory from './Roles/Stocker/ImportExportHistory';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -43,6 +44,7 @@ function Authorize() {
 				<Route path='/profile' element={<Profile />}></Route>
 				<Route path='/export-order' element={<ExportOrder />}></Route>
 				<Route path='/load-order' element={<LoadOrderToTruck />}></Route>
+				<Route path='/import-export-history' element={<ImportExportHistory />}></Route>
 			</Routes>
 		)
 	}

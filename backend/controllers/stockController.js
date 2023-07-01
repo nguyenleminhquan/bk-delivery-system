@@ -5,6 +5,7 @@ import User from '../models/User.js'
 import Stock from '../models/Stock.js'
 import ImportInfo from '../models/ImportInfo.js'
 import { getOrderById } from './orderController.js'
+import ExportInfo from '../models/ExportInfo.js'
 
 const importOrderToStock = async (req, res, next) => {
   try {
@@ -112,11 +113,39 @@ const editStock = async (req, res, next) => {
   }
 }
 
+const getImportHistory = async(req, res, next) => {
+  try {
+    const stockId = req.params.stockId;
+    const data = await ImportInfo
+    .find({stock_id: stockId})
+    .populate('stocker_id')
+    .populate('orders');
+    return res.json(data)
+  } catch(error) {
+    return next(createError(400))
+  }
+}
+
+const getExportHistory = async(req, res, next) => {
+  try {
+    const stockId = req.params.stockId;
+    const data = await ExportInfo
+    .find({stock_id: stockId})
+    .populate('stocker_id')
+    .populate('orders');
+    return res.json(data)
+  } catch(error) {
+    return next(createError(400))
+  }
+}
+
 export {
   importOrderToStock,
   getOrderInStocks,
   addStock,
   getAllStock,
   deleteStock,
-  editStock
+  editStock,
+  getImportHistory,
+  getExportHistory
 }
