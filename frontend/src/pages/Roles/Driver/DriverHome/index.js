@@ -10,6 +10,7 @@ import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
 import ViewOrderInfo from 'components/ViewOrderInfo';
 import { checkInDay } from 'features/user/userSlice';
+import Tabs from 'components/Tabs';
 
 const tabs = [
   {
@@ -266,15 +267,7 @@ function DriverHome() {
       />
       )}
       <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
-      
-      <ul className={styles.tabHeader}>
-        {tabs.map(tab => (
-          <li key={tab.name} 
-            className={selectedTab.field === tab.field ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
-            onClick={() => setSelectedTab(tab)}
-          >{tab.name}</li>
-        ))}
-      </ul>
+      <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
       <div className={styles.deliveryList}>
         {configDeliveries.map((delivery) => (
