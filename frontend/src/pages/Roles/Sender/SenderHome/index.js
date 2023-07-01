@@ -12,6 +12,7 @@ import moment from 'moment/moment';
 import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
 import ConfirmPopup from 'components/ConfirmPopup';
+import Tabs from 'components/Tabs';
 
 const tabs = [
 	{
@@ -133,7 +134,7 @@ function SenderHome() {
 
 			{/* General */}
 			<div className='mb-3'>
-				<h2 className='pt-5 pb-3 fs-5'>Tổng quan</h2>
+				<h2 className='pt-4 pb-3 fs-5'>Tổng quan</h2>
 				<div className="filter d-flex align-items-center">
 					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
 						<p className='font-weight-bold fs-1'>2</p>
@@ -149,14 +150,7 @@ function SenderHome() {
 			</div>
 
 			<h2 className='pt-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
-			<ul className={styles.tabHeader}>
-				{tabs.map(tab => (
-				<li key={tab.name} 
-					className={selectedTab.field === tab.field ? `${styles.tabHeaderItem} ${styles.active}` : `${styles.tabHeaderItem}`}
-					onClick={() => setSelectedTab(tab)}
-				>{tab.name}</li>
-				))}
-			</ul>
+			<Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
 			{/* Order List */}
 			{
@@ -167,7 +161,6 @@ function SenderHome() {
 					{
 						ordersByStatus.map((order) => (
 							<div key={order._id} className={styles.order}>
-								<div className={styles.orderOverlay}></div>
 								<ul className={styles.orderIcons}>
 									<li className={styles.orderIcon} onClick={() => {
 										setShowSpecificOrder(true)

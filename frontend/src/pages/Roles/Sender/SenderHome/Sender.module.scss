@@ -49,23 +49,15 @@
         margin-bottom: 0;
     }
     .order {
-        border-left: 8px solid var(--primary-color);
         padding: 20px;
         box-shadow: var(--shadow);
         box-shadow: 0 1px 4px rgb(0, 0, 0, 0.2);
+        background-color: #fff;
         border-radius: 5px;
         position: relative;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        &:hover .orderOverlay {
-            opacity: 0.9;
-            visibility: visible;
-        }
-        &:hover .orderIcons {
-            opacity: 1;
-            visibility: visible;
-        }
     }
     .orderTitles {
         font-weight: bold;
@@ -89,47 +81,35 @@
         color: rgba(75, 173, 91, 1);
         background-color: rgba(75, 173, 91, 0.1);
     }
-    .orderOverlay {
-        position: absolute;
-        background-color: #2a2a2a;
-        border-radius: 3px;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 1;
-        opacity: 0;
-        visibility: hidden;
-        transition: all .3s;
-    }
     .orderIcons {
         position: absolute;
+        top: 10px;
+        right: 10px;
         z-index: 11;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
         text-align: center;
-        transition: all .5s;
-        opacity: 0;
-        visibility: hidden;
     }
     .orderIcon {
         display: inline-block;
         margin: 0px 5px;
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         background-color: #fff;
-        color: #2a2a2a;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 40px;
+        color: #5d5d5d;
+        border: 1px solid #e3e3e3;
+        border-radius: 10px;
         display: inline-block;
         transition: all .5s;
+        position: relative;
         cursor: pointer;
         &:hover {
-            background-color: var(--primary-color);
-            color: #fff;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
     .orderInfo {
@@ -179,36 +159,6 @@
                 width: 14px;
                 height: 14px;
             }
-        }
-    }
-}
-
-.tabHeader {
-    display: flex;
-    justify-content: center;
-    margin-top: 8px;
-    margin-bottom: 30px;
-    font-size: 14px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border: 1px solid var(--primary-color);
-    border-radius: 5px;
-    background-color: rgba(68, 226, 228, 0.1);
-    .tabHeaderItem {
-        min-width: 150px;
-        text-align: center;
-        font-weight: 600;
-        cursor: pointer;
-        border-bottom: 4px solid transparent;
-        color: #4e4848;
-        & ~ .tabHeaderItem {
-            margin-left: 12px;
-        }
-
-        &.active {
-            border-bottom: 4px solid var(--primary-color);
-            color: var(--primary-color);
-            font-weight: bold;
         }
     }
 }

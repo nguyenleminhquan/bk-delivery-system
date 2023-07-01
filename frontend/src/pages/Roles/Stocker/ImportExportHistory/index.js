@@ -8,6 +8,7 @@ import { FaEnvelope, FaFilePdf, FaPhone, FaUser } from 'react-icons/fa';
 import ConfirmPopup from 'components/ConfirmPopup';
 import IEOrders from 'components/IEOrders';
 import customFetch from 'services/axios';
+import Tabs from 'components/Tabs';
 
 
 const tabs = [
@@ -113,14 +114,15 @@ function ImportExportHistory() {
   return (
     <div className='import-export-history'>
       <h2 className='pb-3 fs-5'>Lịch sử nhập xuất</h2>
-      <ul className='tabHeader'>
+      <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
+      {/* <ul className='tabHeader'>
         {tabs.map(tab => (
           <li key={tab.name}
             className={selectedTab.field === tab.field ? `tabHeaderItem active` : `tabHeaderItem`}
             onClick={() => setSelectedTab(tab)}
           >{tab.name}</li>
         ))}
-      </ul>
+      </ul> */}
       <Table data={tableData} />
       {
         togglePopup &&
