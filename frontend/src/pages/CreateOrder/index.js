@@ -48,6 +48,8 @@ function CreateOrder() {
 
     const [senderInfo, setSenderInfo] = useState(infoModel);
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
+    const [senderCoordinate, setSenderCoordinate] = useState({});
+    const [receiverCoordinate, setReceiverCoordinate] = useState({});
     
     // address information
     // Comment for Google Map API
@@ -174,6 +176,26 @@ function CreateOrder() {
         return products.reduce((acc, curr) => acc + Number(curr.weight), 0);
     }
 
+    function convertAddressToCoordinates(address, setState) {
+        const apiUrl = 'https://nominatim.openstreetmap.org/search';
+        const format = 'json';
+        axios.get(`${apiUrl}?q=${encodeURIComponent(address)}&format=${format}`)
+            .then(res => {
+                if (res.data.length > 0) {
+                    const result = res.data[0];
+                    const lat = result.lat;
+                    const lon = result.lon;
+                    console.log({lat, lon});
+                    setState({lat, lon});
+                } else {
+                    console.log('No results found');
+                }
+            })
+            .catch(error => {
+                console.log('Error: ', error);
+            })
+    }
+
     const handleChangePaymentOption = e => {
         setPaymentOption(e.target.value);
         if (e.target.value === 'receiver') {
@@ -218,6 +240,18 @@ function CreateOrder() {
             .then((res) => setAddressData(res.data))
             .catch((err) => console.log(err))
     }
+
+    useEffect(() => {
+        if ((senderInfo?.city && senderInfo?.district && senderInfo?.ward) || senderInfo?.address) {
+            senderInfo.address = senderInfo?.address ?? generateFinalAddress(senderInfo);
+            convertAddressToCoordinates(senderInfo.address, setSenderCoordinate);
+        }
+
+        if (receiverInfo?.city && receiverInfo?.district && receiverInfo?.ward) {
+            receiverInfo.address = generateFinalAddress(receiverInfo);
+            convertAddressToCoordinates(receiverInfo.address, setReceiverCoordinate);
+        }
+    }, [senderInfo, receiverInfo])
 
     useEffect(() => {
         getAddressData();
