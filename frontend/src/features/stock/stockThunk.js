@@ -44,3 +44,21 @@ export const importOrderToStockThunk = async(payload, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const getImportHistoryThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.getImportHistory(payload);
+        return res.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
+
+export const getExportHistoryThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.getExportHistory(payload);
+        return res.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}

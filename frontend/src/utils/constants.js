@@ -274,17 +274,17 @@ export const stockerSidebar = [
     {
         id: 4,
         path: '/',
-        icon: <FaHome />,
-        text: 'Trang chủ',
+        icon: <FaListUl />,
+        text: 'Đơn hàng trong kho',
         type: 'beneath'
     },
-    // {
-    //     id: 5,
-    //     path: '/delivery-history',
-    //     icon: <FaAddressCard />,
-    //     text: 'Lịch sử giao nhận',
-    //     type: 'beneath'
-    // },
+    {
+        id: 5,
+        path: '/import-export-history',
+        icon: <FaHistory />,
+        text: 'Lịch sử nhập xuất',
+        type: 'beneath'
+    },
     {
         id: 6,
         path: '/profile',

@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
-import { addStockThunk, deleteStockThunk, editStockThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
+import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
 
 const initialState = {
     stocks: [],
     orders: [],
+    imexData: [],
     isLoading: false,
 }
 
@@ -40,6 +41,20 @@ export const importOrderToStock = createAsyncThunk(
     'stock/importOrderToStock', 
     async(payload, thunkAPI) => {
         return importOrderToStockThunk(payload, thunkAPI);
+    }
+)
+
+export const getImportHistory = createAsyncThunk(
+    'stock/getImportHistory', 
+    async(payload, thunkAPI) => {
+        return getImportHistoryThunk(payload, thunkAPI);
+    }
+)
+
+export const getExportHistory = createAsyncThunk(
+    'stock/getExportHistory', 
+    async(payload, thunkAPI) => {
+        return getExportHistoryThunk(payload, thunkAPI);
     }
 )
 
@@ -112,6 +127,28 @@ const stockSlice = createSlice({
         [importOrderToStock.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             toast.success('Nhập kho thành công!');
+        },
+        [getImportHistory.pending]: state => {
+            state.isLoading = true;
+        },
+        [getImportHistory.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getImportHistory.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.imexData = payload;
+        },
+        [getExportHistory.pending]: state => {
+            state.isLoading = true;
+        },
+        [getExportHistory.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getExportHistory.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.imexData = payload;
         }
     }
 })

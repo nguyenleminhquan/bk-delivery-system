@@ -21,12 +21,22 @@ const importOrderToStock = payload => {
     return customFetch.post(`/stock/order`, payload);
 }
 
+const getImportHistory = (stock_id) => {
+    return customFetch.get(`/stock/${stock_id}/import-history`)
+}
+
+const getExportHistory = (stock_id) => {
+    return customFetch.get(`/stock/${stock_id}/export-history`)
+}
+
 const StockService = {
     getStocks,
     addStock,
     deleteStock,
     editStock,
     importOrderToStock,
+    getImportHistory,
+    getExportHistory
 }
 
 export default StockService;
