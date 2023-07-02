@@ -121,6 +121,9 @@ const deleteOrderFromVehicle = async (req, res, next) => {
 
     vehicle.orders = vehicle.orders.filter(id => id != order_id)
     await vehicle.save()
+    
+    // Fix: update order status after deleting from vehicle
+    await Order.findByIdAndUpdate(order_id, { status: 'import' })
 
     return res.json(vehicle)
   } catch (error) {
