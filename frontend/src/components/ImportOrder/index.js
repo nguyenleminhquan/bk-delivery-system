@@ -26,7 +26,7 @@ function ImportOrder() {
 		const payload = {
 			order_id: orderId,
 			stock_id: user?.stock_id,
-			stocker_id: user?._id,
+			stocker_id: user?.id,
 		}
 		dispatch(importOrderToStock(payload));
 		socket.emit('updateOrderStatus', {
