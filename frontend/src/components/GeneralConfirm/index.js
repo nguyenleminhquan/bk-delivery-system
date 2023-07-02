@@ -190,7 +190,9 @@ function GeneralConfirm(props) {
         </div>
         
         <div className={styles.footer}>
-          <button onClick={props.onCancel} className='btn btn-medium bg-secondary'>{props.cancelText}</button>
+          {!props.disableCancel && 
+            <button onClick={props.onCancel} className='btn btn-medium bg-secondary'>{props.cancelText}</button>
+          }
           {props.showConfirmButton &&
             <button onClick={props.onConfirm} className="btn btn-medium">{props.confirmText}</button>
           }

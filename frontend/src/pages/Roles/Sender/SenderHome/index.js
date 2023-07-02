@@ -2,7 +2,7 @@ import { BsSearch } from 'react-icons/bs'
 import { BiPencil } from 'react-icons/bi'
 import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Sender.module.scss'
 import { getOrdersByUserId } from 'features/user/orderSlice';
 import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
@@ -13,6 +13,7 @@ import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
 import ConfirmPopup from 'components/ConfirmPopup';
 import Tabs from 'components/Tabs';
+import GeneralConfirm from 'components/GeneralConfirm';
 
 const tabs = [
 	{
@@ -50,7 +51,9 @@ function SenderHome() {
 	const [specificOrder, setSpecificOrder]= useState('');
 	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const [toggleDeletePopup, setToggleDeletePopup] = useState(false);
+	const [emptyAddressInfo, setEmptyAddressInfo] = useState(false);
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const socket = useContext(SocketContext);
 
 	const handleDeleteOrder = (order) => {
@@ -73,6 +76,17 @@ function SenderHome() {
 			toast.warning('Đơn hàng đã được nhận, không thể xóa')
 		}
 	}
+
+	function handleUpdateInfo() {
+		setEmptyAddressInfo(false);
+		navigate('/profile?tab=address');
+	}
+
+	useEffect(() => {
+		if (!user?.areaCode) {
+			setEmptyAddressInfo(true);
+		}
+	}, [user])
 
 	useEffect(() => {
 		dispatch(getOrdersByUserId(user.id))
@@ -240,6 +254,18 @@ function SenderHome() {
 					/>
 				)
 			}
+
+			{emptyAddressInfo && (
+				<GeneralConfirm 
+					title="Cảm ơn bạn đã lựa chọn BK Delivery"
+					message="Để tiếp tục sử dụng dịch vụ, vui lòng cập nhật địa chỉ của bạn. Chúng tôi cần thông tin địa chỉ chính xác để đảm bảo giao dịch diễn ra thuận lợi. Xin cảm ơn!"
+					disableCancel={true}
+					showConfirmButton={true}
+					confirmText="Đồng ý"
+					onConfirm={handleUpdateInfo}
+
+				/>
+			)}
 
 		</div>
 	)

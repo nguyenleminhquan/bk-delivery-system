@@ -5,11 +5,21 @@ import PersonalTab from 'components/PersonalTab';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import { profileTabs } from 'utils/constants';
+import { useLocation } from 'react-router-dom';
 import './index.scss'
 
 function Profile() {
 	const { user } = useSelector((state) => state.user);
+	const location = useLocation();
 	const [tab, setTab] = useState('personal');
+
+	useState(() => {
+		const queryParams = new URLSearchParams(location.search);
+		const activeTab = queryParams.get('tab');
+		if (activeTab) {
+			setTab(activeTab);
+		}
+	}, [])
 
 	return (
 		<div className='profile'>

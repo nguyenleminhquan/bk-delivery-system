@@ -13,7 +13,8 @@
     .container {
         background-color: #fff;
         min-width: 500px;
-        max-width: calc(100% - 32px);
+        max-width: 650px;
+        // max-width: calc(100% - 32px);
         position: relative;
         animation: fadeIn ease 0.5s;
         margin-top: 10px;
