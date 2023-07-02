@@ -9,6 +9,8 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import IEOrders from 'components/IEOrders';
 import customFetch from 'services/axios';
 import Tabs from 'components/Tabs';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PDFFile from 'components/PDFFille';
 
 
 const tabs = [
@@ -70,7 +72,18 @@ function ImportExportHistory() {
       );
       row.time = moment(item.createdAt).format('DD-MM-YYYY HH:mm:ss');
       row.items = <p className='click-here' onClick={() => { setOrders(item.orders); setTogglePopup(true);  }}>Click vào đây để xem</p>;
-      row.download = <FaFilePdf className='download-icon' onClick={() => handleDownload(item._id)} />
+      row.download = <PDFDownloadLink 
+                        document={<PDFFile 
+                                    type={selectedTab.field === 'import' ? 'import' : 'export'} 
+                                    formId={item._id}
+                                    stockerInfo={item.stocker_id} 
+                                    orders={item.orders}
+                                    createdAt={item.createdAt}
+                                    stock={item.stock_id}
+                                  />} 
+                        filename="FORM">
+      {({loading}) => (loading ? <button>Loading Document...</button> : <FaFilePdf className='download-icon' /> )}
+      </PDFDownloadLink>
       tempData.push(row);
     })
     setRowData(tempData);
@@ -115,14 +128,6 @@ function ImportExportHistory() {
     <div className='import-export-history'>
       <h2 className='pb-3 fs-5'>Lịch sử nhập xuất</h2>
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
-      {/* <ul className='tabHeader'>
-        {tabs.map(tab => (
-          <li key={tab.name}
-            className={selectedTab.field === tab.field ? `tabHeaderItem active` : `tabHeaderItem`}
-            onClick={() => setSelectedTab(tab)}
-          >{tab.name}</li>
-        ))}
-      </ul> */}
       <Table data={tableData} />
       {
         togglePopup &&

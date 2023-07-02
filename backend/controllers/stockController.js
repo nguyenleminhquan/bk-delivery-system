@@ -119,7 +119,13 @@ const getImportHistory = async(req, res, next) => {
     const data = await ImportInfo
     .find({stock_id: stockId})
     .populate('stocker_id')
-    .populate('orders');
+    .populate('stock_id')
+    .populate({
+      path: 'orders',
+      populate: {
+          path: 'items',
+      }
+    });;
     return res.json(data)
   } catch(error) {
     return next(createError(400))
@@ -132,9 +138,15 @@ const getExportHistory = async(req, res, next) => {
     const data = await ExportInfo
     .find({stock_id: stockId})
     .populate('stocker_id')
-    .populate('orders');
+    .populate({
+      path: 'orders',
+      populate: {
+          path: 'items',
+      }
+    });;
     return res.json(data)
   } catch(error) {
+    console.log(error)
     return next(createError(400))
   }
 }
