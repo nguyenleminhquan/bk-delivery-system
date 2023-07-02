@@ -95,9 +95,8 @@ function LoadOrderToTruck() {
     const [exportPopupObject, setExportPopupObject] = useState({});
 
     const handleLoadOrder = (order, e) => {
-        const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
         const updated = orders.map(item => {
-            if (item.id === order.id) {
+            if (item._id === order._id) {
                 return {...item, checked: !item.checked}
             } else return item;
         })
@@ -310,7 +309,7 @@ function LoadOrderToTruck() {
                                 <div className={styles.ordersWrap}>
                                     {orders.length > 0 
                                         ? (orders.map(order => (
-                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                            <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
                                                 <div className='col-1'><input type="checkbox"
                                                     checked={order.checked}
                                                     onChange={e => handleLoadOrder(order, e)}
