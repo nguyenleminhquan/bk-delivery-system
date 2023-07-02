@@ -1,18 +1,21 @@
+// Library import
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { SocketContext } from 'index';
+import { convertDistance, getDistance } from 'geolib';
+import { debounce } from 'lodash';
 
-// Import icon
+// Icon import
 import { BsSearch, BsPencilSquare } from 'react-icons/bs';
 import { BiPencil } from 'react-icons/bi';
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -20,6 +23,7 @@ import GeneralConfirm from 'components/GeneralConfirm';
 import Paypal from 'components/Paypal';
 import AddressForm from 'components/AddressForm';
 import SelectOption from 'components/SelectOption';
+import { DistanceRangePoint, WeightRangePoint } from 'utils/enums/order.enum';
 
 const infoModel = {
     fullname: '',
@@ -50,6 +54,7 @@ function CreateOrder() {
     const [receiverInfo, setReceiverInfo] = useState(infoModel);
     const [senderCoordinate, setSenderCoordinate] = useState({});
     const [receiverCoordinate, setReceiverCoordinate] = useState({});
+    const [distance, setDistance] = useState(null);
     
     // address information
     // Comment for Google Map API
@@ -183,17 +188,41 @@ function CreateOrder() {
             .then(res => {
                 if (res.data.length > 0) {
                     const result = res.data[0];
+                    const lng = result.lon;
                     const lat = result.lat;
-                    const lon = result.lon;
-                    console.log({lat, lon});
-                    setState({lat, lon});
-                } else {
-                    console.log('No results found');
-                }
+                    setState({lng, lat});
+                } else { console.log('No results found'); }
             })
-            .catch(error => {
-                console.log('Error: ', error);
-            })
+            .catch(error => console.log('Error: ', error))
+    }
+
+    function feeBasedOnWeight(weight, range, excessDistance = 0) {
+        /** Range contains: 
+         *  0 -> Distance <= 100km
+         *  1 -> 100km < Distance <= 200km
+         *  2 -> Distance > 200km
+         */
+        let totalFee = 0;
+        const currentFee = range !== 2
+            ? BASE_FEE + (BASE_FEE * COEFFICIENT) * range
+            : BASE_FEE + (BASE_FEE * COEFFICIENT);
+        const feeLv1 = currentFee + (currentFee * COEFFICIENT);
+        const accLv1 = feeLv1 / 100;
+        if (weight <= WeightRangePoint.LOWER) {
+            totalFee = currentFee;
+        } else if (weight > WeightRangePoint.LOWER && weight <= WeightRangePoint.HIGHER) {
+            totalFee = currentFee + (currentFee * COEFFICIENT);
+        } else {
+            const excessWeight = weight - WeightRangePoint.HIGHER;
+            totalFee = feeLv1 + excessWeight * accLv1;
+        }
+
+        if (excessDistance > 0) {
+            const feeLv2 = feeLv1 + (feeLv1 * COEFFICIENT);
+            const accLv2 = feeLv2 / 100;
+            totalFee += accLv2 * excessDistance;
+        }
+        return totalFee;
     }
 
     const handleChangePaymentOption = e => {
@@ -207,14 +236,17 @@ function CreateOrder() {
         let totalWeight = 0;
         // get total weight
         if (products.length > 0) {
-            totalWeight = products.reduce((cur, acc) => cur + acc.quantity * acc.weight, 0);
+            totalWeight = products.reduce((cur, acc) => cur + Number(acc.weight), 0);
         }
-        if (totalWeight <= 3000) {
-            return 40000;
-        } else {
-            const curTotalWeight = totalWeight - 1000;
-            return 40000 + Math.floor(curTotalWeight / 500)*5000 + ((curTotalWeight % 500) && 5000);
+        let distanceRange = 0;
+        let excessDistance = 0;
+        if (distance > DistanceRangePoint.LOWER && distance <= DistanceRangePoint.HIGHER) {
+            distanceRange = 1;
+        } else if (distance > DistanceRangePoint.HIGHER) {
+            distanceRange = 2;
+            excessDistance = distance - DistanceRangePoint.HIGHER;
         }
+        return feeBasedOnWeight(totalWeight, distanceRange, excessDistance);
     }
 
     const handleRemoveProduct = (id) => {
@@ -242,16 +274,33 @@ function CreateOrder() {
     }
 
     useEffect(() => {
-        if ((senderInfo?.city && senderInfo?.district && senderInfo?.ward) || senderInfo?.address) {
-            senderInfo.address = senderInfo?.address ?? generateFinalAddress(senderInfo);
-            convertAddressToCoordinates(senderInfo.address, setSenderCoordinate);
+        if (senderCoordinate && receiverCoordinate) {
+            const distanceInMeter = getDistance(senderCoordinate, receiverCoordinate);
+            setDistance(convertDistance(distanceInMeter, 'km'));
         }
+    }, [senderCoordinate, receiverCoordinate])
 
-        if (receiverInfo?.city && receiverInfo?.district && receiverInfo?.ward) {
-            receiverInfo.address = generateFinalAddress(receiverInfo);
-            convertAddressToCoordinates(receiverInfo.address, setReceiverCoordinate);
+    useEffect(() => {
+        const handleDebounceEvent = debounce(
+            address => convertAddressToCoordinates(address, setSenderCoordinate),
+            DEBOUNCE_DELAY);
+        if (!editSender) {
+            senderInfo.address = generateFinalAddress(senderInfo) ?? senderInfo?.address;
+            handleDebounceEvent(senderInfo.address);
         }
-    }, [senderInfo, receiverInfo])
+        return () => handleDebounceEvent.cancel();
+    }, [editSender]);
+
+    useEffect(() => {
+        const handleDebounceEvent = debounce(
+            address => convertAddressToCoordinates(address, setReceiverCoordinate),
+            DEBOUNCE_DELAY);
+        if (receiverInfo?.city && receiverInfo?.district && receiverInfo?.ward && receiverInfo?.addressDetail) {
+            receiverInfo.address = generateFinalAddress(receiverInfo);
+            handleDebounceEvent(receiverInfo.address);
+        }
+        return () => handleDebounceEvent.cancel();
+    }, [receiverInfo]);
 
     useEffect(() => {
         getAddressData();
@@ -262,9 +311,9 @@ function CreateOrder() {
     }, [receiverAddress])
 
     useEffect(() => {
-        if (products.at(-1).weight && products.at(-1).quantity) {
+        if (products.at(-1).weight) {
             const updated = calculateTotalFee() + parseInt(cod);
-            setTotalFee(updated);
+            setTotalFee(updated ?? 0);
         } else {
             setTotalFee(parseInt(cod) || 0);
         }
