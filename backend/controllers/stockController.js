@@ -118,6 +118,7 @@ const getImportHistory = async(req, res, next) => {
     const stockId = req.params.stockId;
     const data = await ImportInfo
     .find({stock_id: stockId})
+    .sort({ createdAt: -1 })
     .populate('stocker_id')
     .populate('stock_id')
     .populate({
@@ -137,6 +138,7 @@ const getExportHistory = async(req, res, next) => {
     const stockId = req.params.stockId;
     const data = await ExportInfo
     .find({stock_id: stockId})
+    .sort({ createdAt: -1 })
     .populate('stocker_id')
     .populate({
       path: 'orders',

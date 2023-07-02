@@ -38,11 +38,11 @@ function DriverHistory() {
 				<div>
 					<p>
 						<FaUser />
-						{ item.from.split('&')[0] }
+						{ item.from?.split('&')[0] }
 					</p>
 					<p>
 						<MdLocationOn />
-						{ item.from.split('&')[1] }
+						{ item.from?.split('&')[1] }
 					</p>
 				</div>
 			);
@@ -50,11 +50,11 @@ function DriverHistory() {
 				<div>
 					<p>
 						<FaUser />
-						{ item.to.split('&')[0] }
+						{ item.to?.split('&')[0] }
 					</p>
 					<p>
 						<MdLocationOn />
-						{ item.to.split('&')[1] }
+						{ item.to?.split('&')[1] }
 					</p>
 				</div>
 			);
