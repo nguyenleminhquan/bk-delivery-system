@@ -164,20 +164,22 @@ const deliverySlice = createSlice({
             state.isLoading = false;
         },
         [getVehicleOrders.fulfilled]: (state, { payload }) => {
-            state.vehicleOrders = payload;
             state.isLoading = false;
+            state.vehicleOrders = payload;
         },
         [getVehicleOrders.rejected]: (state, { payload }) => {
-            toast.error(payload);
             state.isLoading = false;
+            toast.error(payload);
         },
         [deleteVehicleOrder.pending]: state => {
             state.isLoading = true;
         },
         [deleteVehicleOrder.fulfilled]: (state, { payload }) => {
             state.isLoading = false;
-            const updatedOrders = state.vehicleOrders.filter(order => order._id !== payload._id);
-            state.vehicleOrders = updatedOrders;
+            console.log('payload when delete order from vehicle successfully', payload);
+            // state.vehicleOrders = state.vehicleOrders.filter(order => !payload.orders.find(orderId => orderId === order?._id));
+            // const activeVehicleIndex = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
+            // state.vehicles[activeVehicleIndex] = payload;
             toast.success('Xóa đơn hàng thành công');
         },
         [deleteVehicleOrder.rejected]: (state, { payload }) => {
@@ -193,8 +195,9 @@ const deliverySlice = createSlice({
         },
         [postVehicleOrders.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
-            console.log(payload);
-            // state.vehicleOrders = [...state.vehicleOrders, payload];
+            state.orders = state.orders.filter(order => !payload.orders.find(_order => _order?._id === order?._id));
+            const activeVehicleIndex = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
+            state.vehicles[activeVehicleIndex] = payload;
             toast.success('Thêm đơn hàng thành công.');
         },
         [getVehicleAvailableOrder.pending]: state => {
