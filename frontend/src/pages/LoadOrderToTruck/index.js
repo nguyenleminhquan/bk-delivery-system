@@ -219,7 +219,7 @@ function LoadOrderToTruck() {
         const payload = { vehicle_id: truckInfo._id, stocker_id: user.id };
         dispatch(exportOrderOnVehicle(payload));
         setOpenExportOrderPopup(false);
-        navigate('/export-order');
+        navigate('/');
     }
 
     useEffect(() => {
