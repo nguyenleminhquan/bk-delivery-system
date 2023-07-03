@@ -2,16 +2,20 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import ImportOrder from 'components/ImportOrder';
 import StockerHeader from 'components/StockerHeader';
 import Table from 'components/Table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import './index.scss';
 import { Link } from 'react-router-dom';
 import { BiPencil } from 'react-icons/bi';
 import { TbFileExport } from 'react-icons/tb'
 import DatePickerComp from 'components/DatePickerComp';
+import { useDispatch, useSelector } from 'react-redux';
+import { getStockOrders } from 'features/stock/stockSlice';
 
 function StockerHome() {
-
+  const dispatch = useDispatch();
+  const { orders } = useSelector(state => state.stock);
+  const { user } = useSelector(state => state.user);
   const [toggleImportPopup, setToggleImportPoup] = useState(false);
 
   const data = {
@@ -149,6 +153,16 @@ function StockerHome() {
     console.log('startDate', startDate);
     console.log('endDate', endDate)
   }
+
+  useEffect(() => {
+    console.log(orders);
+  }, [orders])
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getStockOrders(user.stock_id));
+    }
+  }, [user])
 
   return (
     <div className='stocker-home'>

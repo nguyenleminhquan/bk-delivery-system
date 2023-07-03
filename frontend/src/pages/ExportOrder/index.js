@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { TruckIcon } from 'components/Icons';
 import { getVehicleByRegion, getVehicleByRoute, getVehicles } from 'features/delivery/deliverySlice';
+import ConfirmPopup from 'components/ConfirmPopup';
+import ImportOrder from 'components/ImportOrder';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -28,6 +30,7 @@ function ExportOrder() {
     const dispatch = useDispatch();
     const [routeFilters,  setRouteFilters] = useState([routeModels]);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
+    const [toggleImportPopup, setToggleImportPopup] = useState(false);
 
     const handleChooseColor = (percent) => {
         if (percent < 0.5) {
@@ -46,7 +49,8 @@ function ExportOrder() {
     }
 
     const handleChooseTruck = (truckInfo) => {
-        navigate('/load-order', {state: {truckInfo}});
+        localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
+        navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
     }
 
     // Filter
@@ -96,7 +100,7 @@ function ExportOrder() {
                             <BiPencil className='me-3'/> Xuất Kho
                         </Link>
 
-                        <Link className={`btn ${styles.customBtn}`} to="/create-order">
+                        <Link className={`btn ${styles.customBtn}`} onClick={() => setToggleImportPopup(true)}>
                             <BiPencil className='me-3'/> Nhập Kho
                         </Link>
                     </div>
@@ -148,6 +152,15 @@ function ExportOrder() {
                     </div>
                 ))}
             </div>
+
+            {toggleImportPopup && (
+                <ConfirmPopup
+                    title="Thêm đơn hàng mới vào kho"
+                    content={<ImportOrder />}
+                    actionNo={() => setToggleImportPopup(false)}
+                    cancelLabel="Hủy bỏ"
+                />
+            )}
         </div>
     );
 }

@@ -1,7 +1,7 @@
 // Library import
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { SocketContext } from 'index';
@@ -47,6 +47,7 @@ const recentlyAddress = [
 
 function CreateOrder() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { user } = useSelector((state) => state.user);
     const { newOrder } = useSelector((state) => state.order);
 
@@ -156,6 +157,9 @@ function CreateOrder() {
         }
         dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         clearOrderState();
+        setTimeout(() => {
+            navigate('/');
+        }, 2000);
     }
 
     const handleSubmit = () => {

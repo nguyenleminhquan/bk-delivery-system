@@ -36,6 +36,15 @@ export const editStockThunk = async(payload, thunkAPI) => {
     }
 }
 
+export const getStockOrdersThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.getStockOrders(payload);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
+
 export const importOrderToStockThunk = async(payload, thunkAPI) => {
     try {
         const res = await StockService.importOrderToStock(payload);

@@ -5,7 +5,7 @@ import { FaSearch } from 'react-icons/fa';
 import './index.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { importOrderToStock } from 'features/stock/stockSlice';
-import { getOrderById } from 'features/user/orderSlice';
+import { getOrderById, resetOrder } from 'features/user/orderSlice';
 import { SocketContext } from 'index';
 import { Tooltip } from 'react-tooltip';
 
@@ -34,8 +34,9 @@ function ImportOrder() {
             status: 'import',
             date: new Date()
         })
-		setOrderId('');
-		setOrderInfo('');
+	  setOrderId('');
+	  setOrderInfo('');
+		dispatch(resetOrder());
 	}
 
 	useEffect(() => {
