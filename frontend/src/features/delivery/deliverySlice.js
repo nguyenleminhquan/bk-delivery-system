@@ -176,10 +176,9 @@ const deliverySlice = createSlice({
         },
         [deleteVehicleOrder.fulfilled]: (state, { payload }) => {
             state.isLoading = false;
-            console.log('payload when delete order from vehicle successfully', payload);
-            // state.vehicleOrders = state.vehicleOrders.filter(order => !payload.orders.find(orderId => orderId === order?._id));
-            // const activeVehicleIndex = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
-            // state.vehicles[activeVehicleIndex] = payload;
+            const index = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
+            state.vehicles[index] = payload;
+            state.vehicleOrders = state.vehicles[index].orders;
             toast.success('Xóa đơn hàng thành công');
         },
         [deleteVehicleOrder.rejected]: (state, { payload }) => {
