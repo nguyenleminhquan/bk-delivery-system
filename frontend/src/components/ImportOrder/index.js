@@ -2,12 +2,13 @@ import FormInput from 'components/FormInput'
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { importOrderToStock } from 'features/stock/stockSlice';
+import { getStockOrders, importOrderToStock } from 'features/stock/stockSlice';
 import { resetOrder } from 'features/user/orderSlice';
 import { clearVehicleOrders, getVehicleOrders } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
 import { Tooltip } from 'react-tooltip';
 import './index.scss'
+import { formatCurrency } from 'utils/constants';
 
 function ImportOrder({closePopup}) {
 	const { user } = useSelector(state => state.user);
@@ -36,9 +37,14 @@ function ImportOrder({closePopup}) {
     //     })
 	  setVehicleId('');
 	  setOrders([]);
-		closePopup();
+		handleClose();
 		dispatch(resetOrder());
+		dispatch(getStockOrders(user?.stock_id));
+	}
+
+	const handleClose = () => {
 		dispatch(clearVehicleOrders());
+		closePopup();
 	}
 
 	useEffect(() => {
@@ -78,7 +84,7 @@ function ImportOrder({closePopup}) {
 								<Tooltip id="orderId" />
 								<span data-tooltip-id="orderName" data-tooltip-content={order.sender_name}> {order.sender_name} </span>
 								<Tooltip id="orderName" />
-								<span data-tooltip-id="orderPrice" data-tooltip-content={order.shipping_fee}> {order.shipping_fee} đ</span>
+								<span data-tooltip-id="orderPrice" data-tooltip-content={order.shipping_fee}>{formatCurrency(order.shipping_fee)}</span>
 								<Tooltip id="orderPrice" />
 							</div>
 						))}
@@ -86,8 +92,8 @@ function ImportOrder({closePopup}) {
 				</Fragment>
       )}
 			<div className="actions text-end mt-3">
-				<button className="btn btn-medium" style={{backgroundColor: '#6C757D'}} onClick={closePopup}>Hủy bỏ</button>
-				<button className="btn btn-medium" onClick={handleImport}>Thêm vào kho</button>
+				<button className="btn btn-medium" style={{backgroundColor: '#6C757D'}} onClick={handleClose}>Hủy bỏ</button>
+				{orders.length > 0 && (<button className="btn btn-medium" onClick={handleImport}>Thêm vào kho</button>)}
 			</div>
 		</div>
 	)

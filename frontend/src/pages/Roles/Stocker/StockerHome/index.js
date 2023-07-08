@@ -14,6 +14,7 @@ import { getStockOrders } from 'features/stock/stockSlice';
 import moment from 'moment';
 import { DATE_TIME_FORMAT } from 'utils/consts';
 import { formatCurrency } from 'utils/constants';
+import GeneralConfirm from 'components/GeneralConfirm';
 
 const initData = {
   columns: [
@@ -93,14 +94,11 @@ function StockerHome() {
       </div>
       <Table data={data} />
       {toggleImportPopup && (
-        <ConfirmPopup
+        <GeneralConfirm
           title="Thêm đơn hàng mới vào kho"
-          content={<ImportOrder closePopup={() => setToggleImportPopup(false)} /> }
-          actionNo={() => setToggleImportPopup(false)}
-          // actionYes={() => handleImport()}
-          cancelLabel="Hủy bỏ"
-          // okLabel="Check-in"
-      />
+          message={<ImportOrder closePopup={() => setToggleImportPopup(false)} />}
+          disableCancel={true}
+        />
       )}
     </div>
   )

@@ -1,55 +1,6 @@
 @import '../../styles/variabless';
 
 .import-order {
-    // .order-lists, .order-info-header {
-    //     display: flex;
-    //     align-items: center;
-    //     align-content: center;
-    //     flex-direction: column;
-    //     margin-top: 5px;
-    //     padding: 15px;
-    //     background-color: rgb(198, 147, 1, 0.08);
-    //     border-radius: 5px;
-
-    //     .order-info-wrapper {
-    //         display: flex;
-    //         align-items: center;
-    //         flex: 1;
-    //         span {
-    //             flex: 1;
-    //             & ~ span {
-    //                 margin-left: 12px;
-    //                 text-align: center;
-    //             }
-    //         }
-    //     }
-
-    //     span {
-    //         max-width: 50%;
-    //         white-space: nowrap;
-    //         text-overflow: ellipsis;
-    //         overflow: hidden;
-    //     }
-    // }
-
-    // .order-info-header {
-    //     font-weight: $fw-600;
-    // }
-    // .import-btn {
-    //     color: #fff;
-    //     width: 25px;
-    //     height: 25px;
-    //     background-color: var(--primary-color);
-    //     text-align: center;
-    //     line-height: 25px;
-    //     border-radius: 50%;
-    //     box-shadow: var(--shadow);
-    //     cursor: pointer;
-    //     svg {
-    //         width: 18px;
-    //         height: 18px;
-    //     }
-    // }
     label {
         font-size: $fs-md;
         font-weight: $fw-600;
@@ -67,8 +18,10 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            & > span {
+            & ~ span {
                 margin-left: 12px;
+                padding-left: 12px;
+                border-left: 1px dashed $border-color;
             }
         }
     }
