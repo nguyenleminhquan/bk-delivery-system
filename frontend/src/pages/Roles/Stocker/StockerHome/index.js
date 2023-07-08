@@ -61,7 +61,7 @@ function StockerHome() {
   const dispatch = useDispatch();
   const { orders } = useSelector(state => state.stock);
   const { user } = useSelector(state => state.user);
-  const [toggleImportPopup, setToggleImportPoup] = useState(false);
+  const [toggleImportPopup, setToggleImportPopup] = useState(false);
   const [data, setData] = useState(initData);
 
   const handleSearch = (startDate, endDate) => {
@@ -87,7 +87,7 @@ function StockerHome() {
 
   return (
     <div className='stocker-home'>
-      <StockerHeader title="Tổng quan" openImportPopup={() => setToggleImportPoup(true)} />
+      <StockerHeader title="Tổng quan" openImportPopup={() => setToggleImportPopup(true)} />
       <div className='filter'>
         <DatePickerComp handleSearch={handleSearch} />
       </div>
@@ -95,8 +95,8 @@ function StockerHome() {
       {toggleImportPopup && (
         <ConfirmPopup
           title="Thêm đơn hàng mới vào kho"
-          content={<ImportOrder />}
-          actionNo={() => setToggleImportPoup(false)}
+          content={<ImportOrder closePopup={() => setToggleImportPopup(false)} /> }
+          actionNo={() => setToggleImportPopup(false)}
           // actionYes={() => handleImport()}
           cancelLabel="Hủy bỏ"
           // okLabel="Check-in"

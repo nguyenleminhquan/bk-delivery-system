@@ -101,6 +101,9 @@ const deliverySlice = createSlice({
     initialState,
     reducers: {
         clearAllDeliveriesState: (state) => initialState,
+        clearVehicleOrders: state => {
+            state.vehicleOrders = [];
+        },
     },
     extraReducers: {
         [getDeliveryHistory.pending]: (state) => {
@@ -238,7 +241,8 @@ const deliverySlice = createSlice({
 })
 
 export const {
-    clearAllDeliveriesState
+    clearAllDeliveriesState,
+    clearVehicleOrders
 } = deliverySlice.actions
 
 export default deliverySlice.reducer;

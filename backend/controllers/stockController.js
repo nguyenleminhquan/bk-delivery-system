@@ -21,16 +21,16 @@ const importOrderToStock = async (req, res, next) => {
     await order.save()
 
     // Check the existence of importInfo with stock_id
-    let importInfo = await ImportInfo.findOne({ stock_id })
-    if (importInfo && importInfo.stocker_id == stocker_id) {
-        importInfo.orders.push(order_id)
-    } else {
-      importInfo = new ImportInfo({
-        stocker_id,
-        stock_id,
-        orders: [order_id]
-      })
-    }
+    // let importInfo = await ImportInfo.findOne({ stock_id })
+    // if (importInfo && importInfo.stocker_id == stocker_id) {
+    //     importInfo.orders.push(order_id)
+    // } else {
+    let importInfo = new ImportInfo({
+      stocker_id,
+      stock_id,
+      orders: order_id
+    })
+    // }
     await importInfo.save()
     
     return res.json(importInfo)
