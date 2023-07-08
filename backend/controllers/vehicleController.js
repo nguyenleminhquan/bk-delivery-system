@@ -135,10 +135,18 @@ const getAllOrdersByVehicle = async (req, res, next) => {
   try {
     const vehicle_id = req.params.id
 
-    let vehicle = await Vehicle.findById(vehicle_id).populate('orders')
+    let vehicle = await Vehicle
+    .findById(vehicle_id)
+    .populate({
+      path: 'orders',
+      populate: {
+          path: 'items',
+      }
+    });
 
     return res.json(vehicle.orders)
   } catch (error) {
+    console.log(error)
     return next(createError(400))
   }
 }
