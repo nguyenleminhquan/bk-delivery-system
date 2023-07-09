@@ -6,6 +6,7 @@ services:
     image: ${REPO_BACKEND}:${BE_IMAGE_TAG}
     ports:
       - ${BE_PORT}
+    restart: always
     networks:
       - network
   frontend:
@@ -15,6 +16,7 @@ services:
       WDS_SOCKET_PORT: 0
     ports:
       - ${FE_PORT}
+    restart: always
     networks:
       - network
     depends_on:
