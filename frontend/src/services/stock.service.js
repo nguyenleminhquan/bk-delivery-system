@@ -16,6 +16,10 @@ const editStock = id => {
     return customFetch.patch(`/stock/${id}`);
 }
 
+const getStockOrders = stock_id => {
+    return customFetch.get(`/stock/${stock_id}/order`);
+}
+
 const importOrderToStock = payload => {
     // Payload contains: {order_id: string, stock_id: string, stocker_id: string}
     return customFetch.post(`/stock/order`, payload);
@@ -36,7 +40,8 @@ const StockService = {
     editStock,
     importOrderToStock,
     getImportHistory,
-    getExportHistory
+    getExportHistory,
+    getStockOrders,
 }
 
 export default StockService;

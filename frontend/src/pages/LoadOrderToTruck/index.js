@@ -10,6 +10,7 @@ import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
+import ImportOrder from 'components/ImportOrder';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -76,14 +77,18 @@ const ConfirmOrderLists = ({vehicle}) => {
 
 function LoadOrderToTruck() {
     const dispatch = useDispatch();
-    const delivery = useSelector(state => state.delivery);
-    const { user } = useSelector(state => state.user); 
+    const { orders } = useSelector(state => state.delivery);
+    const { user } = useSelector(state => state.user);
+    const { vehicles } = useSelector(state => state.delivery); 
     const navigate = useNavigate();
     const location = useLocation();
-    const {truckInfo} = location.state;
+    const queryParams = new URLSearchParams(location.search);
+    const truckId = queryParams.get('truckId');
+    const [truckInfo, setTruckInfo] = useState({});
+    // const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
-    const [orders, setOrders] = useState({});
+    const [truckOrders, setTruckOrders] = useState({});
     const [selected, setSelected] = useState(0);
     const [totalWeight, setTotalWeight] = useState(0);
     const [toggleAll, setToggleAll] = useState(false);
@@ -93,15 +98,15 @@ function LoadOrderToTruck() {
     const [openPopup, setOpenPopup] = useState(false);
     const [openExportOrderPopup, setOpenExportOrderPopup] = useState(null);
     const [exportPopupObject, setExportPopupObject] = useState({});
+    const [toggleImportPopup, setToggleImportPopup] = useState(false);
 
     const handleLoadOrder = (order, e) => {
-        const currentWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
         const updated = orders.map(item => {
-            if (item.id === order.id) {
+            if (item._id === order._id) {
                 return {...item, checked: !item.checked}
             } else return item;
         })
-        setOrders(updated);
+        setTruckOrders(updated);
         setToggleAll(isAllChecked(updated));
         if (e.target.checked) {
             setTruckLoad(prev => [...prev, order]);
@@ -144,17 +149,9 @@ function LoadOrderToTruck() {
             setTruckAvailable(truckAvailable - totalClickedWeight);
             dispatch(postVehicleOrders({
                 vehicle_id: truckInfo._id,
-                list_orders: orders.filter(order => order.checked).map(item => item._id),
+                list_orders: truckOrders.filter(order => order.checked).map(item => item._id),
             }));
-            // Update order list (remove) after load order to truck
-            setOrders(updateOrderList());
-            setTotalWeight(0);
-            setSelected(0);
         }
-    }
-
-    const updateOrderList = () => {
-        return orders.filter(item => !truckLoad.map(order => order.id).includes(item.id));
     }
 
     const handleOpenTruckOrders = () => {
@@ -165,12 +162,12 @@ function LoadOrderToTruck() {
     const handleToggleAll = e => {
         setToggleAll(!toggleAll);
         if (e.target.checked) {
-            setOrders(prev => prev.map(item => ({...item, checked: true})));
+            setTruckOrders(prev => prev.map(item => ({...item, checked: true})));
             setTruckLoad(orders);
             setTotalWeight(orders.reduce((acc, cur) => acc + cur.weight, 0));
             setSelected(orders.length);
         } else {
-            setOrders(prev => prev.map(item => ({...item, checked: false})));
+            setTruckOrders(prev => prev.map(item => ({...item, checked: false})));
             setTruckLoad([]);
             setTotalWeight(0);
             setSelected(0);
@@ -222,18 +219,23 @@ function LoadOrderToTruck() {
         const payload = { vehicle_id: truckInfo._id, stocker_id: user.id };
         dispatch(exportOrderOnVehicle(payload));
         setOpenExportOrderPopup(false);
-        navigate('/export-order');
+        navigate('/');
     }
 
     useEffect(() => {
-        setOrders(delivery.orders.map(order => ({...order, checked: false})));
-    }, [delivery.orders])
+        setTruckOrders(orders.map(order => ({...order, checked: false})));
+    }, [orders])
 
     useEffect(() => {
-        if (truckInfo) {
-            dispatch(getVehicleAvailableOrder(truckInfo._id));
+        if (truckId) {
+            dispatch(getVehicleAvailableOrder(truckId));
+            if (vehicles.length > 0) {
+                setTruckInfo(vehicles.find(vehicle => vehicle?._id === truckId));
+            } else {
+                setTruckInfo(JSON.parse(localStorage.getItem('activeTruck')))
+            }
         }
-    }, []);
+    }, [vehicles]);
 
     return (
         <div className={styles.wrapper}>
@@ -249,7 +251,7 @@ function LoadOrderToTruck() {
                             <BiPencil className='me-3'/> Xuất Kho
                         </Link>
 
-                        <Link className={`btn ${styles.customBtn}`} to="/create-order">
+                        <Link className={`btn ${styles.customBtn}`} onClick={() => setToggleImportPopup(true)}>
                             <BiPencil className='me-3'/> Nhập Kho
                         </Link>
                     </div>
@@ -308,9 +310,9 @@ function LoadOrderToTruck() {
                                     </div>
                                 </div>
                                 <div className={styles.ordersWrap}>
-                                    {orders.length > 0 
+                                    {truckOrders.length > 0 
                                         ? (orders.map(order => (
-                                            <div className={`row p-2 ${styles.ordersRow}`} key={order.id}>
+                                            <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
                                                 <div className='col-1'><input type="checkbox"
                                                     checked={order.checked}
                                                     onChange={e => handleLoadOrder(order, e)}
@@ -339,6 +341,15 @@ function LoadOrderToTruck() {
             )}
         
             {openExportOrderPopup && <ConfirmPopup {...exportPopupObject}/> }
+
+            {toggleImportPopup && (
+                <ConfirmPopup
+                    title="Thêm đơn hàng mới vào kho"
+                    content={<ImportOrder />}
+                    actionNo={() => setToggleImportPopup(false)}
+                    cancelLabel="Hủy bỏ"
+                />
+            )}
         </div>
     );
 }
