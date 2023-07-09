@@ -5,6 +5,7 @@ function SelectOption(props) {
     <Select
       className='select-control-wrapper'
       classNamePrefix='select'
+      menuPlacement='auto'
       {...props}
     />
   )
