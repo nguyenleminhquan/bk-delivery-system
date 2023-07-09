@@ -8,6 +8,7 @@ import { TruckIcon } from 'components/Icons';
 import { getVehicleByRegion, getVehicleByRoute, getVehicles } from 'features/delivery/deliverySlice';
 import ConfirmPopup from 'components/ConfirmPopup';
 import ImportOrder from 'components/ImportOrder';
+import GeneralConfirm from 'components/GeneralConfirm';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -154,11 +155,10 @@ function ExportOrder() {
             </div>
 
             {toggleImportPopup && (
-                <ConfirmPopup
+                <GeneralConfirm
                     title="Thêm đơn hàng mới vào kho"
-                    content={<ImportOrder />}
-                    actionNo={() => setToggleImportPopup(false)}
-                    cancelLabel="Hủy bỏ"
+                    message={<ImportOrder closePopup={() => setToggleImportPopup(false)} />}
+                    disableCancel={true}
                 />
             )}
         </div>

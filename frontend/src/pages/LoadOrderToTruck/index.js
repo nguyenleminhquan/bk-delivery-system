@@ -11,6 +11,7 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
 import ImportOrder from 'components/ImportOrder';
+import GeneralConfirm from 'components/GeneralConfirm';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -343,11 +344,10 @@ function LoadOrderToTruck() {
             {openExportOrderPopup && <ConfirmPopup {...exportPopupObject}/> }
 
             {toggleImportPopup && (
-                <ConfirmPopup
+                <GeneralConfirm
                     title="Thêm đơn hàng mới vào kho"
-                    content={<ImportOrder />}
-                    actionNo={() => setToggleImportPopup(false)}
-                    cancelLabel="Hủy bỏ"
+                    message={<ImportOrder closePopup={() => setToggleImportPopup(false)} />}
+                    disableCancel={true}
                 />
             )}
         </div>
