@@ -15,7 +15,7 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY, formatCurrency } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -542,7 +542,7 @@ function CreateOrder() {
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
-                                    <h1 className={styles.importantLine}>{totalFee}đ</h1>
+                                    <h1 className={styles.importantLine}>{formatCurrency(totalFee)}</h1>
                                     <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
                                     {/* <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button> */}
                                 </div>
