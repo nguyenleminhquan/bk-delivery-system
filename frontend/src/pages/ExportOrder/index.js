@@ -6,6 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { TruckIcon } from 'components/Icons';
 import { getVehicleByRegion, getVehicleByRoute, getVehicles } from 'features/delivery/deliverySlice';
+import ConfirmPopup from 'components/ConfirmPopup';
+import ImportOrder from 'components/ImportOrder';
+import GeneralConfirm from 'components/GeneralConfirm';
+import Tabs from 'components/Tabs';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -16,6 +20,17 @@ const routeModels = {
     destination: '',
     label: 'Tất cả'
 }
+
+const tabs = [
+    {
+		field: 'inter',
+		name: 'Liên tỉnh'
+	},
+    {
+        field: 'inner',
+        name: 'Nội thành'
+    }
+]
 /** Truck info:
  * 0 <= available < 50% -> #008000 (Green)
  * 50% <= available < 80% -> #ffa500 (Yellow)
@@ -26,8 +41,11 @@ function ExportOrder() {
     const { user } = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [selectedTab, setSelectedTab] = useState(tabs[0]);
+    const [availVehicle, setAvailVehicle] = useState([]);
     const [routeFilters,  setRouteFilters] = useState([routeModels]);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
+    const [toggleImportPopup, setToggleImportPopup] = useState(false);
 
     const handleChooseColor = (percent) => {
         if (percent < 0.5) {
@@ -46,7 +64,8 @@ function ExportOrder() {
     }
 
     const handleChooseTruck = (truckInfo) => {
-        navigate('/load-order', {state: {truckInfo}});
+        localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
+        navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
     }
 
     // Filter
@@ -78,9 +97,15 @@ function ExportOrder() {
 
     useEffect(() => {
         if (vehicles) {
-            generateVehicleFilter();
+            setAvailVehicle(vehicles.filter(vehicle => vehicle.type === selectedTab.field));
         }
-    }, [vehicles]);
+    }, [selectedTab, vehicles]);
+
+    // useEffect(() => {
+    //     if (vehicles) {
+    //         generateVehicleFilter();
+    //     }
+    // }, [vehicles]);
 
     return (
         <div className={styles.wrapper}>
@@ -96,18 +121,21 @@ function ExportOrder() {
                             <BiPencil className='me-3'/> Xuất Kho
                         </Link>
 
-                        <Link className={`btn ${styles.customBtn}`} to="/create-order">
+                        <Link className={`btn ${styles.customBtn}`} onClick={() => setToggleImportPopup(true)}>
                             <BiPencil className='me-3'/> Nhập Kho
                         </Link>
                     </div>
                 </header>
 
             </div>
-            <div className="row mt-5">
+            <div className="row">
+                <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
+            </div>
+            <div className="row">
                 <div className="col-12">
                     <div className="d-flex align-items-center justify-content-between">
                         <span className='fs-5 fw-semibold'>Chọn xe tải</span>
-                        <div className={styles.selectFilter}>
+                        {/* <div className={styles.selectFilter}>
                             <label className='fs-6 me-3'>Tuyến</label>
                             <select value={selectedRouteFilter}
                                 onChange={e => setSelectedRouteFilter(e.target.value)}>
@@ -115,12 +143,12 @@ function ExportOrder() {
                                     <option value={route.label} key={index}>{route.label}</option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
             <div className="row mt-3">
-                {vehicles.map(route => (
+                {availVehicle.map(route => (
                     <div className="col-4 mb-4" key={route._id} onClick={() => handleChooseTruck(route)}>
                         <div className={styles.blockItem}>
                             <div className="d-flex">
@@ -148,6 +176,14 @@ function ExportOrder() {
                     </div>
                 ))}
             </div>
+
+            {toggleImportPopup && (
+                <GeneralConfirm
+                    title="Thêm đơn hàng mới vào kho"
+                    message={<ImportOrder closePopup={() => setToggleImportPopup(false)} />}
+                    disableCancel={true}
+                />
+            )}
         </div>
     );
 }

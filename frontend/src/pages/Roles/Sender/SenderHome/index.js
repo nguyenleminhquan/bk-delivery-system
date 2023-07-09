@@ -151,12 +151,12 @@ function SenderHome() {
 				<h2 className='pt-4 pb-3 fs-5'>Tổng quan</h2>
 				<div className="filter d-flex align-items-center">
 					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
-						<p className='font-weight-bold fs-1'>2</p>
+						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</p>
 						<p>Đã lấy hàng</p>
 					</div>
 
 					<div className={`${styles.orderFilter} ${styles.orderFilter2}`}>
-						<p className='font-weight-bold fs-1'>1</p>
+						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status === 'waiting' || order.status === 'accepted').length}</p>
 						<p>Chưa lấy hàng</p>
 					</div>
 

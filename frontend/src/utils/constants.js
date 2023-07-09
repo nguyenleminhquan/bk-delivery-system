@@ -378,3 +378,10 @@ export const orderStatusList = {
     "success": "Giao hàng đến người nhận thành công",
     "cancel": "Đơn hàng bị hủy"
 }
+
+export const formatCurrency = (value) => {
+    if (isNaN(value)) { return ''; }
+    const formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+
+    return formatter.format(value);
+}

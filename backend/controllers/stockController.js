@@ -21,16 +21,16 @@ const importOrderToStock = async (req, res, next) => {
     await order.save()
 
     // Check the existence of importInfo with stock_id
-    let importInfo = await ImportInfo.findOne({ stock_id })
-    if (importInfo && importInfo.stocker_id == stocker_id) {
-        importInfo.orders.push(order_id)
-    } else {
-      importInfo = new ImportInfo({
-        stocker_id,
-        stock_id,
-        orders: [order_id]
-      })
-    }
+    // let importInfo = await ImportInfo.findOne({ stock_id })
+    // if (importInfo && importInfo.stocker_id == stocker_id) {
+    //     importInfo.orders.push(order_id)
+    // } else {
+    let importInfo = new ImportInfo({
+      stocker_id,
+      stock_id,
+      orders: order_id
+    })
+    // }
     await importInfo.save()
     
     return res.json(importInfo)
@@ -48,7 +48,7 @@ const getOrderInStocks = async (req, res, next) => {
       item.orders.forEach(id => order_ids.push(id))
     })
 
-    let orders = await Order.find({ _id: {$in: order_ids }, status: 'arrived_send_stock' })
+    let orders = await Order.find({ _id: {$in: order_ids }, status: 'import' })
     
     return res.json(orders)
   } catch (error) {
@@ -118,8 +118,15 @@ const getImportHistory = async(req, res, next) => {
     const stockId = req.params.stockId;
     const data = await ImportInfo
     .find({stock_id: stockId})
+    .sort({ createdAt: -1 })
     .populate('stocker_id')
-    .populate('orders');
+    .populate('stock_id')
+    .populate({
+      path: 'orders',
+      populate: {
+          path: 'items',
+      }
+    });;
     return res.json(data)
   } catch(error) {
     return next(createError(400))
@@ -131,10 +138,17 @@ const getExportHistory = async(req, res, next) => {
     const stockId = req.params.stockId;
     const data = await ExportInfo
     .find({stock_id: stockId})
+    .sort({ createdAt: -1 })
     .populate('stocker_id')
-    .populate('orders');
+    .populate({
+      path: 'orders',
+      populate: {
+          path: 'items',
+      }
+    });;
     return res.json(data)
   } catch(error) {
+    console.log(error)
     return next(createError(400))
   }
 }

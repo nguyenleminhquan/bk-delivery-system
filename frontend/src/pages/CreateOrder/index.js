@@ -1,7 +1,7 @@
 // Library import
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { SocketContext } from 'index';
@@ -15,7 +15,7 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY, formatCurrency } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
 import SearchAddress from 'components/SearchAddress';
@@ -34,7 +34,7 @@ const infoModel = {
 const productModel = {
     name: '',
     weight: '',
-    // quantity: '',
+    quantity: '',
     // imgUrl: '',
     type: '',
 }
@@ -47,6 +47,7 @@ const recentlyAddress = [
 
 function CreateOrder() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { user } = useSelector((state) => state.user);
     const { newOrder } = useSelector((state) => state.order);
 
@@ -102,7 +103,7 @@ function CreateOrder() {
     }
 
     const checkEmptyProductInfo = (product) => {
-        return product.name === '' || product.weight === '' || product.type === '';
+        return product.name === '' || product.weight === '' || product.type === '' || product.quantity === '';
     }
 
     const isDisabledSubmit = () => {
@@ -156,6 +157,9 @@ function CreateOrder() {
         }
         dispatch(createOrder({ orderPayload, deliveryPayload, socket }));
         clearOrderState();
+        setTimeout(() => {
+            navigate('/');
+        }, 2000);
     }
 
     const handleSubmit = () => {
@@ -313,9 +317,9 @@ function CreateOrder() {
     useEffect(() => {
         if (products.at(-1).weight) {
             const updated = calculateTotalFee() + parseInt(cod);
-            setTotalFee(updated ?? 0);
+            setTotalFee(prev => updated ?? prev);
         } else {
-            setTotalFee(parseInt(cod) || 0);
+            setTotalFee(prev => parseInt(cod) || prev);
         }
     }, [cod, products])
 
@@ -430,41 +434,47 @@ function CreateOrder() {
                                             </div> */}
 
                                             <div className={styles.info}>
-                                                <div className="d-flex align-items-center">
+                                                <div className="d-flex align-items-center flex-wrap">
                                                     <span className='fw-semibold'>{index+1}.&nbsp;</span>
-                                                    <div className='d-flex'>
+                                                    <div className={styles.orderItemField}>
                                                         <label className='fw-semibold me-1'>Tên</label>
                                                         <input type="text"
                                                             placeholder='Tên sản phẩm'
                                                             value={product.name}
                                                             onChange={e => handleUpdateProduct(e.target.value, index, 'name')}/>
                                                     </div>
-                                                    <div className='d-flex'>
+                                                    <div className={`${styles.orderItemField}`}>
                                                         <label className='fw-semibold me-1'>KL(Kilogram)</label>
                                                         <input type="text" 
                                                             placeholder='0' 
                                                             value={product.weight}
                                                             onChange={e => handleUpdateProduct(e.target.value, index, 'weight')}/>
                                                     </div>
-                                                    <div className='d-flex align-items-center'>
+                                                    <div className={`${styles.orderItemField} mt-2`}>
+                                                        <label className='fw-semibold me-1'>Số lượng</label>
+                                                        <input type="text" 
+                                                            placeholder='2 thùng/bao/gói' 
+                                                            value={product.quantity}
+                                                            onChange={e => handleUpdateProduct(e.target.value, index, 'quantity')}/>
+                                                    </div>
+                                                    <div className={`${styles.orderItemField} mt-2`}>
                                                         <label className='fw-semibold me-1'>Loại</label>
                                                         <SelectOption
                                                             value={product?.type ? product.type.value : ''}
                                                             options={orderTypes}
                                                             onChange={selectedProductType => handleUpdateProduct(selectedProductType, index, 'type')}
-                                                            placeholder="Loại hàng"
-                                                        />
+                                                            placeholder="Loại hàng"/>
                                                     </div>
                                                 </div>
                                                 
-                                                <div className='d-flex'>
+                                                <div className='d-flex ms-3'>
                                                     {products.length > 1 && (
                                                         <button className='flex-fill bg-white' onClick={() => handleRemoveProduct(index)}>
                                                             <AiOutlineCloseCircle className={`${styles.addItemBtn} text-danger`}/>
                                                         </button>
                                                     )}
                                                     {index === products.length - 1 && (
-                                                        <button className='flex-fill bg-white ms-1' onClick={handleAddProduct}>
+                                                        <button className='flex-fill bg-white' onClick={handleAddProduct}>
                                                             <AiOutlinePlusCircle className={styles.addItemBtn}/>
                                                         </button>
                                                     )}
@@ -532,7 +542,7 @@ function CreateOrder() {
                             <div className={`${styles.createOrderSection} ${styles.lastSection}`}>
                                 <div className={styles.content}>
                                     <h3>Tổng phí</h3>
-                                    <h1 className={styles.importantLine}>{totalFee}đ</h1>
+                                    <h1 className={styles.importantLine}>{formatCurrency(totalFee)}</h1>
                                     <button className={styles.button} onClick={handleSubmit}>Tạo đơn</button>
                                     {/* <button className={styles.button} disabled={isDisabledSubmit()} onClick={handleSubmit}>Tạo đơn</button> */}
                                 </div>

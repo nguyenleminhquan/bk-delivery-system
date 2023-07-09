@@ -57,6 +57,7 @@ const getDeliveryHistory = async (req, res, next) => {
         const id = req.params.driverId
         const delivery = await Delivery
         .find({ driver: id, status: 'deliveried' })
+        .sort({ createdAt: -1 })
         .populate({
             path: 'order',
             populate: {

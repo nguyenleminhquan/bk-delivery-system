@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
-import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
+import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStockOrdersThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
 
 const initialState = {
     stocks: [],
@@ -34,6 +34,13 @@ export const editStock = createAsyncThunk(
     'stock/editStock',
     async(payload, thunkAPI) => {
         return editStockThunk(payload, thunkAPI);
+    }
+)
+
+export const getStockOrders = createAsyncThunk(
+    'stock/getStockOrders',
+    async(payload, thunkAPI) => {
+        return getStockOrdersThunk(payload, thunkAPI);
     }
 )
 
@@ -116,6 +123,18 @@ const stockSlice = createSlice({
         [editStock.rejected]: (state, {payload}) => {
             state.isLoading = false;
             toast.error(payload);
+        },
+        [getStockOrders.pending]: state => {
+            state.isLoading = true;
+        },
+        [getStockOrders.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getStockOrders.fulfilled]: (state, {payload}) => {
+            console.log(payload);
+            state.isLoading = false;
+            state.orders = payload;
         },
         [importOrderToStock.pending]: state => {
             state.isLoading = true;
