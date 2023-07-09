@@ -83,7 +83,8 @@ function SenderHome() {
 	}
 
 	useEffect(() => {
-		if (!user?.areaCode) {
+		console.log(user);
+		if (!user?.area_code) {
 			setEmptyAddressInfo(true);
 		}
 	}, [user])

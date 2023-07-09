@@ -6,10 +6,12 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from 'features/user/userSlice';
 import AddressForm from 'components/AddressForm';
+import { AreaDelivery } from 'utils/consts';
 
 function AddressTab() {
+	const dispatch = useDispatch();
 	const { user } = useSelector((state) => state.user);
-	const [userInfo, setUserInfo] = useState({});
+	const [userInfo, setUserInfo] = useState(null);
 	const [addressData, setAddressData] = useState([]);
 	const [districts, setDistricts] = useState([]);
 	const [wards, setWards] = useState([]);
@@ -21,13 +23,54 @@ function AddressTab() {
 	}
 
 	function findAreaCode() {
+		return AreaDelivery.find(area => area.label === userInfo.city).code;
+	}
 
+	function generateFinalAddress() {
+		return `${userInfo?.addressDetail}, ${userInfo?.ward}, ${userInfo?.district}, ${userInfo?.city}`
+	}
+
+	function setupAddress() {
+		const parts = user.address.split(', ');
+		const addressDetails = parts.slice(0, parts.length - 3);
+		let addressDetail = '';
+		addressDetails.forEach((ele, index) => {
+			if (index !== addressDetails.length - 1) {
+				addressDetail += `${ele}, `
+			} else {
+				addressDetail += ele;
+			}
+		});
+		const addressObject = {
+			addressDetail,
+			ward: parts[parts.length - 3],
+			district: parts[parts.length - 2],
+			city: parts[parts.length - 1]
+		};
+
+		setUserInfo(addressObject);
 	}
 
 	const handleSubmit = (e) => {
+		console.log(userInfo);
+		if (!userInfo || (userInfo?.city === '' || userInfo?.district === '' || userInfo?.ward === '' || userInfo?.addressDetail === '')) {
+			toast.error('Thiếu thông tin địa chỉ!');
+		} else {
+			const payload = {
+				userId: user.id,
+				info: {
+					address: generateFinalAddress(),
+					area_code: findAreaCode(),
+				}
+			}
+			dispatch(updateUser(payload));
+		}
 	}
 
 	useEffect(() => {
+		if (user.address) {
+			setupAddress();
+		}
     getAddressData();
 	}, []);
 

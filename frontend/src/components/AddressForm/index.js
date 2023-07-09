@@ -30,7 +30,8 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
             ...prev, 
             city: city.value,
             district: '',
-            ward: ''
+            ward: '',
+            addressDetail: '',
         }))
     }
 
@@ -40,11 +41,12 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
             ...prev,
             district: district.value,
             ward: '',
+            addressDetail: '',
         }))
     }
 
     const handleChangeWard = ward => {
-        setStateInfo(prev => ({...prev, ward: ward.value }));
+        setStateInfo(prev => ({...prev, ward: ward.value, addressDetail: '' }));
     }
 
     const isActiveField = (fieldName) => {
@@ -113,7 +115,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         <label>Tỉnh/Thành phố</label>
                         <SelectOption
                             options={citiesData}
-                            value={stateInfo?.city ? stateInfo.city.value : ''}
+                            value={stateInfo?.city ? {label: stateInfo.city, value: stateInfo.city} : null}
                             onChange={selectedCity => handleChangeCity(selectedCity)}
                             placeholder='Chọn thành phố'
                         />
@@ -125,7 +127,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         <label>Quận/Huyện</label>
                         <SelectOption
                             options={districtsData}
-                            value={stateInfo?.district ? stateInfo.district.value : ''}
+                            value={stateInfo?.district ? {label: stateInfo.district, value: stateInfo.district} : null}
                             onChange={selectedDistrict => handleChangeDistrict(selectedDistrict)}
                             placeholder='Chọn quận/huyện'
                         />
@@ -137,7 +139,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                         <label>Phường/Xã</label>
                         <SelectOption
                             options={wardsData}
-                            value={stateInfo?.ward ? stateInfo.ward.value : ''}
+                            value={stateInfo?.ward ? {label: stateInfo.ward, value: stateInfo.ward} : null}
                             onChange={selectedWard => handleChangeWard(selectedWard)}
                             placeholder='Chọn phường/xã'
                         />
