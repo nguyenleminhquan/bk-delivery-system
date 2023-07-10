@@ -37,7 +37,7 @@ export const createOrderThunk = async(payload, thunkAPI) => {
     try {
         const res = await OrderService.create(orderPayload);
         deliveryPayload.order_id = res.data._id
-        socket.emit('newDelivery', deliveryPayload);
+        socket.emit('newDeliveries', [deliveryPayload]);
         socket.emit('updateOrderStatus', {
             order_id: res.data._id,
             status: 'waiting',

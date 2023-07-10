@@ -149,7 +149,7 @@ function CreateOrder() {
         const deliveryPayload = {
             status: OrderStatus.WAITING,
             area_code: user.area_code,
-            type: 'inner',
+            type: 'inner_sender',
             from: `${senderInfo.fullname}&${senderAddress ?? generateFinalAddress(senderInfo)}`,
             to: `${receiverInfo.fullname}&${generateFinalAddress(receiverInfo)}`,
             from_code: senderInfo?.city ? AreaDelivery.find(area => area.label === senderInfo.city).code : user.area_code,

@@ -19,7 +19,7 @@ function DeliveryOrder({ delivery }) {
         receiver_address: order.receiver_address,
         receiver_name: order.receiver_name,
         receiver_phone: order.receiver_phone,
-        quantity: items.length,
+        // quantity: items.length,
         weight: order.weight,
         items: items
       }
