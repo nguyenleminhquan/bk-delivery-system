@@ -1,7 +1,7 @@
 import { AiOutlineHistory } from 'react-icons/ai'
 import { BiLogOut } from 'react-icons/bi'
 import { BsPersonCircle } from 'react-icons/bs'
-import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaUser, FaWarehouse} from 'react-icons/fa'
+import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaTruck, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import {CODMethodIcon, MomoMethodIcon, ATMMethodIcon } from '../components/Icons';
 export * from './consts';
@@ -342,6 +342,13 @@ export const adminSidebar = [
         path: '/stock-management',
         icon: <FaWarehouse />,
         text: 'Quản lý kho',
+        type: 'beneath'
+    },
+    {
+        id: 8,
+        path: '/vehicle-management',
+        icon: <FaTruck />,
+        text: 'Quản lý phương tiện',
         type: 'beneath'
     },
 ]
