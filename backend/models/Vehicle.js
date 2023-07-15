@@ -8,7 +8,12 @@ const vehicleSchema = mongoose.Schema({
   },
   current_address_code: Number,
   from: Number,
-  to: Number,
+  to: [{
+    type: Number
+  }],
+  recommend_ways: [{
+    type: Number
+  }],
   from_string: String,
   to_string: String,
   license_plate_number: String,
