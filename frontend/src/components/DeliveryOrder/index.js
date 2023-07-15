@@ -45,7 +45,7 @@ function DeliveryOrder({ delivery }) {
 			</div>
 			<div className='action-btns'>
 				{
-					btns.map((btn) => (
+					btns?.map((btn) => (
 						<button 
 							key={btn.id} 
 							onClick={() => {

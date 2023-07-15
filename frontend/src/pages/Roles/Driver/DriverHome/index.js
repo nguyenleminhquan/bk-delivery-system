@@ -25,6 +25,10 @@ const tabs = [
   {
     field: 'picked',
     name: 'Đã lấy hàng',
+  },
+  {
+    field: 'deliveried',
+    name: 'Đang có trong xe'
   }
 ]
 
@@ -69,6 +73,7 @@ function DriverHome() {
   const checkShowAllButton = (status, configDeliveries) => {
     if (configDeliveries.length === 0) return false;
     const deliveryType = configDeliveries[0].type;
+    if (status === 'waiting') return true;
     if (status === 'accepted') {
       if (deliveryType === 'inner_sender') return false;
       return true;
@@ -77,7 +82,7 @@ function DriverHome() {
       if (deliveryType === 'inner_receiver') return false;
       return true;
     }
-    return true;
+    return false;
   }
 
   const btns = {
@@ -220,7 +225,8 @@ function DriverHome() {
     socket.emit('allDeliveries', {
       // area_code: user.area_code,
       // type: deliveryType
-      vehicle_id: user.vehicle_id
+      vehicle_id: user.vehicle_id,
+      area_code: user.area_code
     })
   }, [])
 
@@ -239,27 +245,48 @@ function DriverHome() {
       }
     })
     socket.on('updatedDelivery', (data) => {
-      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      tempDeliveries.forEach((item) => {
-        if (item._id === data._id) {
-          item.status = data.status
-        }
+      // console.log('allDeliveries', allDeliveries)
+      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      // tempDeliveries.forEach((item) => {
+      //   if (item._id === data._id) {
+      //     item.status = data.status
+      //   }
+      // })
+      // setAllDeliveries(tempDeliveries);
+      setAllDeliveries((prevDeliveries) => {
+        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
+        tempDeliveries.forEach((item) => {
+          if (item._id === data._id) {
+            item.status = data.status
+          }
+        })
+        return tempDeliveries
       })
-      setAllDeliveries(tempDeliveries);
     })
     socket.on('updateOrderStatus', (data) => {
-      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      tempDeliveries.forEach((item) => {
-        if (item.order._id === data.order_id) {
-          item.order.status = data.status
-        }
+      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      // tempDeliveries.forEach((item) => {
+      //   if (item.order._id === data.order_id) {
+      //     item.order.status = data.status
+      //   }
+      // })
+      // setAllDeliveries(tempDeliveries);
+      setAllDeliveries((prevDeliveries) => {
+        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
+        tempDeliveries.forEach((item) => {
+          if (item.order._id === data.order_id) {
+            item.order.status = data.status
+          }
+        })
+        return tempDeliveries
       })
-      setAllDeliveries(tempDeliveries);
     })
     socket.on('deleteDelivery', (delivery_id) => {
-      console.log('deliveryId', delivery_id)
       setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
     })
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
   }, [socket, allDeliveries])
 
   useEffect(() => {
@@ -272,21 +299,26 @@ function DriverHome() {
     if (selectedTab.field === 'picked') {
       setDeliveries(allDeliveries.filter((item) => item.status === 'picked' && item.area_code === user.area_code))
     }
+    if (selectedTab.field === 'deliveried') {
+      setDeliveries(allDeliveries.filter((item) => (item.status === 'deliveried' || item.status === 'picked') && item.area_code === user.area_code))
+    }
   }, [selectedTab, allDeliveries])
 
   useEffect(() => {
-    console.log('deliveries', deliveries)
     const { accept, viewOrder, picked, deliveried, cancel } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
     // let deliveryType = tempDeliveries[0].type;
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item), cancel(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
     }
     if (selectedTab.field === 'accepted') {
       tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })
     }
     if (selectedTab.field === 'picked') {
       tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item)] })
+    }
+    if (selectedTab.field === 'deliveried') {
+      tempDeliveries.forEach((item) => { item.btns = [viewOrder(item)] })
     }
     setConfigDeliveries(tempDeliveries)
   }, [deliveries])
