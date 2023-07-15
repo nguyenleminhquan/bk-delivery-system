@@ -1,6 +1,7 @@
 import createError from 'http-errors'
 import Delivery from '../models/Delivery.js';
 import Stock from '../models/Stock.js';
+import Vehicle from '../models/Vehicle.js';
 
 const getDeliveryByStatus = async (req, res, next) => {
     try {
@@ -109,59 +110,61 @@ const socketDelivery = (io) => {
             console.log("message: ", msg);
             io.emit('message', msg);
         })
-        socket.on('newDelivery', async(data) => {
-            console.log('data', data)
-            // config data received
-            let { status, area_code, order_id, driver_id, type, from, to, from_code, to_code } = data;
-            if (from.includes('stock_')) {
-                let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
-                from = stock.name + '&'  + stock.address
-            }
-            if (to.includes('stock_')) {
-                let stock = await Stock.findOne({ area_code: to.slice(6, to.length) })
-                to = stock.name + '&' + stock.address
-            }
-            // save new delivery
-            let newDelivery = new Delivery({
-                order: order_id,
-                driver: driver_id,
-                status: status,
-                area_code: area_code,
-                from: from,
-                to: to,
-                type: type,
-                from_code: from_code,
-                to_code: to_code
-            })
-            const res = await newDelivery.save();
-            const delivery =  await Delivery
-            .findById(res._id)
-            .populate({
-                path: 'order',
-                populate: {
-                    path: 'items',
+        socket.on('newDeliveries', async(deliveries) => {
+            let deliveriesResponse = [];
+            for (let data of deliveries) {
+                let { status, area_code, order_id, driver_id, type, from, to, from_code, to_code } = data;
+                if (from.includes('stock_')) {
+                    let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
+                    from = stock.name + '&'  + stock.address
                 }
-            })
-            io.emit('newDelivery', delivery)
+                if (to.includes('stock_')) {
+                    let stock = await Stock.findOne({ area_code: to.slice(6, to.length) })
+                    to = stock.name + '&' + stock.address
+                }
+                // save new delivery
+                let newDelivery = new Delivery({
+                    order: order_id,
+                    driver: driver_id,
+                    status: status,
+                    area_code: area_code,
+                    from: from,
+                    to: to,
+                    type: type,
+                    from_code: from_code,
+                    to_code: to_code
+                })
+                let res = await newDelivery.save();
+                let delivery = await Delivery
+                .findById(res._id)
+                .populate({
+                    path: 'order',
+                    populate: {
+                        path: 'items',
+                    }
+                });
+                deliveriesResponse.push(delivery);
+            }
+            io.emit('newDeliveries', deliveriesResponse)
         })
         socket.on('allDeliveries', async(data) => {
-            const { area_code, type } = data;
-            const deliveries = await Delivery
-            .find({ area_code: area_code, type: type })
-            .populate({
-                path: 'order',
-                populate: {
-                    path: 'items',
-                }
-            })
-            // console.log(deliveries)
+            const { vehicle_id } = data;
+            const vehicleInfo = await Vehicle
+            .findById(vehicle_id)
+            .populate('deliveries')
+            const deliveries = vehicleInfo?.deliveries;
+            console.log('deliveries', deliveries)
             socket.emit('allDeliveries', deliveries)
         })
         socket.on('acceptDelivery', async(data) => {
-            const { delivery_id, driver_id } = data;
+            console.log('accept delivery');
+            const { delivery_id, vehicle_id, driver_id } = data;
             const waitingDelivery = await Delivery.findById(delivery_id);
             if (waitingDelivery.status === 'waiting') {
-                let updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true})
+                const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true})
+                const vehicle = await Vehicle.findById(vehicle_id);
+                vehicle.deliveries.push(delivery_id);
+                vehicle.save();
                 // return res.json(data)
                 socket.emit('updatedDelivery', updatedDelivery)
             }
