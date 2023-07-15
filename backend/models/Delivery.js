@@ -11,7 +11,7 @@ const deliverySchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['waiting', 'accepted', 'picked', 'deliveried'],
+    enum: ['waiting', 'accepted', 'picked', 'deliveried', 'success'],
     default: 'waiting'
   },
   area_code: {
@@ -31,8 +31,8 @@ const deliverySchema = mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['inner', 'inter']
-  }
+    enum: ['inner_sender', 'inner_receiver', 'inter']
+  },
 }, { timestamps: true })
 
 export default mongoose.model('Delivery', deliverySchema)

@@ -33,6 +33,10 @@ const userSchema = mongoose.Schema({
   },
   area_code: {
     type: Number
+  },
+  vehicle_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle'
   }
 })
 
