@@ -1,6 +1,5 @@
 import {useState, useEffect, useContext} from 'react';
 import {MdOutlineDonutSmall} from 'react-icons/md'
-import styles from './Driver.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
@@ -11,6 +10,8 @@ import { toast } from 'react-toastify';
 import ViewOrderInfo from 'components/ViewOrderInfo';
 import { checkInDay } from 'features/user/userSlice';
 import Tabs from 'components/Tabs';
+import { FaCheck } from 'react-icons/fa';
+import './index.scss'
 
 const tabs = [
   {
@@ -24,6 +25,10 @@ const tabs = [
   {
     field: 'picked',
     name: 'Đã lấy hàng',
+  },
+  {
+    field: 'deliveried',
+    name: 'Đang có trong xe'
   }
 ]
 
@@ -32,13 +37,13 @@ function DriverHome() {
   const dispatch = useDispatch();
   const [toggleCheckinPopup, setToggleCheckinPopup] = useState(false);
   const [toggleViewOrderPopup, setToggleViewOrderPopup] = useState(false);
+  const [toggleAllPopup, setToggleAllPopup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
   const [ allDeliveries, setAllDeliveries ] = useState([]);
   const [ deliveries, setDeliveries ] = useState([]);
   const [ configDeliveries, setConfigDeliveries ] = useState([])
   const [orderInfo, setOrderInfo] = useState('')
   const { user } = useSelector((state) => state.user)
-  let deliveryType = user.typeUser === 'driver_inner' ? 'inner' : 'inter';
   const socket = useContext(SocketContext);
   
   const handleTracking = () => {
@@ -47,6 +52,37 @@ function DriverHome() {
     const now = Date.now();
     dispatch(checkInDay(now));
     setToggleCheckinPopup(false);
+  }
+
+  const handleAllAction = (deliveries) => {
+    if (selectedTab.field === 'waiting') {
+      deliveries.forEach((delivery) => {
+        btns.accept(delivery).action();
+      })
+    } else if (selectedTab.field === 'accepted') {
+      deliveries.forEach((delivery) => {
+        btns.picked(delivery).action();
+      })
+    } else if (selectedTab.field === 'picked') {
+      deliveries.forEach((delivery) => {
+        btns.deliveried(delivery).action();
+      })
+    }
+  }
+
+  const checkShowAllButton = (status, configDeliveries) => {
+    if (configDeliveries.length === 0) return false;
+    const deliveryType = configDeliveries[0].type;
+    if (status === 'waiting') return true;
+    if (status === 'accepted') {
+      if (deliveryType === 'inner_sender') return false;
+      return true;
+    }
+    if (status === 'picked') {
+      if (deliveryType === 'inner_receiver') return false;
+      return true;
+    }
+    return false;
   }
 
   const btns = {
@@ -58,6 +94,7 @@ function DriverHome() {
         action: () => {
           socket.emit('acceptDelivery', {
             driver_id: user.id,
+            vehicle_id: user.vehicle_id,
             delivery_id: delivery._id
           })
           if (order.status === 'waiting') {
@@ -82,7 +119,7 @@ function DriverHome() {
         receiver_address: order.receiver_address,
         receiver_name: order.receiver_name,
         receiver_phone: order.receiver_phone,
-        quantity: items.length,
+        // quantity: items.length,
         weight: order.weight,
         items: items
       }
@@ -186,8 +223,10 @@ function DriverHome() {
 
   useEffect(() => {
     socket.emit('allDeliveries', {
-      area_code: user.area_code,
-      type: deliveryType
+      // area_code: user.area_code,
+      // type: deliveryType
+      vehicle_id: user.vehicle_id,
+      area_code: user.area_code
     })
   }, [])
 
@@ -196,51 +235,81 @@ function DriverHome() {
       console.log('allDeliveries', data)
       setAllDeliveries(data);
     })
-    socket.on('newDelivery', (data) => {
-      setAllDeliveries([...allDeliveries, data])
+    socket.on('newDeliveries', (data) => {
+      if (allDeliveries.length === 0) {
+        setAllDeliveries(data);
+      } else {
+        let deliveryType = allDeliveries[0].type;
+        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType);
+        setAllDeliveries([...allDeliveries, ...tempDeliveries]);
+      }
     })
     socket.on('updatedDelivery', (data) => {
-      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      tempDeliveries.forEach((item) => {
-        if (item._id === data._id) {
-          item.status = data.status
-        }
+      // console.log('allDeliveries', allDeliveries)
+      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      // tempDeliveries.forEach((item) => {
+      //   if (item._id === data._id) {
+      //     item.status = data.status
+      //   }
+      // })
+      // setAllDeliveries(tempDeliveries);
+      setAllDeliveries((prevDeliveries) => {
+        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
+        tempDeliveries.forEach((item) => {
+          if (item._id === data._id) {
+            item.status = data.status
+          }
+        })
+        return tempDeliveries
       })
-      setAllDeliveries(tempDeliveries);
     })
     socket.on('updateOrderStatus', (data) => {
-      const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      tempDeliveries.forEach((item) => {
-        if (item.order._id === data.order_id) {
-          item.order.status = data.status
-        }
+      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
+      // tempDeliveries.forEach((item) => {
+      //   if (item.order._id === data.order_id) {
+      //     item.order.status = data.status
+      //   }
+      // })
+      // setAllDeliveries(tempDeliveries);
+      setAllDeliveries((prevDeliveries) => {
+        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
+        tempDeliveries.forEach((item) => {
+          if (item.order._id === data.order_id) {
+            item.order.status = data.status
+          }
+        })
+        return tempDeliveries
       })
-      setAllDeliveries(tempDeliveries);
     })
     socket.on('deleteDelivery', (delivery_id) => {
-      console.log('deliveryId', delivery_id)
       setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
     })
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
   }, [socket, allDeliveries])
 
   useEffect(() => {
     if (selectedTab.field === 'waiting') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'waiting' && item.area_code === user.area_code && item.type === deliveryType))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'waiting' && item.area_code === user.area_code))
     }
     if (selectedTab.field === 'accepted') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'accepted' && item.area_code === user.area_code && item.type === deliveryType))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'accepted' && item.area_code === user.area_code))
     }
     if (selectedTab.field === 'picked') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'picked' && item.area_code === user.area_code && item.type === deliveryType))
+      setDeliveries(allDeliveries.filter((item) => item.status === 'picked' && item.area_code === user.area_code))
+    }
+    if (selectedTab.field === 'deliveried') {
+      setDeliveries(allDeliveries.filter((item) => (item.status === 'deliveried' || item.status === 'picked') && item.area_code === user.area_code))
     }
   }, [selectedTab, allDeliveries])
 
   useEffect(() => {
-    console.log('deliveries', deliveries)
     const { accept, viewOrder, picked, deliveried, cancel } = btns;
     let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
+    // let deliveryType = tempDeliveries[0].type;
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item), cancel(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
     }
     if (selectedTab.field === 'accepted') {
       tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })
@@ -248,28 +317,39 @@ function DriverHome() {
     if (selectedTab.field === 'picked') {
       tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item)] })
     }
+    if (selectedTab.field === 'deliveried') {
+      tempDeliveries.forEach((item) => { item.btns = [viewOrder(item)] })
+    }
     setConfigDeliveries(tempDeliveries)
   }, [deliveries])
 
   return (
-    <div className={styles.wrapper}>
+    <div className='driver-home'>
       <div className='checkinBtn' onClick={() => setToggleCheckinPopup(true)}>
         <MdOutlineDonutSmall />
       </div>
-      {toggleCheckinPopup && (
-        <ConfirmPopup 
-          title="Check in hôm nay"
-          content={<WorkCheckIn />}
-          actionNo={() => setToggleCheckinPopup(false)}
-          actionYes={() => handleTracking()}
-          cancelLabel="Đóng lại"
-          okLabel="Check-in"
-      />
-      )}
+      
       <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
-      <div className={styles.deliveryList}>
+      {
+        checkShowAllButton(selectedTab.field, configDeliveries) &&
+          <div className='actionAll' onClick={() => setToggleAllPopup(true)}>
+            <span className='checkIcon'><FaCheck/></span>
+            <span className='allText'>
+              {
+                selectedTab.field === 'waiting'
+                ? 'Nhận tất cả đơn hàng'
+                : selectedTab.field === 'accepted'
+                  ? 'Đã lấy tất cả đơn hàng'
+                  : 'Đã giao xong tất cả đơn hàng'
+              }
+            </span>
+          </div>
+      }
+
+
+      <div className='deliveryList'>  
         {configDeliveries.map((delivery) => (
           <DeliveryOrder
             key={delivery._id}
@@ -280,14 +360,26 @@ function DriverHome() {
         ))}
       </div>
 
-      {/* {toggleViewOrderPopup && (
-				<ConfirmPopup 
-					title='Thông tin đơn hàng'
-					content={<ViewOrderInfo orderInfo={orderInfo} />}
-					actionNo={() => setToggleViewOrderPopup(false)}
-					cancelLabel="Đóng lại"
-				/>
-			)}	 */}
+      {toggleCheckinPopup && (
+        <ConfirmPopup 
+          title="Check in hôm nay"
+          content={<WorkCheckIn />}
+          actionNo={() => setToggleCheckinPopup(false)}
+          actionYes={() => handleTracking()}
+          cancelLabel="Đóng lại"
+          okLabel="Check-in"
+      />
+      )}
+
+      {toggleAllPopup && (
+        <ConfirmPopup 
+          title="Bạn xác nhận thực hiện trên tất cả các đơn hàng này?"
+          actionNo={() => setToggleAllPopup(false)}
+          actionYes={() => { handleAllAction(configDeliveries); setToggleAllPopup(false); }}
+          cancelLabel="Đóng lại"
+          okLabel="Xác nhận"
+      />
+      )}
 
     </div>
   )

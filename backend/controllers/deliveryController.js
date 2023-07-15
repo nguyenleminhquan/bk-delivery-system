@@ -2,6 +2,7 @@ import createError from 'http-errors'
 import Delivery from '../models/Delivery.js';
 import Stock from '../models/Stock.js';
 import Vehicle from '../models/Vehicle.js';
+import Order from '../models/Order.js';
 
 const getDeliveryByStatus = async (req, res, next) => {
     try {
@@ -148,22 +149,46 @@ const socketDelivery = (io) => {
             io.emit('newDeliveries', deliveriesResponse)
         })
         socket.on('allDeliveries', async(data) => {
-            const { vehicle_id } = data;
+            let deliveries = [];
+            // get deliveries in vehicle
+            const { vehicle_id, area_code } = data;
             const vehicleInfo = await Vehicle
             .findById(vehicle_id)
-            .populate('deliveries')
-            const deliveries = vehicleInfo?.deliveries;
-            console.log('deliveries', deliveries)
+            .populate({
+                path: 'deliveries',
+                populate: {
+                    path: 'order',
+                    populate: {
+                        path: 'items'
+                    }
+                }
+            })
+            deliveries.push(...vehicleInfo?.deliveries);
+            // get waiting deliveries
+            let waitingDeliveries = await Delivery
+            .find({ status: 'waiting', area_code: area_code })
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'items',
+                }
+            })
+            if (vehicleInfo?.deliveries.length > 0) {
+                waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
+            }
+            deliveries.push(...waitingDeliveries);
             socket.emit('allDeliveries', deliveries)
         })
         socket.on('acceptDelivery', async(data) => {
-            console.log('accept delivery');
             const { delivery_id, vehicle_id, driver_id } = data;
             const waitingDelivery = await Delivery.findById(delivery_id);
             if (waitingDelivery.status === 'waiting') {
                 const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true})
                 const vehicle = await Vehicle.findById(vehicle_id);
                 vehicle.deliveries.push(delivery_id);
+                if (!vehicle.orders.includes(waitingDelivery.order)) {
+                    vehicle.orders.push(waitingDelivery.order);
+                }
                 vehicle.save();
                 // return res.json(data)
                 socket.emit('updatedDelivery', updatedDelivery)

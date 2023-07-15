@@ -98,23 +98,28 @@ function SenderHome() {
 	}, [orders])
 
 	useEffect(() => {
-		console.log('updatedOrder', updatedOrders)
 		socket.on('updateOrderStatus', (data) => {
+			console.log('updatedorder', updatedOrders)
 			const { order_id, status, date } = data;
-			const tempOrders = JSON.parse(JSON.stringify(updatedOrders))
-			tempOrders.forEach((order) => {
-				if (order._id === order_id) {
-					order.status = status
-					order.tracking[status] = date;
-				}
+			setUpdatedOrders((prevOrders) => {
+				const tempOrders = JSON.parse(JSON.stringify(prevOrders))
+				tempOrders.forEach((order) => {
+					if (order._id === order_id) {
+						order.status = status
+						order.tracking[status] = date;
+					}
+				})
+				return tempOrders
 			})
-			setUpdatedOrders(tempOrders)
-		})
+		});
 		socket.on('deleteOrder', (data) => {
 			const { order_id } = data;
 			const tempOrders = updatedOrders.filter((item) => item._id !== order_id);
 			setUpdatedOrders(tempOrders)
-		}) 
+		});
+		socket.on("connect_error", (err) => {
+			console.log(`connect_error due to ${err.message}`);
+		});
 	}, [socket, updatedOrders])
 
 	useEffect(() => {

@@ -19,7 +19,7 @@ function DeliveryOrder({ delivery }) {
         receiver_address: order.receiver_address,
         receiver_name: order.receiver_name,
         receiver_phone: order.receiver_phone,
-        quantity: items.length,
+        // quantity: items.length,
         weight: order.weight,
         items: items
       }
@@ -45,7 +45,7 @@ function DeliveryOrder({ delivery }) {
 			</div>
 			<div className='action-btns'>
 				{
-					btns.map((btn) => (
+					btns?.map((btn) => (
 						<button 
 							key={btn.id} 
 							onClick={() => {
