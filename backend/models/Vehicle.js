@@ -26,7 +26,11 @@ const vehicleSchema = mongoose.Schema({
   exported: {
     type: Boolean,
     default: false
-  }
+  },
+  deliveries: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Delivery'
+  }],
 })
 
 export default mongoose.model('Vehicle', vehicleSchema)

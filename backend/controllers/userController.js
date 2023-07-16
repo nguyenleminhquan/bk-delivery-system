@@ -38,6 +38,7 @@ const userRegister = async (req, res, next) => {
                 bank_account: exist.bank_account,
                 working_days: newUser.working_days,
                 area_code: newUser.area_code,
+                vehicle_id: newUser.vehicle_id,
                 token, refresh_token 
             }
             
@@ -76,6 +77,7 @@ const userLogin = async (req, res, next) => {
                 working_days: exist.working_days,
                 area_code: exist.area_code,
                 stock_id: exist.stock_id,
+                vehicle_id: exist.vehicle_id,
                 token, refresh_token 
             }
             
@@ -120,6 +122,7 @@ const updateUserInfo = async (req, res, next) => {
                 bank_account: data.bank_account,
                 working_days: data.working_days,
                 area_code: data.area_code,
+                vehicle_id: data.vehicle_id,
                 token, refresh_token
             },
             msg: "User updated!"
