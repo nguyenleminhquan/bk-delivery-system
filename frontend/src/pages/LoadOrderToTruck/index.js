@@ -89,7 +89,7 @@ function LoadOrderToTruck() {
     // const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
-    const [truckOrders, setTruckOrders] = useState({});
+    const [truckOrders, setTruckOrders] = useState([]);
     const [selected, setSelected] = useState(0);
     const [totalWeight, setTotalWeight] = useState(0);
     const [toggleAll, setToggleAll] = useState(false);
@@ -102,24 +102,14 @@ function LoadOrderToTruck() {
     const [toggleImportPopup, setToggleImportPopup] = useState(false);
 
     const handleLoadOrder = (order, e) => {
-        const updated = orders.map(item => {
-            if (item._id === order._id) {
-                return {...item, checked: !item.checked}
-            } else return item;
-        })
-        setTruckOrders(updated);
-        setToggleAll(isAllChecked(updated));
-        if (e.target.checked) {
-            setTruckLoad(prev => [...prev, order]);
-            setSelected(prev => prev + 1);
-            setTotalWeight(prev => prev + order.weight);
-        } else {
-            // remove order from truckLoad
-            const orderIndex = truckLoad.findIndex(item => item.id === order.id);
-            setTruckLoad([...truckLoad.slice(0, orderIndex), ...truckLoad.slice(orderIndex+1)]);
-            setSelected(prev => prev - 1);
-            setTotalWeight(prev => prev - order.weight);
-        }
+        setTruckOrders(prev => {
+            return prev.map(el => {
+                if (el._id === order._id) {
+                    return {...el, checked: !el.checked}
+                } return el;
+            })
+        });
+        
     }
 
     const handleSetStatus = percent => {
@@ -161,7 +151,6 @@ function LoadOrderToTruck() {
     }
 
     const handleToggleAll = e => {
-        setToggleAll(!toggleAll);
         if (e.target.checked) {
             setTruckOrders(prev => prev.map(item => ({...item, checked: true})));
             setTruckLoad(orders);
@@ -175,8 +164,8 @@ function LoadOrderToTruck() {
         }
     }
 
-    const isAllChecked = orders => {
-        return orders.every(order => order.checked);
+    const isAllChecked = () => {
+        return truckOrders?.every(order => order.checked);
     }
 
     const handleSortCol = () => {
@@ -224,6 +213,15 @@ function LoadOrderToTruck() {
     }
 
     useEffect(() => {
+        const checkedOrders = truckOrders.filter(order => order.checked);
+        const totalWeight = checkedOrders.reduce((acc, cur) => acc + cur.weight, 0);
+        setToggleAll(isAllChecked());
+        setSelected(checkedOrders.length);
+        setTotalWeight(totalWeight);
+        // setTruckInfo(prev => ({...prev, current_weight: prev.current_weight + totalWeight}));
+    }, [truckOrders]);
+
+    useEffect(() => {
         setTruckOrders(orders.map(order => ({...order, checked: false})));
     }, [orders])
 
@@ -267,13 +265,13 @@ function LoadOrderToTruck() {
                 <div className="col-5">
                     <div className={styles.leftCol}>
                         <div className={styles.title}>Truck Load</div>
-                        <div className={handleSetStatus(truckInfo.current_weight / truckInfo.max_weight)}>{((truckInfo.current_weight / truckInfo.max_weight)*100).toFixed(2)}%</div>
+                        <div className={handleSetStatus((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)}>{(((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)*100).toFixed(2)}%</div>
                         <div className="my-5">
                             <TruckIcon 
                                 width="80%"
                                 height="100%" 
-                                availability={truckInfo.current_weight / truckInfo.max_weight}
-                                color={handleChooseColor(truckInfo.current_weight / truckInfo.max_weight)}
+                                availability={(truckInfo.current_weight + totalWeight) / truckInfo.max_weight}
+                                color={handleChooseColor((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)}
                             />
                         </div>
                         <div className={styles.action}>
@@ -298,7 +296,7 @@ function LoadOrderToTruck() {
                         <div className={styles.customTableWrap}>
                             <div className={styles.customTable}>
                                 <div className={`row p-2 ${styles.ordersHeader}`}>
-                                    <div className='col-1'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
+                                    <div className='col-1 d-flex'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
                                     <div className='col-6'>Mã đơn hàng</div>
                                     <div className='col-5'>
                                         <div className="d-flex">
@@ -312,9 +310,9 @@ function LoadOrderToTruck() {
                                 </div>
                                 <div className={styles.ordersWrap}>
                                     {truckOrders.length > 0 
-                                        ? (orders.map(order => (
+                                        ? (truckOrders.map(order => (
                                             <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
-                                                <div className='col-1'><input type="checkbox"
+                                                <div className='col-1 d-flex'><input type="checkbox"
                                                     checked={order.checked}
                                                     onChange={e => handleLoadOrder(order, e)}
                                                 /></div>
