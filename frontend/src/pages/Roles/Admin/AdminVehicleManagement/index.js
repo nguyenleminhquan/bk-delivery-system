@@ -7,14 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 // Component import
 import Table from 'components/Table';
 // Utils import
-import { getVehicles } from 'features/delivery/deliverySlice';
+import { addVehicle, getVehicles } from 'features/delivery/deliverySlice';
 import { VehicleType, VehicleTypeLabel } from 'utils/enums/vehicle.enum';
 // Style import
 import './index.scss';
 import GeneralConfirm from 'components/GeneralConfirm';
 import { VehicleTypes } from 'utils/consts';
-import { getAllEmployee } from 'features/user/userSlice';
-import { EmployeeRole } from 'utils/enums';
+import { getStocks } from 'features/stock/stockSlice';
 
 const vehicleModels = {
   columns: [
@@ -61,40 +60,41 @@ const vehicleModels = {
 function AdminVehicleManagement() {
   const dispatch = useDispatch();
   const { vehicles } = useSelector(state => state.delivery);
-  const { employees } = useSelector(state => state.user);
+  const { stocks } = useSelector(state => state.stock);
   const [data, setData] = useState(vehicleModels);
   const [showEditPopup, setShowEditPopup] = useState();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [employeeData, setEmployeeData] = useState([]);
+  const [stockData, setStockData] = useState([]);
 
   const handleAddVehicle = formData => {
-    console.log(formData);
+    const payload = {
+      max_weight: formData.net,
+      from: stocks.find(stock => stock._id === formData.stock),
+      license_plate_number: formData.license,
+      type: formData.type
+    }
+
+    dispatch(addVehicle(payload));
   }
 
   const handleEditVehicle = formData => {
-    console.log(formData);
+    
   }
 
   const handleDeleteVehicle = () => {
 
   }
 
-  function setupEmployeeData() {
-    const driverRole = [EmployeeRole.DRIVER_INNER, EmployeeRole.DRIVER_INTER];
-    const drivers = employees.filter(employee => driverRole.includes(employee.typeUser));
-    setEmployeeData(drivers.map(driver => ({label: driver.fullname, code: driver._id})));
-  }
-
   useEffect(() => {
-    setupEmployeeData();
-  }, [employees]);
+    setStockData(stocks.map(stock => ({label: stock.name, code: stock._id})));
+  }, [stocks]);
 
   useEffect(() => {
     const rows = [...vehicles.map(vehicle => ({
       type: vehicle.type === VehicleType.INNER ? VehicleTypeLabel.INNER : VehicleTypeLabel.INTER,
       license: vehicle.license_plate_number,
       net: vehicle.max_weight,
-      driver: 'Nguyễn Văn A',
+      driver: vehicle?.driver ?? null,
       edit: (<BiEdit className="text-success" role="button" onClick={() => setShowEditPopup(vehicle)} />),
       delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setShowDeletePopup(vehicle._id)} />)
     }))];
@@ -103,7 +103,7 @@ function AdminVehicleManagement() {
 
   useEffect(() => {
     dispatch(getVehicles());
-    dispatch(getAllEmployee());
+    dispatch(getStocks());
   }, []);
 
   return (
@@ -133,7 +133,7 @@ function AdminVehicleManagement() {
             { name: "type", label: "Loại xe", type: "select", models: VehicleTypes, value: showEditPopup.type},
             { name: "license", label: "Biển số xe", type: "text", value: showEditPopup.license },
             { name: "net", label: "Khối lượng", type: "text", value: showEditPopup.net },
-            { name: "driver", label: "Tài xế", type: "select", models: employeeData, value: showEditPopup.driver },
+            { name: "stock", label: "Kho hoạt động", type: "select", models: stockData, value: showEditPopup.stock },
           ]}
           formValue={showEditPopup}
           formSubmitText={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}

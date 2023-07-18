@@ -30,6 +30,10 @@ const getVehicles = () => {
     return customFetch.get('/vehicle');
 }
 
+const addVehicle = payload => {
+    return customFetch.post('/vehicle', payload);
+}
+
 const getVehicleByRegion = (region_id) => {
     return customFetch.get(`/vehicle/region/${region_id}`);
 }
@@ -64,6 +68,7 @@ const DeliveryService = {
     updateDeliveryStatus,
     acceptDelivery,
     getVehicles,
+    addVehicle,
     getVehicleByRegion,
     getVehicleOrders,
     deleteVehicleOrder,
