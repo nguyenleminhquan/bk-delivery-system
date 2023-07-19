@@ -66,7 +66,7 @@ function AdminVehicleManagement() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [stockData, setStockData] = useState([]);
 
-  const handleAddVehicle = formData => {
+  const handleUpsertVehicle = formData => {
     const payload = {
       max_weight: formData.net,
       from: stocks.find(stock => stock._id === formData.stock),
@@ -75,10 +75,6 @@ function AdminVehicleManagement() {
     }
 
     dispatch(addVehicle(payload));
-  }
-
-  const handleEditVehicle = formData => {
-    
   }
 
   const handleDeleteVehicle = () => {
@@ -127,12 +123,12 @@ function AdminVehicleManagement() {
           title={showEditPopup.license ? 'Cập nhật thông tin xe' : 'Thêm xe'}
           cancelText="Đóng lại"
           onCancel={() => setShowEditPopup(false)}
-          onConfirm={showEditPopup?.license ? handleEditVehicle : handleAddVehicle}
+          onConfirm={handleUpsertVehicle}
           showForm={true}
           formFields={[
             { name: "type", label: "Loại xe", type: "select", models: VehicleTypes, value: showEditPopup.type},
-            { name: "license", label: "Biển số xe", type: "text", value: showEditPopup.license },
-            { name: "net", label: "Khối lượng", type: "text", value: showEditPopup.net },
+            { name: "license", label: "Biển số xe", type: "text", value: showEditPopup.license_plate_number },
+            { name: "net", label: "Khối lượng", type: "text", value: showEditPopup.max_weight },
             { name: "stock", label: "Kho hoạt động", type: "select", models: stockData, value: showEditPopup.stock },
           ]}
           formValue={showEditPopup}
