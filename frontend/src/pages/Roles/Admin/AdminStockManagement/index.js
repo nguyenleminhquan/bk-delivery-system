@@ -7,6 +7,8 @@ import { BiEdit } from 'react-icons/bi';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './AdminStockerManagement.module.scss';
+import { VietNamArea } from 'utils/consts/area.const';
+import { toast } from 'react-toastify';
 
 const stockModels = {
     columns: [
@@ -50,13 +52,20 @@ function AdminStockManagement() {
     const [data, setData] = useState(stockModels);
     const [showEditPopup, setShowEditPopup] = useState();
     const [showDeletePopup, setShowDeletePopup] = useState('');
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
 
     const handleAddStock = payload => {
+        if (!payload.name || !payload.city || !payload.district || !payload.address) {
+            toast.error('Nhập thiếu thông tin kho!');
+            return;
+        }
         const name = payload.name;
-        const address = payload.address;
-        const area_code = Number(payload.area_code);
+        const address = `${payload.address}, ${payload.district.label}, ${payload.city.label}`;
+        const area_code = payload.city.value;
+        const district_code = payload.district.value;
 
-        dispatch(addStock({name, address, area_code}));
+        dispatch(addStock({name, address, area_code, district_code}));
         setShowEditPopup(false);
     }
 
@@ -70,10 +79,28 @@ function AdminStockManagement() {
         setShowDeletePopup('');
     }
 
+    function setupDistrictData(city) {
+        const target = VietNamArea.find(area => area.code === city.value);
+        setDistricts(target.districts.map(district => ({ label: district.name, value: district.code })));
+    }
+
+    function handleShowEditForm(stock) {
+        const addressArr = stock.address.split(", ");
+        const city = VietNamArea.find(area => area.code === stock.area_code);
+        const district = city.districts.find(district => district.code === stock?.district_code);
+        const data = {
+            name: stock.name,
+            address: addressArr[0],
+            city: {label: city.name, value: city.code},
+            district: {label: district.name, value: district.code},
+        }
+        setShowEditPopup(data);
+    }
+
     useEffect(() => {
         const rows = [...stocks.map(stock => ({
             ...stock,
-            edit: (<BiEdit className="text-success" role="button" onClick={() => setShowEditPopup(stock)}/>),
+            edit: (<BiEdit className="text-success" role="button" onClick={() => handleShowEditForm(stock)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setShowDeletePopup(stock._id)}/>)
         }))];
 
@@ -82,6 +109,7 @@ function AdminStockManagement() {
 
     useEffect(() => {
         dispatch(getStocks());
+        setCities(VietNamArea.map(area => ({ label: area.name, value: area.code })));
     }, []);
 
     return (
@@ -89,7 +117,7 @@ function AdminStockManagement() {
             <div className="container">
                 <div className="row">
                     <div className="d-flex align-items-center">
-                        <h2 className='fs-4'>Quản lí nhân viên</h2>
+                        <h2 className='fs-4'>Quản lí kho</h2>
                     <button className='btn btn-medium ms-3' onClick={() => setShowEditPopup(true)}>
                             <AiOutlinePlus className='me-2'/>
                             Thêm mới</button>
@@ -106,14 +134,16 @@ function AdminStockManagement() {
                     cancelText="Đóng lại"
                     onCancel={() => setShowEditPopup(false)}
                     onConfirm={showEditPopup?.name ? handleEditStock : handleAddStock}
+                    onObserver={setupDistrictData}
                     showForm={true}
                     formFields={[
                         { name: "name", label: "Tên kho", type: "text", value: showEditPopup.name, disabled: !!showEditPopup.name },
-                        { name: "area_code", label: "Mã kho", type: "text", value: showEditPopup.area_code, disabled: !!showEditPopup.area_code}
+                        { name: "city", label: "Tỉnh/Thành phố", type: "select", models: cities, value: showEditPopup.city, observerData: true, placeholder: "Chọn tỉnh/thành phố" },
+                        { name: "district", label: "Quận/Huyện", type: "select", models: districts, value: showEditPopup.district, placeholder: "Chọn quận/huyện" },
+                        { name: "address", label: "Địa chỉ", type: "text", value: showEditPopup.address },
                     ]}
                     formValue={showEditPopup}
                     formSubmitText={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
-                    addressAutoForm={true}
                 />
             )}
 

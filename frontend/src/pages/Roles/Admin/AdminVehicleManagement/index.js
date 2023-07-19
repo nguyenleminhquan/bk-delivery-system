@@ -69,9 +69,9 @@ function AdminVehicleManagement() {
   const handleUpsertVehicle = formData => {
     const payload = {
       max_weight: formData.net,
-      from: stocks.find(stock => stock._id === formData.stock),
+      from: stocks.find(stock => stock._id === formData.stock.value),
       license_plate_number: formData.license,
-      type: formData.type
+      type: formData.type.value
     }
 
     dispatch(addVehicle(payload));
@@ -81,8 +81,17 @@ function AdminVehicleManagement() {
 
   }
 
+  function onShowEditForm(vehicle) {
+    const data = {
+      ...vehicle,
+      type: VehicleTypes.find(type => type.value === vehicle.type),
+      stock: stockData.find(stock => stock.value === vehicle.stock)
+    }
+    setShowEditPopup(data);
+  }
+
   useEffect(() => {
-    setStockData(stocks.map(stock => ({label: stock.name, code: stock._id})));
+    setStockData(stocks.map(stock => ({label: stock.name, value: stock._id})));
   }, [stocks]);
 
   useEffect(() => {
@@ -91,7 +100,7 @@ function AdminVehicleManagement() {
       license: vehicle.license_plate_number,
       net: vehicle.max_weight,
       driver: vehicle?.driver ?? null,
-      edit: (<BiEdit className="text-success" role="button" onClick={() => setShowEditPopup(vehicle)} />),
+      edit: (<BiEdit className="text-success" role="button" onClick={() => onShowEditForm(vehicle)} />),
       delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setShowDeletePopup(vehicle._id)} />)
     }))];
     setData({...data, rows});

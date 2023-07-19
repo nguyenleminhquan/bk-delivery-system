@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { toast } from 'react-toastify';
 import styles from './GeneralConfirm.module.scss';
+import SelectOption from 'components/SelectOption';
 
 /** How to use this component?
  *  - title: the title of confirmation dialog
@@ -55,6 +56,13 @@ function GeneralConfirm(props) {
     const value = target.value;
 
     setFormData({...formData, [name]: value});
+  }
+
+  const handleSelectChange = (field, value) => {
+    setFormData({...formData, [field.name]: value});
+    if (field?.observerData) {
+      props.onObserver(value);
+    }
   }
 
   const handleSubmit = (event) => {
@@ -119,12 +127,12 @@ function GeneralConfirm(props) {
                 <div className={styles.formGroup} key={field.name}>
                   <label>{field.label}</label>
                   {field.type === 'select' ? (
-                    <select name={field.name} defaultValue={field.value} onChange={handleInputChange}>
-                      <option value="">Chọn {field.label}</option>
-                      {field.models.map(({code, label}) => (
-                        <option value={code} key={code}>{label}</option>
-                      ))}
-                    </select>
+                    <SelectOption name={field.name}
+                      value={field?.value}
+                      options={field.models}
+                      onChange={selected => handleSelectChange(field, selected)}
+                      placeholder={field.placeholder}
+                      isMulti={field?.multiple ?? false} />
                   ) : (
                     <input type={field.type} 
                       name={field.name} 

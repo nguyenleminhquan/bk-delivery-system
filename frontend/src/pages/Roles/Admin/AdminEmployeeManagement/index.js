@@ -21,6 +21,7 @@ import GeneralConfirm from 'components/GeneralConfirm';
 import styles from './AdminEmployeeManagement.module.scss';
 import { AreaDelivery } from 'utils/consts/Delivery.const';
 import { EmployeeManagementToast, EmployeeRole } from 'utils/enums';
+import { VietNamArea } from 'utils/consts/area.const';
 
 const employeeModels = {
     columns: [
@@ -66,15 +67,15 @@ const employeeModels = {
 const roleModels = [
     {
         label: 'Tài xế nội thành',
-        code: EmployeeRole.DRIVER_INNER
+        value: EmployeeRole.DRIVER_INNER
     },
     {
         label: 'Tài xế liên tỉnh',
-        code: EmployeeRole.DRIVER_INTER
+        value: EmployeeRole.DRIVER_INTER
     },
     {
         label: 'Quản lí kho',
-        code: EmployeeRole.STOCKER
+        value: EmployeeRole.STOCKER
     }
 ];
 
@@ -83,15 +84,20 @@ const DEFAULT_PASSWORD = '1234567890';
 function AdminEmployeeManagement() {
     const dispatch = useDispatch();
     const { employees } = useSelector(state => state.user);
+    const areaData = VietNamArea.map(area => ({label: area.name, value: area.code}));
     const [data, setData] = useState(employeeModels);
     const [editPopup, setEditPopup] = useState();
     const [deletePopup, setDeletePopup] = useState('');
 
     const handleAddEmployee = (formData) => {
-        console.log(formData);
         if (formData.fullname && formData.phone && formData.email && formData.typeUser && formData.area_code) {
             // Create new employee with default password: 1234567890
-            dispatch(createEmployee({ ...formData, password: DEFAULT_PASSWORD }));
+            const payload = {
+                ...formData,
+                area_code: formData.area_code.value,
+                typeUser: formData.typeUser.value
+            }
+            dispatch(createEmployee({ ...payload, password: DEFAULT_PASSWORD }));
             setEditPopup(false);
         } else {
             return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
@@ -115,6 +121,15 @@ function AdminEmployeeManagement() {
         setDeletePopup('');
     }
 
+    function handleShowEditForm(employee) {
+        const data = {
+            ...employee,
+            typeUser: roleModels.find(role => role.value === employee.typeUser),
+            area_code: areaData.find(area => area.value === employee.area_code),
+        }
+        setEditPopup(data);
+    }
+
     useEffect(() => {
         const rows = [...employees.map(employee => ({
             generalInfo: (
@@ -130,7 +145,7 @@ function AdminEmployeeManagement() {
             activeStock: AreaDelivery.find(area => area.code === employee?.area_code)?.label ?? '',
             vehicleInfo: 'Xe máy Honda 63B5-99999',
             role: roleModels.find(role => role.code === employee?.typeUser)?.label,
-            edit: (<BiEdit className="text-success" role="button" onClick={() => setEditPopup(employee)}/>),
+            edit: (<BiEdit className="text-success" role="button" onClick={() => handleShowEditForm(employee)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
         }))];
         setData({...data, rows});
@@ -167,8 +182,8 @@ function AdminEmployeeManagement() {
                         { name: "fullname", label: "Họ và tên", type: "text", value: editPopup.fullname },
                         { name: "email", label: "Email", type: "email", value: editPopup.email },
                         { name: "phone", label: "Số điện thoại", type: "text", value: editPopup.phone },
-                        { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser},
-                        { name: "area_code", label: "Khu vực", type: "select", models: AreaDelivery, value: editPopup.area_code},
+                        { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser, placeholder: "Chọn quyền"},
+                        { name: "area_code", label: "Khu vực", type: "select", models: areaData, value: editPopup.area_code, placeholder: "Chọn kho hoạt động"},
                     ]}
                     formValue={editPopup}
                     formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
