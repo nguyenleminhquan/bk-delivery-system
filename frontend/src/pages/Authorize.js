@@ -13,6 +13,7 @@ import LoadOrderToTruck from './LoadOrderToTruck';
 import AdminEmployeeManagement from './Roles/Admin/AdminEmployeeManagement';
 import AdminStockManagement from './Roles/Admin/AdminStockManagement';
 import ImportExportHistory from './Roles/Stocker/ImportExportHistory';
+import AdminVehicleManagement from './Roles/Admin/AdminVehicleManagement';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -55,6 +56,7 @@ function Authorize() {
 				<Route index element={<AdminHome />}></Route>
 				<Route path='/employee-management' element={<AdminEmployeeManagement />}></Route>
 				<Route path='/stock-management' element={<AdminStockManagement />}></Route>
+				<Route path='/vehicle-management' element={<AdminVehicleManagement />}></Route>
 			</Routes>
 		)
 	}

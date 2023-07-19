@@ -191,7 +191,7 @@ function GeneralConfirm(props) {
         
         <div className={styles.footer}>
           {!props.disableCancel && 
-            <button onClick={props.onCancel} className='btn btn-medium bg-secondary'>{props.cancelText}</button>
+            <button onClick={props.onCancel} style={{backgroundColor: '#6C757D'}} className='btn btn-medium'>{props.cancelText}</button>
           }
           {props.showConfirmButton &&
             <button onClick={props.onConfirm} className="btn btn-medium">{props.confirmText}</button>
