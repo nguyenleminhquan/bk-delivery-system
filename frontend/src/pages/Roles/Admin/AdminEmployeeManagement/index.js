@@ -22,6 +22,7 @@ import styles from './AdminEmployeeManagement.module.scss';
 import { AreaDelivery } from 'utils/consts/Delivery.const';
 import { EmployeeManagementToast, EmployeeRole } from 'utils/enums';
 import { VietNamArea } from 'utils/consts/area.const';
+import EmployeeUpsert from 'components/EmployeeUpsert';
 
 const employeeModels = {
     columns: [
@@ -106,7 +107,6 @@ function AdminEmployeeManagement() {
 
     const handleEditEmployee = (formData) => {
         const updatedData = {...editPopup, ...formData};
-        console.log(updatedData);
         if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.area_code) {
             dispatch(editEmployee({ id: editPopup._id, info: updatedData }));
             setEditPopup(false);
@@ -144,7 +144,7 @@ function AdminEmployeeManagement() {
             ),
             activeStock: AreaDelivery.find(area => area.code === employee?.area_code)?.label ?? '',
             vehicleInfo: 'Xe máy Honda 63B5-99999',
-            role: roleModels.find(role => role.code === employee?.typeUser)?.label,
+            role: roleModels.find(role => role.value === employee?.typeUser)?.label,
             edit: (<BiEdit className="text-success" role="button" onClick={() => handleShowEditForm(employee)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
         }))];
@@ -174,20 +174,9 @@ function AdminEmployeeManagement() {
             {editPopup && (
                 <GeneralConfirm 
                     title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
-                    cancelText="Đóng lại"
-                    onCancel={() => setEditPopup(false)}
                     onConfirm={editPopup?.email ? handleEditEmployee : handleAddEmployee}
-                    showForm={true}
-                    formFields={[
-                        { name: "fullname", label: "Họ và tên", type: "text", value: editPopup.fullname },
-                        { name: "email", label: "Email", type: "email", value: editPopup.email },
-                        { name: "phone", label: "Số điện thoại", type: "text", value: editPopup.phone },
-                        { name: "typeUser", label: "Quyền", type: "select", models: roleModels, value: editPopup.typeUser, placeholder: "Chọn quyền"},
-                        { name: "area_code", label: "Khu vực", type: "select", models: areaData, value: editPopup.area_code, placeholder: "Chọn kho hoạt động"},
-                    ]}
-                    formValue={editPopup}
-                    formSubmitText={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
-                />
+                    message={<EmployeeUpsert object={editPopup} handleClose={() => setEditPopup(false)}/>}
+                    disableCancel={true}/>
             )}
 
             {deletePopup && (
