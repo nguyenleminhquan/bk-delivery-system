@@ -1,6 +1,6 @@
 import createError from 'http-errors'
 import Order from '../models/Order.js'
-import Item from '../models/Item.js'
+import Vehicle from '../models/Vehicle.js'
 import User from '../models/User.js'
 import Stock from '../models/Stock.js'
 import ImportInfo from '../models/ImportInfo.js'
@@ -13,12 +13,16 @@ const importOrderToStock = async (req, res, next) => {
     let { order_id, stock_id, stocker_id } = req.body
     console.log(req.body)
     let order = await Order.findById(order_id)
+    let stock = await Stock.findById(stock_id)
     await User.findById(stocker_id)
-    await Stock.findById(stock_id)
 
     // Change status of order to `import`
     order.status = 'import'
     await order.save()
+
+    // Them order vao stock
+    stock.orders.push(order)
+    await stock.save()
 
     // Check the existence of importInfo with stock_id
     // let importInfo = await ImportInfo.findOne({ stock_id })
@@ -153,6 +157,21 @@ const getExportHistory = async(req, res, next) => {
   }
 }
 
+const getAllVehicleAtStock = async (req, res, next) => {
+  try {
+    console.info("Get all vehicles at stock")
+    let stock = await Stock.findById(req.params.stockId)
+    let stockAreaCode = stock.area_code
+
+    let allVehicles = await Vehicle.find({ from: stockAreaCode })
+
+    return res.json(allVehicles)
+  } catch (error) {
+    console.log(error)
+    return next(createError(400))
+  }
+}
+
 export {
   importOrderToStock,
   getOrderInStocks,
@@ -160,6 +179,7 @@ export {
   getAllStock,
   deleteStock,
   editStock,
+  getAllVehicleAtStock,
   getImportHistory,
   getExportHistory
 }
