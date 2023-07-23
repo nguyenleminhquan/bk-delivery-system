@@ -223,10 +223,10 @@ function DriverHome() {
 
   useEffect(() => {
     socket.emit('allDeliveries', {
-      // area_code: user.area_code,
-      // type: deliveryType
       vehicle_id: user.vehicle_id,
-      area_code: user.area_code
+      area_code: user.area_code,
+      district_code: user.district_code,
+      type: user.typeUser
     })
   }, [])
 

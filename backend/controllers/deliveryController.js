@@ -114,7 +114,7 @@ const socketDelivery = (io) => {
         socket.on('newDeliveries', async(deliveries) => {
             let deliveriesResponse = [];
             for (let data of deliveries) {
-                let { status, area_code, order_id, driver_id, type, from, to, from_code, to_code } = data;
+                let { status, area_code, district_code, order_id, driver_id, type, from, to, from_code, to_code } = data;
                 if (from.includes('stock_')) {
                     let stock = await Stock.findOne({ area_code: from.slice(6, from.length) })
                     from = stock.name + '&'  + stock.address
@@ -129,6 +129,7 @@ const socketDelivery = (io) => {
                     driver: driver_id,
                     status: status,
                     area_code: area_code,
+                    district_code: district_code,
                     from: from,
                     to: to,
                     type: type,
@@ -151,7 +152,7 @@ const socketDelivery = (io) => {
         socket.on('allDeliveries', async(data) => {
             let deliveries = [];
             // get deliveries in vehicle
-            const { vehicle_id, area_code } = data;
+            const { vehicle_id, area_code, district_code, type } = data;
             const vehicleInfo = await Vehicle
             .findById(vehicle_id)
             .populate({
@@ -166,7 +167,7 @@ const socketDelivery = (io) => {
             deliveries.push(...vehicleInfo?.deliveries);
             // get waiting deliveries
             let waitingDeliveries = await Delivery
-            .find({ status: 'waiting', area_code: area_code })
+            .find({ status: 'waiting', area_code: area_code, district_code: district_code, type: {$regex: type} })
             .populate({
                 path: 'order',
                 populate: {
