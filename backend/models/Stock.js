@@ -18,7 +18,11 @@ const stockSchema = mongoose.Schema({
   },
   lon: {
     type: Number
-  }
+  },
+  orders: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order'
+  }]
 }, { timestamps: true })
 
 export default mongoose.model('Stock', stockSchema)
