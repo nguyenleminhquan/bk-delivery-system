@@ -21,6 +21,7 @@
 | /delivery/:id/accept-delivery | PATCH | Driver accept the waiting delivery | Authorization: Bearer <refresh_token> <access_token> | driver_id: string |
 | /stock| GET | Get all stock | Authorization: Bearer <refresh_token> <access_token> | |
 | /stock/:id/vehicles | GET | Get all vehicle at this stock | Authorization: Bearer <refresh_token> <access_token> | |
+| /stock/:stockId/vehicle/:vehicleId/avail-orders | GET | Get available orders for vehicle at one stock | Authorization: Bearer <refresh_token> <access_token> | |
 | /stock| POST | Add stock | Authorization: Bearer <refresh_token> <access_token> | name: string <br/> address: string <br/> area_code: number |
 | /stock/:id | DELETE | Delete stock | Authorization: Bearer <refresh_token> <access_token> | |
 | /stock/:id | PATCH | Edit stock | Authorization: Bearer <refresh_token> <access_token> | address: string |
@@ -32,7 +33,7 @@
 | /vehicle/search?from=`number`&to=`number` | GET | Filter vehicle by route | Authorization: Bearer <refresh_token> <access_token> | |
 | /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | list_orders: [array of order_id] |
 | /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
-| /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
+| **OBSELETED** /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/export-order | POST | Export order on vehicle | Authorization: Bearer <refresh_token> <access_token> | { stocker_id: id } |
 | /vehicle/region/:id/search?exported=<true\|false> | GET | Get all vehicle by region and status | Authorization: Bearer <refresh_token> <access_token> |  |
 | /user/create-account | POST | Create account for stocker and driver | Authorization: Bearer <refresh_token> <access_token> | information you want to create |

@@ -62,5 +62,5 @@ export {
   getDomainFromString
 }
 
-console.log(getDomainFromString("1544 Ngô Quyền, thị xã Cai , Huyện Năm Căn, Tỉnh Cà Mau"))
-console.log(getAreaCodeAndDistrictCodeFromString("1544 Ngô Quyền, thị xã Cai , Huyện Năm Căn, Tỉnh Cà Mau"))
+// console.log(getDomainFromString("1544 Ngô Quyền, thị xã Cai , Huyện Năm Căn, Tỉnh Cà Mau"))
+// console.log(getAreaCodeAndDistrictCodeFromString("1544 Ngô Quyền, thị xã Cai , Huyện Năm Căn, Tỉnh Cà Mau"))

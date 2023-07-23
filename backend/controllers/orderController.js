@@ -1,6 +1,9 @@
 import createError from 'http-errors'
 import Order from '../models/Order.js'
 import Item from '../models/Item.js'
+import {
+  getAreaCodeAndDistrictCodeFromString
+} from '../utils/order-utils.js'
 
 // Create new order
 const createOrder = async (req, res, next) => {
@@ -8,6 +11,11 @@ const createOrder = async (req, res, next) => {
   // user_id
   // list items: name, quantity, type, weight
   const bodyObj = req.body
+
+  let parseReceiver = bodyObj.receiver_address.split(", ")
+  let length_parseReceiver = parseReceiver.length
+  let receiver_area_address = parseReceiver[length_parseReceiver - 1]
+  let receiver_district_address = parseReceiver[length_parseReceiver - 2]
 
   let newOrder = new Order({
     weight: bodyObj.weight,
@@ -24,6 +32,8 @@ const createOrder = async (req, res, next) => {
     shipping_fee: bodyObj.shipping_fee,
     user_id: bodyObj.user_id
   })
+
+  // Parse thong tin de lay code cua noi den
   // Save order for getting _id
   await newOrder.save()
 
