@@ -132,7 +132,7 @@ function EmployeeUpsert({object, handleClose}) {
           onChange={selected => handleSelectChange('typeUser', selected)}/>
       </div>
 
-      {info?.role && info.typeUser.value !== EmployeeRole.STOCKER && (
+      {info?.typeUser && info.typeUser.value !== EmployeeRole.STOCKER && (
         <div className="form-group">
           <label>Phương tiện</label>
           <SelectOption name="vehicle"
