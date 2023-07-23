@@ -1,12 +1,13 @@
 FROM node:18.12.1-alpine3.16
+EXPOSE 5000
 
 WORKDIR /app
 
-COPY . .
-
-EXPOSE 5000
+COPY package*.json .
 
 RUN npm install
+
+COPY . .
 
 CMD [ "npm", "start" ]
 
