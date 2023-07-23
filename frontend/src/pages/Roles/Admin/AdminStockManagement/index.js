@@ -97,7 +97,7 @@ function AdminStockManagement() {
         const district = city.districts.find(district => district.code === stock?.district_code);
         const data = {
             name: stock.name,
-            address: addressArr[0],
+            address: addressArr.slice(0, addressArr.length - 2).join(', '),
             city: {label: city.name, value: city.code},
             district: {label: district.name, value: district.code},
         }
