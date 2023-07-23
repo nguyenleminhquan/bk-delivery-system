@@ -309,8 +309,12 @@ const createAccount = async (req, res, next) => {
     }
     else {
         try {
-            let stock = await Stock.find({area_code: body.area_code});
-            const userInfo = {...body, stock_id: stock[0]?._id};
+            // let stock = await Stock.find({area_code: body.area_code});
+            const stocks = body.stocks;
+            const stockId = stocks[0]._id;
+            const area_code = stocks[0].area_code;
+            const district_code = stocks.map((stock) => stock.district_code)
+            const userInfo = {...body, stock_id: stockId, area_code: area_code, district_code: district_code};
             let newUser = new User(userInfo);
             newUser = await newUser.save()
             // Data tra ve
@@ -322,10 +326,14 @@ const createAccount = async (req, res, next) => {
                 typeUser: newUser.typeUser,
                 sender_address: newUser.sender_address,
                 address: newUser.address,
+                vehicle_id: newUser.vehicle_id,
                 area_code: newUser.area_code,
+                district_code: newUser.district_code,
+                stock_id:  newUser.stock_id
             } 
             return res.json(data)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -335,21 +343,29 @@ const editAccount = async (req, res, next) => {
     try {
         const accountId = req.params.id;
         const info = req.body;
-        const data = await User.findByIdAndUpdate(
+        const stocks = info.stocks;
+        const stockId = stocks[0]._id;
+        const area_code = stocks[0].area_code;
+        const district_code = stocks.map((stock) => stock.district_code)
+        const userInfo = {...body, stock_id: stockId, area_code: area_code, district_code: district_code};
+        const updatedUser = await User.findByIdAndUpdate(
             accountId,
-            info,
+            userInfo,
             { new: true }
         );
         return res.json({ 
             data: {
-                id: data._id,
-                fullname: data.fullname,
-                email: data.email,
-                phone: data.phone,
-                typeUser: data.typeUser,
-                sender_address: data.sender_address,
-                address: data.address,
-                area_code: data.area_code,
+                id: updatedUser._id,
+                fullname: updatedUser.fullname,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                typeUser: updatedUser.typeUser,
+                sender_address: updatedUser.sender_address,
+                address: updatedUser.address,
+                vehicle_id: updatedUser.vehicle_id,
+                area_code: updatedUser.area_code,
+                district_code: updatedUser.district_code,
+                stock_id:  updatedUser.stock_id
             },
             msg: "User updated!"
         });

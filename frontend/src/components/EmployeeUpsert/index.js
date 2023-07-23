@@ -31,6 +31,7 @@ const roleModels = [
     value: EmployeeRole.STOCKER
   }
 ];
+const DEFAULT_PASSWORD = '1234567890';
 
 function EmployeeUpsert({object, handleClose}) {
   const dispatch = useDispatch();
@@ -60,7 +61,7 @@ function EmployeeUpsert({object, handleClose}) {
         typeUser: info.typeUser.value
       }
       if (info.typeUser.value !== EmployeeRole.STOCKER) {
-        payload.vehicle = info.vehicle.value; 
+        payload.vehicle_id = info.vehicle.value; 
       }
 
       if (isArray(info.stocks)) {
@@ -69,6 +70,8 @@ function EmployeeUpsert({object, handleClose}) {
       } else {
         payload.stocks = [stocks.find(stock => stock._id === info.stocks.value)];
       }
+
+      payload.password = DEFAULT_PASSWORD
 
       dispatch(createEmployee(payload));
       handleClose();
