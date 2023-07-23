@@ -37,7 +37,7 @@ function EmployeeUpsert({object, handleClose}) {
   const dispatch = useDispatch();
   const { stocks } = useSelector(state => state.stock);
   const { vehicles } = useSelector(state => state.delivery);
-  const [info, setInfo] = useState(object ?? infoModel);
+  const [info, setInfo] = useState(object?.fullname ?? infoModel);
   const [stockData, setStockData] = useState([]);
   const [vehicleData, setVehicleData] = useState([]);
 
@@ -53,7 +53,7 @@ function EmployeeUpsert({object, handleClose}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (info?.fullname && info?.email && info.typeUser && info.stocks && info.vehicle) {
+    if (info?.fullname && info?.email && info.phone && info.typeUser && info.stocks) {
       const payload = {
         fullname: info.fullname,
         email: info.email,
@@ -61,7 +61,11 @@ function EmployeeUpsert({object, handleClose}) {
         typeUser: info.typeUser.value
       }
       if (info.typeUser.value !== EmployeeRole.STOCKER) {
-        payload.vehicle_id = info.vehicle.value; 
+        if (info?.vehicle) {
+          payload.vehicle_id = info.vehicle.value;
+        } else {
+          toast.error('Thiếu thông tin nhân viên!');
+        }
       }
 
       if (isArray(info.stocks)) {
@@ -159,7 +163,7 @@ function EmployeeUpsert({object, handleClose}) {
       <div className="d-flex float-end mt-3">
         <button style={{backgroundColor: '#6C757D'}} className='btn btn-medium' onClick={handleClose}>Đóng lại</button>
         <button className="btn btn-medium ms-1" onClick={handleSubmit}>
-          {object ? 'Chỉnh sửa' : 'Thêm mới'}
+          {object?.fullname ? 'Chỉnh sửa' : 'Thêm mới'}
         </button>
       </div>
     </form>

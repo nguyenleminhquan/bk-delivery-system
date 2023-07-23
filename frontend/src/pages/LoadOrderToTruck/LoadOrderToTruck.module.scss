@@ -178,6 +178,7 @@ $duration: 0.5s;
             .ordersRow {
                 border: 1px solid #E9ECEF;
                 border-top: none;
+                cursor: pointer;
                 &:nth-child(odd) {
                     background-color: rgba(247, 184, 1, .08);
                 }

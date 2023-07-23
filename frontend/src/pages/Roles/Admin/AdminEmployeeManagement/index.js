@@ -87,7 +87,7 @@ function AdminEmployeeManagement() {
     const { employees } = useSelector(state => state.user);
     const areaData = VietNamArea.map(area => ({label: area.name, value: area.code}));
     const [data, setData] = useState(employeeModels);
-    const [editPopup, setEditPopup] = useState();
+    const [editPopup, setEditPopup] = useState(null);
     const [deletePopup, setDeletePopup] = useState('');
 
     const handleAddEmployee = (formData) => {
@@ -109,7 +109,7 @@ function AdminEmployeeManagement() {
         const updatedData = {...editPopup, ...formData};
         if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.area_code) {
             dispatch(editEmployee({ id: editPopup._id, info: updatedData }));
-            setEditPopup(false);
+            setEditPopup(null);
         } else {
             return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
         }
@@ -161,7 +161,7 @@ function AdminEmployeeManagement() {
                 <div className="row">
                     <div className="d-flex align-items-center">
                         <h2 className='fs-4'>Quản lí nhân viên</h2>
-                        <button className='btn btn-medium ms-3' onClick={() => setEditPopup(true)}>
+                        <button className='btn btn-medium ms-3' onClick={() => setEditPopup({})}>
                             <AiOutlinePlus className='me-2'/>
                             Thêm mới</button>
                     </div>
@@ -175,7 +175,7 @@ function AdminEmployeeManagement() {
                 <GeneralConfirm 
                     title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
                     onConfirm={editPopup?.email ? handleEditEmployee : handleAddEmployee}
-                    message={<EmployeeUpsert object={editPopup} handleClose={() => setEditPopup(false)}/>}
+                    message={<EmployeeUpsert object={editPopup} handleClose={() => setEditPopup(null)}/>}
                     disableCancel={true}/>
             )}
 

@@ -5,19 +5,21 @@ import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { TruckIcon } from 'components/Icons';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, Fragment} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
+import SpecificSenderOrder from 'components/SpecificSenderOrder';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
     const dispatch = useDispatch();
     const [toggleFilter, setToggleFilter] = useState(false);
     const { vehicleOrders } = useSelector(state => state.delivery);
+    const [showOrderDetail, setShowOrderDetail] = useState(null);
     
     const handleSortCol = () => {
         /**
@@ -51,7 +53,7 @@ const ConfirmOrderLists = ({vehicle}) => {
                     <div className='col-6'>Mã đơn hàng</div>
                     <div className='col-5'>
                         <div className="d-flex">
-                            Khối lượng
+                            Khối lượng(kg)
                             <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
                                 <span className={styles.leftBar}></span>
                                 <span className={styles.rightBar}></span>
@@ -62,7 +64,7 @@ const ConfirmOrderLists = ({vehicle}) => {
                 </div>
                 <div className={styles.ordersWrap}>
                     {vehicleOrders.map(order => (
-                        <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
+                        <div className={`row p-2 ${styles.ordersRow}`} key={order._id} onClick={() => setShowOrderDetail(order)}>
                             <div className="col-6">{order._id}</div>
                             <div className="col-5">{order.weight}</div>
                             <div className="col-1">
@@ -72,6 +74,8 @@ const ConfirmOrderLists = ({vehicle}) => {
                     ))}
                 </div>
             </div>
+
+            {showOrderDetail && <SpecificSenderOrder order={showOrderDetail} closeModal={() => setShowOrderDetail(null)} />}
         </div>
     );
 }
@@ -100,8 +104,11 @@ function LoadOrderToTruck() {
     const [openExportOrderPopup, setOpenExportOrderPopup] = useState(null);
     const [exportPopupObject, setExportPopupObject] = useState({});
     const [toggleImportPopup, setToggleImportPopup] = useState(false);
+    const [showOrderDetail, setShowOrderDetail] = useState(null);
 
     const handleLoadOrder = (order, e) => {
+        e.preventDefault();
+        e.stopPropagation();
         setTruckOrders(prev => {
             return prev.map(el => {
                 if (el._id === order._id) {
@@ -316,8 +323,8 @@ function LoadOrderToTruck() {
                                                     checked={order.checked}
                                                     onChange={e => handleLoadOrder(order, e)}
                                                 /></div>
-                                                <div className="col-6">{order._id}</div>
-                                                <div className="col-5">{order.weight}</div>
+                                                <div className="col-6" onClick={() => setShowOrderDetail(order)}>{order._id}</div>
+                                                <div className="col-5" onClick={() => setShowOrderDetail(order)}>{order.weight}</div>
                                             </div>)))
                                         : (<div className='p-2'>Không có đơn hàng nào</div>)
                                     }
@@ -348,6 +355,8 @@ function LoadOrderToTruck() {
                     disableCancel={true}
                 />
             )}
+
+            {showOrderDetail && <SpecificSenderOrder order={showOrderDetail} closeModal={() => setShowOrderDetail(null)} />}
         </div>
     );
 }
