@@ -71,3 +71,12 @@ export const getExportHistoryThunk = async(payload, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const getStockVehiclesThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.getStockVehicles(payload);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}

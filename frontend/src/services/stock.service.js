@@ -33,6 +33,10 @@ const getExportHistory = (stock_id) => {
     return customFetch.get(`/stock/${stock_id}/export-history`)
 }
 
+const getStockVehicles = stock_id => {
+    return customFetch.get(`/stock/${stock_id}/vehicles`);
+}
+
 const StockService = {
     getStocks,
     addStock,
@@ -42,6 +46,7 @@ const StockService = {
     getImportHistory,
     getExportHistory,
     getStockOrders,
+    getStockVehicles
 }
 
 export default StockService;

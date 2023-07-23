@@ -84,7 +84,7 @@ function LoadOrderToTruck() {
     const dispatch = useDispatch();
     const { orders } = useSelector(state => state.delivery);
     const { user } = useSelector(state => state.user);
-    const { vehicles } = useSelector(state => state.delivery); 
+    const { vehicles } = useSelector(state => state.stock); 
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);

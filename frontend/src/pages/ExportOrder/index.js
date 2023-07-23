@@ -10,6 +10,7 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import Tabs from 'components/Tabs';
+import { getStockVehicles } from 'features/stock/stockSlice';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -37,7 +38,7 @@ const tabs = [
  * 80% <= available < 100% -> #ff0000 (Red)
  */
 function ExportOrder() {
-    const { vehicles } = useSelector(state => state.delivery);
+    const { vehicles } = useSelector(state => state.stock);
     const { user } = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -68,17 +69,6 @@ function ExportOrder() {
         navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
     }
 
-    // Filter
-    useEffect(() => {
-        // call api get truck route by route -> set state for truck route
-        if (selectedRouteFilter === 'Tất cả' && user) {
-            dispatch(getVehicleByRegion(user?.area_code));
-        } else {
-            const selectedRoute = routeFilters.find(route => route.label === selectedRouteFilter);
-            dispatch(getVehicleByRoute({ from: selectedRoute.source, to: selectedRoute.destination }));
-        }
-    }, [selectedRouteFilter]);
-
     function generateVehicleFilter() {
         const filters = vehicles.map(vehicle => ({
             source: vehicle.from,
@@ -96,16 +86,14 @@ function ExportOrder() {
     }
 
     useEffect(() => {
-        if (vehicles) {
+        if (vehicles.length > 0) {
             setAvailVehicle(vehicles.filter(vehicle => vehicle.type === selectedTab.field));
         }
     }, [selectedTab, vehicles]);
 
-    // useEffect(() => {
-    //     if (vehicles) {
-    //         generateVehicleFilter();
-    //     }
-    // }, [vehicles]);
+    useEffect(() => {
+        dispatch(getStockVehicles(user.stock_id));
+    }, []);
 
     return (
         <div className={styles.wrapper}>

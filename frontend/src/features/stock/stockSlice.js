@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
-import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStockOrdersThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
+import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStockOrdersThunk, getStockVehiclesThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
 
 const initialState = {
     stocks: [],
     orders: [],
+    vehicles: [],
     imexData: [],
     isLoading: false,
 }
@@ -62,6 +63,13 @@ export const getExportHistory = createAsyncThunk(
     'stock/getExportHistory', 
     async(payload, thunkAPI) => {
         return getExportHistoryThunk(payload, thunkAPI);
+    }
+)
+
+export const getStockVehicles = createAsyncThunk(
+    'stock/getStockVehicles',
+    async(payload, thunkAPI) => {
+        return getStockVehiclesThunk(payload, thunkAPI);
     }
 )
 
@@ -168,6 +176,17 @@ const stockSlice = createSlice({
         [getExportHistory.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             state.imexData = payload;
+        },
+        [getStockVehicles.pending]: state => {
+            state.isLoading = true;
+        },
+        [getStockVehicles.rejected]: (state, payload) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getStockVehicles.fulfilled]: (state, payload) => {
+            state.isLoading = true;
+            state.vehicles = payload;
         }
     }
 })

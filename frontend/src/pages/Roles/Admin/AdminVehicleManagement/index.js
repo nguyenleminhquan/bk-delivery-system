@@ -59,8 +59,7 @@ const vehicleModels = {
 
 function AdminVehicleManagement() {
   const dispatch = useDispatch();
-  const { vehicles } = useSelector(state => state.delivery);
-  const { stocks } = useSelector(state => state.stock);
+  const { stocks, vehicles } = useSelector(state => state.stock);
   const [data, setData] = useState(vehicleModels);
   const [showEditPopup, setShowEditPopup] = useState();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
