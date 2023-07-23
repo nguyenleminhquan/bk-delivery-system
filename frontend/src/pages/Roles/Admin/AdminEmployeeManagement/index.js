@@ -143,7 +143,7 @@ function AdminEmployeeManagement() {
                 </div>
             ),
             activeStock: AreaDelivery.find(area => area.code === employee?.area_code)?.label ?? '',
-            vehicleInfo: 'Xe máy Honda 63B5-99999',
+            vehicleInfo: employee?.vehicle ?? '',
             role: roleModels.find(role => role.value === employee?.typeUser)?.label,
             edit: (<BiEdit className="text-success" role="button" onClick={() => handleShowEditForm(employee)}/>),
             delete: (<RiDeleteBin6Fill className="text-danger" role="button" onClick={() => setDeletePopup(employee._id)}/>)
