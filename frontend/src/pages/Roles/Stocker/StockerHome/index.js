@@ -89,9 +89,9 @@ function StockerHome() {
   return (
     <div className='stocker-home'>
       <StockerHeader title="Tổng quan" openImportPopup={() => setToggleImportPopup(true)} />
-      <div className='filter'>
+      {/* <div className='filter'>
         <DatePickerComp handleSearch={handleSearch} />
-      </div>
+      </div> */}
       <Table data={data} />
       {toggleImportPopup && (
         <GeneralConfirm
