@@ -9,6 +9,15 @@ const stockSchema = mongoose.Schema({
   },
   area_code: {
     type: Number
+  },
+  district_code: {
+    type: Number
+  },
+  lat: {
+    type: Number
+  },
+  lon: {
+    type: Number
   }
 }, { timestamps: true })
 
