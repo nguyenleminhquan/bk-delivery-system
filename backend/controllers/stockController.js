@@ -58,14 +58,14 @@ const getOrderInStocks = async (req, res, next) => {
 
 const addStock = async (req, res, next) => {
   try {
-    const { area_code } = req.body
+    const { area_code, district_code } = req.body
     // Check area_code is number
-    if (typeof area_code != "number") {
-      return next(createError(400, 'Type of area_code must be number'))
+    if (typeof area_code != "number" || typeof district_code != "number") {
+      return next(createError(400, 'Type of area_code and district_code must be number'))
     }
 
     // Check duplicate area_code
-    let existStock = await Stock.find({ area_code })
+    let existStock = await Stock.find({ area_code, district_code })
     if (existStock != "") {
       return next(createError(400, 'The stock has been added'))
     }
