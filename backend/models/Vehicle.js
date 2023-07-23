@@ -8,9 +8,13 @@ const vehicleSchema = mongoose.Schema({
   },
   current_address_code: Number,
   from: Number,
-  to: [{
-    type: Number
-  }],
+  to: {
+    type: String,
+    enum: ["vung1", "vung2", "vung3", "vung4", "vung5", "vung6", "vung7"]
+  },
+  // to: [{
+  //   type: Number
+  // }],
   recommend_ways: [{
     type: Number
   }],
