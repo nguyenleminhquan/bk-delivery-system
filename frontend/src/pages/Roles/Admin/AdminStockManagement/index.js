@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styles from './AdminStockerManagement.module.scss';
 import { VietNamArea } from 'utils/consts/area.const';
 import { toast } from 'react-toastify';
+import { convertAddressToCoordinates } from 'utils/geoTools';
 
 const stockModels = {
     columns: [
@@ -54,18 +55,24 @@ function AdminStockManagement() {
     const [showDeletePopup, setShowDeletePopup] = useState('');
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
+    const [coordinate, setCoordinate] = useState({});
 
-    const handleAddStock = payload => {
+    const handleAddStock = async payload => {
+        console.log(payload);
         if (!payload.name || !payload.city || !payload.district || !payload.address) {
             toast.error('Nhập thiếu thông tin kho!');
             return;
         }
-        const name = payload.name;
-        const address = `${payload.address}, ${payload.district.label}, ${payload.city.label}`;
-        const area_code = payload.city.value;
-        const district_code = payload.district.value;
+        const coordinate = await convertAddressToCoordinates(`${payload.district.label}, ${payload.city.label}`);
+        const object = {
+            name: payload.name, 
+            address: `${payload.address}, ${payload.district.label}, ${payload.city.label}`,
+            area_code: payload.city.value,
+            district_code: payload.district.value,
+            ...coordinate
+        }
 
-        dispatch(addStock({name, address, area_code, district_code}));
+        dispatch(addStock(object));
         setShowEditPopup(false);
     }
 
