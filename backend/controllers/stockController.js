@@ -6,6 +6,7 @@ import Stock from '../models/Stock.js'
 import ImportInfo from '../models/ImportInfo.js'
 import { getOrderById } from './orderController.js'
 import ExportInfo from '../models/ExportInfo.js'
+import { getDomainFromString } from '../utils/order-utils.js'
 
 const importOrderToStock = async (req, res, next) => {
   try {
@@ -16,6 +17,10 @@ const importOrderToStock = async (req, res, next) => {
     let stock = await Stock.findById(stock_id)
     await User.findById(stocker_id)
 
+    if (order.status != "arrived_send_stock") {
+      return next(createError(400, "Đơn hàng phải được đến kho gửi trước khi nhập kho!"))
+    }
+    
     // Change status of order to `import`
     order.status = 'import'
     await order.save()
@@ -172,6 +177,40 @@ const getAllVehicleAtStock = async (req, res, next) => {
   }
 }
 
+const getAvailableOrderForVehicle = async (req, res, next) => {
+  try {
+    console.info("Get available order for vehicle at stock")
+    const stockId = req.params.stockId
+    const vehicleId = req.params.vehicleId
+    
+    let stock = await Stock.findById(stockId)
+    let vehicle = await Vehicle.findById(vehicleId)
+    
+    if (vehicle.current_address_code != stock.area_code) {
+      return next(createError(404, "Địa chỉ hiện tại của xe tải phải giống với kho!"))
+    }
+
+    let domainOfVehicle = vehicle.to
+    const getOrders = async (orders) => {
+      let result = []
+      for (let i = 0; i < orders.length; i++) {
+        let order = await Order.findById(orders[i])
+        if (getDomainFromString(order.receiver_address) == domainOfVehicle) {
+          result.push(order)
+        }
+      }
+      return result
+    }
+
+    let result = await getOrders(stock.orders)
+    
+    return res.json(result)
+  } catch (error) {
+    console.log(error)
+    return next(createError(400))
+  }
+}
+
 export {
   importOrderToStock,
   getOrderInStocks,
@@ -180,6 +219,7 @@ export {
   deleteStock,
   editStock,
   getAllVehicleAtStock,
+  getAvailableOrderForVehicle,
   getImportHistory,
   getExportHistory
 }
