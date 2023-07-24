@@ -1,5 +1,5 @@
 import Vehicle from "../models/Vehicle.js"
-import Drive from "../models/Drive.js"
+import Stock from "../models/Stock.js"
 import ExportInfo from "../models/ExportInfo.js"
 import createError from 'http-errors'
 import Order from "../models/Order.js"
@@ -67,9 +67,12 @@ const addVehicle = async (req, res, next) => {
 
 const pushOrderToVehicle = async (req, res, next) => {
   try {
-    const { list_orders } = req.body
+    console.info('[API] Push order to vehicle')
+    const { list_orders, stock_id } = req.body
     const vehicle_id = req.params.id
     let vehicle = await Vehicle.findById(vehicle_id)
+    let stock = await Stock.findById(stock_id)
+
     const getOrdersByListID = async (list_orders) => {
       let orders = []
       for (let i = 0; i < list_orders.length; i++) {
@@ -90,10 +93,21 @@ const pushOrderToVehicle = async (req, res, next) => {
       if ((vehicle.current_weight + orders[i].weight) > vehicle.max_weight) {
         return next(createError(400, 'The order weight exceeds the maximum vehicle weight'))
       }
+      
+      let orderIndexInStock = stock.orders.indexOf(orders[i]._id)
+      if (orderIndexInStock !== -1) {
+        console.info(`--->Stock.orders: ${stock.orders}`)
+        console.info(`--->Order index: ${orderIndexInStock}`)
+        stock.orders.splice(orderIndexInStock, 1)
+        console.info("--->Delete order from stock")
+        console.info(`--->Stock after deleting order: ${stock.orders}`)
+      }
+
       vehicle.current_weight += orders[i].weight
       await Order.findByIdAndUpdate(orders[i]._id, {status: 'on_vehicle'})
       vehicle.orders.push(orders[i])
     }
+    await stock.save()
 
     await vehicle.save()
     return res.json(vehicle)
