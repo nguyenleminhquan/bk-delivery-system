@@ -7,13 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 // Component import
 import Table from 'components/Table';
 // Utils import
-import { addVehicle, getVehicles } from 'features/delivery/deliverySlice';
+import { getVehicles } from 'features/delivery/deliverySlice';
 import { VehicleType, VehicleTypeLabel } from 'utils/enums/vehicle.enum';
 // Style import
 import './index.scss';
 import GeneralConfirm from 'components/GeneralConfirm';
 import { VehicleTypes } from 'utils/consts';
 import { getStocks } from 'features/stock/stockSlice';
+import VehicleManagementUpsert from 'components/VehicleManagementUpsert';
 
 const vehicleModels = {
   columns: [
@@ -59,22 +60,12 @@ const vehicleModels = {
 
 function AdminVehicleManagement() {
   const dispatch = useDispatch();
-  const { stocks, vehicles } = useSelector(state => state.stock);
+  const { stocks } = useSelector(state => state.stock);
+  const { vehicles } = useSelector(state => state.delivery);
   const [data, setData] = useState(vehicleModels);
   const [showEditPopup, setShowEditPopup] = useState();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [stockData, setStockData] = useState([]);
-
-  const handleUpsertVehicle = formData => {
-    const payload = {
-      max_weight: formData.net,
-      from: stocks.find(stock => stock._id === formData.stock.value),
-      license_plate_number: formData.license,
-      type: formData.type.value
-    }
-
-    dispatch(addVehicle(payload));
-  }
 
   const handleDeleteVehicle = () => {
 
@@ -82,9 +73,10 @@ function AdminVehicleManagement() {
 
   function onShowEditForm(vehicle) {
     const data = {
-      ...vehicle,
       type: VehicleTypes.find(type => type.value === vehicle.type),
-      stock: stockData.find(stock => stock.value === vehicle.stock)
+      stock: stockData.find(stock => stock.value === vehicle.stock),
+      net: vehicle.max_weight,
+      license: vehicle.license_plate_number
     }
     setShowEditPopup(data);
   }
@@ -131,16 +123,8 @@ function AdminVehicleManagement() {
           title={showEditPopup.license ? 'Cập nhật thông tin xe' : 'Thêm xe'}
           cancelText="Đóng lại"
           onCancel={() => setShowEditPopup(false)}
-          onConfirm={handleUpsertVehicle}
-          showForm={true}
-          formFields={[
-            { name: "type", label: "Loại xe", type: "select", models: VehicleTypes, value: showEditPopup.type},
-            { name: "license", label: "Biển số xe", type: "text", value: showEditPopup.license_plate_number },
-            { name: "net", label: "Khối lượng", type: "text", value: showEditPopup.max_weight },
-            { name: "stock", label: "Kho hoạt động", type: "select", models: stockData, value: showEditPopup.stock },
-          ]}
-          formValue={showEditPopup}
-          formSubmitText={showEditPopup?.name ? 'Chỉnh sửa' : 'Thêm mới'}
+          disableCancel={true}
+          message={<VehicleManagementUpsert object={showEditPopup} handleClose={() => setShowEditPopup(null)} />}
         />
       )}
 

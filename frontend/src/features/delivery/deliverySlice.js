@@ -172,6 +172,7 @@ const deliverySlice = createSlice({
         [addVehicle.fulfilled]: (state, { payload }) => {
             state.isLoading = false;
             state.vehicles = [...state.vehicles, payload];
+            toast.success('Thêm xe thành công!');
         },
         [getVehicleByRegion.fulfilled]: (state, { payload }) => {
             state.vehicles = payload;
