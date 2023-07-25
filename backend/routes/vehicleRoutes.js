@@ -18,7 +18,7 @@ import {
 const router = express.Router()
 
 router.get('/', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker']), getAllVehicle)
-router.get('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
+router.get('/:id/order?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
 // router.get('/:id/avail-order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAvailableOrderForVehicle)
 // router.get('/region/:id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getVehicleByRegion)
 router.get('/region/:id/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), searchVehicleWithCondition)

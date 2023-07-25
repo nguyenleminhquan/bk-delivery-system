@@ -4,7 +4,7 @@ import ExportInfo from "../models/ExportInfo.js"
 import createError from 'http-errors'
 import Order from "../models/Order.js"
 import Delivery from "../models/Delivery.js"
-
+import { getAreaCodeAndDistrictCodeFromString } from "../utils/order-utils.js"
 // --------------------
 // Utils
 // --------------------
@@ -147,7 +147,14 @@ const deleteOrderFromVehicle = async (req, res, next) => {
 
 const getAllOrdersByVehicle = async (req, res, next) => {
   try {
+    console.info("[API] Get all orders by vehicle")
     const vehicle_id = req.params.id
+    let stockAreaCode = -1
+    if ("filter" in req.query|| req.query.filter == "stock") {
+      const stock_id = req.query.stock_id
+      let stock = await Stock.findById(stock_id)
+      stockAreaCode = stock.area_code
+    }
 
     let vehicle = await Vehicle
     .findById(vehicle_id)
@@ -158,7 +165,15 @@ const getAllOrdersByVehicle = async (req, res, next) => {
       }
     });
 
-    return res.json(vehicle.orders)
+    let result = vehicle.orders
+    if (stockAreaCode != -1) {
+      result = result.filter(order => {
+        let orderAreaCode = getAreaCodeAndDistrictCodeFromString(order.receiver_address)[0]
+        return orderAreaCode == stockAreaCode
+      })
+    }
+
+    return res.json(result)
   } catch (error) {
     console.log(error)
     return next(createError(400))
