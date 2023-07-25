@@ -10,40 +10,75 @@ import { getDomainFromString } from '../utils/order-utils.js'
 
 const importOrderToStock = async (req, res, next) => {
   try {
-    // Support import multiple orders?
-    let { order_id, stock_id, stocker_id } = req.body
-    console.log(req.body)
-    let order = await Order.findById(order_id)
-    let stock = await Stock.findById(stock_id)
+    console.info("[API] Import order to stock")
+
+    const { order_ids, stock_id, stocker_id, vehicle_id } = req.body
     await User.findById(stocker_id)
 
-    if (order.status != "arrived_send_stock") {
-      return next(createError(400, "Đơn hàng phải được đến kho gửi trước khi nhập kho!"))
+    const getOrders = async (ids) => {
+      let orders = []
+      for (let i = 0; i < ids.length; i++) {
+        let order = await Order.findById(ids[i])
+        orders.push(order)
+      }
+      return orders
     }
     
-    // Change status of order to `import`
-    order.status = 'import'
-    await order.save()
+    let orders = await getOrders(order_ids)
+    console.log(`--->Orders length: ${orders.length}`)
+    let ordersLength = orders.length
+    let invalidOrder = orders.some(order => 
+          order.status != "arrived_send_stock" && order.status != "arrived_dest_stock")
+    
+    if (invalidOrder) {
+      return next(createError(400, "Đơn hàng phải đến kho trước khi được nhập vào kho!"))
+    }
+      
+    let stock = await Stock.findById(stock_id)
+    let vehicle = await Vehicle.findById(vehicle_id)
 
-    // Them order vao stock
-    stock.orders.push(order)
+    // Kiểm tra xem nhập tại kho gửi hay kho đích
+    let isAtSendStock = orders.every(order => order.status == "arrived_send_stock")
+    if (isAtSendStock) {
+      console.info("--->Stock at: sender")  
+      
+      for (let i = 0; i < ordersLength; i++) {
+        orders[i].status = "import"
+        await orders[i].save()
+
+        stock.orders.push(orders[i]._id)
+      }
+
+    } else {
+      console.info("--->Stock at: receiver")
+
+      for (let i = 0; i < ordersLength; i++) {
+        orders[i].status = "imported_dest_stock"
+        await orders[i].save()
+
+        // Gỡ đơn hàng ra khỏi xe tải
+        let orderIndexInVehicle = vehicle.orders.indexOf(orders[i]._id)
+        if (orderIndexInVehicle !== -1) {
+          console.info(`--->Remove order ${orders[i]._id} from vehicle`)
+          vehicle.orders.splice(orderIndexInVehicle, 1)
+          console.info(`--->Orders on vehicle after deleting: ${vehicle.orders}`)
+        }
+
+        stock.orders.push(orders[i]._id)
+      }
+
+      await vehicle.save()
+    }
     await stock.save()
 
-    // Check the existence of importInfo with stock_id
-    // let importInfo = await ImportInfo.findOne({ stock_id })
-    // if (importInfo && importInfo.stocker_id == stocker_id) {
-    //     importInfo.orders.push(order_id)
-    // } else {
     let importInfo = new ImportInfo({
       stocker_id,
       stock_id,
-      orders: order_id
+      orders: order_ids
     })
-    // }
     await importInfo.save()
     
     return res.json(importInfo)
-
   } catch (error) {
     return next(createError(404))
   }
