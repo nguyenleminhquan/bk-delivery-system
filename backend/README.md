@@ -25,7 +25,7 @@
 | /stock| POST | Add stock | Authorization: Bearer <refresh_token> <access_token> | name: string <br/> address: string <br/> area_code: number |
 | /stock/:id | DELETE | Delete stock | Authorization: Bearer <refresh_token> <access_token> | |
 | /stock/:id | PATCH | Edit stock | Authorization: Bearer <refresh_token> <access_token> | address: string |
-| /stock/order | POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | order_id: string <br /> stock_id: string <br /> stocker_id: string|
+| /stock/order | POST | Import order to stock | Authorization: Bearer <refresh_token> <access_token> | {order_ids: string <br /> stock_id: string <br /> stocker_id: string<br/>vehicle_id: string}|
 | /stock/:stock_id/order | GET | Get all orders in the stock with stock_id | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle | GET | Get all vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/order | GET | Get all orders by vehicle id | Authorization: Bearer <refresh_token> <access_token> |  |

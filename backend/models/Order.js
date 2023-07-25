@@ -18,7 +18,7 @@ const orderSchema = mongoose.Schema({
   status: {
     type: String,
     enum: ['waiting', 'accepted', 'picked', 'arrived_send_stock', 'import', 'on_vehicle', 'coming_dest_stock',
-          'arrived_dest_stock', 'delivering', 'success', 'cancel'],
+          'arrived_dest_stock', 'imported_dest_stock', 'delivering', 'success', 'cancel'],
     default: 'waiting'
   },
   tracking: {
