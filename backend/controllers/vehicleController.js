@@ -46,7 +46,7 @@ const getAllVehicle = async (req, res, next) => {
 
 const addVehicle = async (req, res, next) => {
   try {
-    if (!(req.body.max_weight && req.body.from && req.body.to && req.body.license_plate_number)) {
+    if (!(req.body.max_weight && req.body.from && req.body.license_plate_number)) {
       return next(createError(400, 'Please provide enough information!'))
     }
     

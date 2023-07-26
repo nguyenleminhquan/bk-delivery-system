@@ -94,7 +94,7 @@ function ImportOrder({closePopup}) {
 					</div>
 				</Fragment>
       )}
-			<div className="actions text-end">
+			<div className="actions text-end mt-2">
 				<button className="btn btn-medium" style={{backgroundColor: '#6C757D'}} onClick={handleClose}>Hủy bỏ</button>
 				{orders.length > 0 && (<button className="btn btn-medium" onClick={handleImport}>Thêm vào kho</button>)}
 			</div>
