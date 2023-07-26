@@ -56,16 +56,19 @@ function ImportOrder({closePopup}) {
 	return (
 		<div className='import-order'>
 			<label>Mã xe tải</label>
-			<form onSubmit={handleSearch}>
-				<FormInput
-					name='orderId'
-					type="text"
-					value={vehicleId}
-					placeholderText="Nhập vào mã xe tải"
-					handleChange={(e) => setVehicleId(e.target.value)}
-					icon={<FaSearch />}
-				/>
-			</form>
+			<div className="d-flex">
+				<form className='flex-fill' onSubmit={handleSearch}>
+					<FormInput
+						name='orderId'
+						type="text"
+						value={vehicleId}
+						placeholderText="Nhập vào mã xe tải"
+						handleChange={(e) => setVehicleId(e.target.value)}
+						icon={<FaSearch />}
+					/>
+				</form>
+				<button className='btn ms-2 fs-14 m-0' onClick={handleSearch} >Tìm kiếm</button>
+			</div>
 			
 			{vehicleOrders.length > 0 && (
 				<Fragment>
@@ -91,7 +94,7 @@ function ImportOrder({closePopup}) {
 					</div>
 				</Fragment>
       )}
-			<div className="actions text-end mt-3">
+			<div className="actions text-end">
 				<button className="btn btn-medium" style={{backgroundColor: '#6C757D'}} onClick={handleClose}>Hủy bỏ</button>
 				{orders.length > 0 && (<button className="btn btn-medium" onClick={handleImport}>Thêm vào kho</button>)}
 			</div>
