@@ -26,6 +26,10 @@ const updateDeliveryStatus = ({ delivery_id, status }) => {
     )
 }
 
+const getAllDelivery = ({ vehicle_id, area_code, district_code, type }) => {
+    return customFetch.get(`delivery/all-delivery?vehicle_id=${vehicle_id}&area_code=${area_code}&district_code=${district_code}&type=${type}`)
+}
+
 const getVehicles = () => {
     return customFetch.get('/vehicle');
 }
@@ -63,6 +67,7 @@ const DeliveryService = {
     getDeliveryByStatus,
     updateDeliveryStatus,
     acceptDelivery,
+    getAllDelivery,
     getVehicles,
     addVehicle,
     getVehicleByRegion,
