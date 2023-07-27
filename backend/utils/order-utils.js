@@ -63,7 +63,7 @@ async function convertAddressToCoordinates(address) {
   const format = 'json';
 
   try {
-    const res = await axios.get(`${apiUrl}?origins=${encodeURIComponent(address)}&format=${format}`);
+    const res = await axios.get(`${apiUrl}?q=${encodeURIComponent(address)}&format=${format}`);
     if (res.data.length > 0) {
       const result = res.data[0];
       const lat = Number(Number(result.lat).toFixed(3));

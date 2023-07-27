@@ -142,22 +142,22 @@ const getAllDelivery = async (req, res, next) => {
 
 const findNearestArea = async (area_code, address) => {
     try {
-        const stocks = Stock.find({area_code: area_code});
+        const stocks = await Stock.find({area_code: area_code});
         if (stocks.length === 0) return next(createError(400, 'Can not find nearest area'))
         const latlonOfAddress = await convertAddressToCoordinates(address);
         let nearestStock;
         let minDistance = 999999;
-        for (let stock in stocks) {
-            const distance = calculateDistance(`${latlonOfAddress.lat},${latlonOfAddress.lon}`, `${stock.lat},${stock.lon}`, 'driving');
+        for (let stock of stocks) {
+            const distance = await calculateDistance(`${latlonOfAddress.lat},${latlonOfAddress.lon}`, `${stock.lat},${stock.lon}`, 'driving');
             if (distance < minDistance) {
                 minDistance = distance;
                 nearestStock = stock;
             }
         }
+        console.log('nearestStock', nearestStock)
         return nearestStock
     } catch(err) {
         console.log(err)
-        return next(createError(500))
     }
 }
 

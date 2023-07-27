@@ -6,13 +6,10 @@ import DeliveryOrder from 'components/DeliveryOrder';
 import { useDispatch, useSelector } from 'react-redux';
 import { acceptDelivery, getAllDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
-import { toast } from 'react-toastify';
-import ViewOrderInfo from 'components/ViewOrderInfo';
 import { checkInDay } from 'features/user/userSlice';
 import Tabs from 'components/Tabs';
 import { FaCheck } from 'react-icons/fa';
 import './index.scss'
-import customFetch from 'services/axios';
 
 const tabs = [
   {
@@ -248,7 +245,7 @@ function DriverHome() {
         setAllDeliveries(data.filter((delivery) => delivery.type.includes(user.typeUser === 'driver_inter' ? 'inter' : 'inner') && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code)));
       } else {
         let deliveryType = allDeliveries[0].type;
-        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && delivery.district_code.includes(delivery.district_code));
+        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
         setAllDeliveries([...allDeliveries, ...tempDeliveries]);
       }
     })

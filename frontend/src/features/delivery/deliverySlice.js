@@ -166,6 +166,18 @@ const deliverySlice = createSlice({
             state.isLoading = false;
             toast.error(payload);
         },
+        [getAllDelivery.pending]: (state) => {
+            state.isLoading = true;
+        },
+        [getAllDelivery.fulfilled]: (state, { payload }) => {
+            state.deliveries = payload;
+            state.isLoading = false;
+        },
+        [getAllDelivery.rejected]: (state, { payload }) => {
+            console.log(payload);
+            state.isLoading = false;
+            toast.error(payload);
+        },
         [getVehicles.fulfilled]: (state, { payload }) => {
             state.vehicles = payload;
             state.isLoading = false;
