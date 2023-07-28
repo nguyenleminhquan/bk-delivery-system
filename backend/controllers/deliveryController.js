@@ -132,7 +132,14 @@ const getAllDelivery = async (req, res, next) => {
             waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
         }
         deliveries.push(...waitingDeliveries);
-        return res.json(deliveries);
+        return res.json({ 
+            deliveries: deliveries, 
+            vehicle: { 
+                current_weight: vehicleInfo.current_weight, 
+                max_weight: vehicleInfo.max_weight, 
+                license_plate_number: vehicleInfo.license_plate_number
+            } 
+        });
     } catch(err) {
         console.log(err)
         return next(createError(400))
@@ -261,7 +268,6 @@ const socketDelivery = (io) => {
                     vehicle.visitedStocks.push({area_code: area.area_code, district_code: area.district_code})
                 }
                 vehicle.save();
-                // return res.json(data)
                 socket.emit('updatedDelivery', updatedDelivery)
             }
         })

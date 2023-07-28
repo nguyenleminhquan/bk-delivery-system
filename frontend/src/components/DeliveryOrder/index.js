@@ -31,14 +31,14 @@ function DeliveryOrder({ delivery }) {
 				<div className='address'>
 					<div className='circle circle-1'></div>
 					<div className='text'>
-						<p>Bên gửi: { from.split('&')[0] } </p>
+						<p>Từ: { from.split('&')[0] } </p>
 						<p> { from.split('&')[1] } </p>
 					</div>
 				</div>
 				<div className='address'>
 					<div className='circle circle-2'></div>
 					<div className='text'>
-						<p>Bên nhận: { to.split('&')[0] } </p>
+						<p>Đến: { to.split('&')[0] } </p>
 						<p> { to.split('&')[1] } </p>
 					</div>
 				</div>

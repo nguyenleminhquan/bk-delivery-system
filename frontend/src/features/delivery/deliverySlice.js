@@ -4,6 +4,7 @@ import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOr
 
 const initialState = {
     deliveries: [],
+    vehicle: {},
     vehicles: [],
     vehicleOrders: [],
     orders: [],
@@ -170,7 +171,8 @@ const deliverySlice = createSlice({
             state.isLoading = true;
         },
         [getAllDelivery.fulfilled]: (state, { payload }) => {
-            state.deliveries = payload;
+            state.deliveries = payload.deliveries;
+            state.vehicle = payload.vehicle;
             state.isLoading = false;
         },
         [getAllDelivery.rejected]: (state, { payload }) => {

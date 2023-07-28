@@ -10,6 +10,7 @@ import { checkInDay } from 'features/user/userSlice';
 import Tabs from 'components/Tabs';
 import { FaCheck } from 'react-icons/fa';
 import './index.scss'
+import VehicleBoard from 'components/VehicleBoard';
 
 const tabs = [
   {
@@ -42,7 +43,7 @@ function DriverHome() {
   const [ configDeliveries, setConfigDeliveries ] = useState([])
   const [orderInfo, setOrderInfo] = useState('')
   const { user } = useSelector((state) => state.user)
-  const { deliveries } = useSelector((state) => state.delivery)
+  const { deliveries, vehicle } = useSelector((state) => state.delivery)
   const socket = useContext(SocketContext);
   
   const handleTracking = () => {
@@ -318,8 +319,8 @@ function DriverHome() {
       <div className='checkinBtn' onClick={() => setToggleCheckinPopup(true)}>
         <MdOutlineDonutSmall />
       </div>
-      
       <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
+      <VehicleBoard vehicleInfo={vehicle} vehicleType={user.typeUser.includes('inner') ? 'Xe tải nội thành' : 'Xe tải liên tỉnh'} />
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
       {
