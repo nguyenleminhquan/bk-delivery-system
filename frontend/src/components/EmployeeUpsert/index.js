@@ -35,7 +35,8 @@ const DEFAULT_PASSWORD = '1234567890';
 
 function EmployeeUpsert({object, handleClose}) {
   const dispatch = useDispatch();
-  const { stocks, vehicles } = useSelector(state => state.stock);
+  const { stocks } = useSelector(state => state.stock);
+  const { vehicles } = useSelector(state => state.delivery);
   const [info, setInfo] = useState(object ?? infoModel);
   const [stockData, setStockData] = useState([]);
   const [vehicleData, setVehicleData] = useState([]);
