@@ -1,0 +1,51 @@
+.vehicle-board {
+    position: relative;
+    background-image: url('../../assests/images/white-pattern.jpg');
+    background-size: cover;
+    // .white-pattern {
+    //     position: absolute;
+    //     top: 0;
+    //     left: 0;
+    //     // bottom: 0;
+    //     // right: 0;
+    //     width: 100%;
+    //     height: auto;
+    //     overflow: hidden;
+    // }
+    &-wrapper {
+        // background-color: #f3f5f9;
+        padding: 0px 40px;
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        align-items: center;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: var(--shadow);
+        position: relative;
+
+    }
+    .vehicle-info .title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .vehicle-desc {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 10px;
+        font-size: 14px;
+        color: #575050;
+        p {
+            margin-bottom: 0;
+        }
+        .value {
+            display: block;
+            margin-top: 6px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    }
+    img {
+        width: 400px;
+        place-self: center;
+    }
+}

@@ -4,14 +4,13 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
+import { acceptDelivery, getAllDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
-import { toast } from 'react-toastify';
-import ViewOrderInfo from 'components/ViewOrderInfo';
 import { checkInDay } from 'features/user/userSlice';
 import Tabs from 'components/Tabs';
 import { FaCheck } from 'react-icons/fa';
 import './index.scss'
+import VehicleBoard from 'components/VehicleBoard';
 
 const tabs = [
   {
@@ -40,10 +39,11 @@ function DriverHome() {
   const [toggleAllPopup, setToggleAllPopup] = useState(false);
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
   const [ allDeliveries, setAllDeliveries ] = useState([]);
-  const [ deliveries, setDeliveries ] = useState([]);
+  const [ deliveriesByStatus, setDeliveriesByStatus ] = useState([]);
   const [ configDeliveries, setConfigDeliveries ] = useState([])
   const [orderInfo, setOrderInfo] = useState('')
   const { user } = useSelector((state) => state.user)
+  const { deliveries, vehicle } = useSelector((state) => state.delivery)
   const socket = useContext(SocketContext);
   
   const handleTracking = () => {
@@ -222,37 +222,35 @@ function DriverHome() {
   }
 
   useEffect(() => {
-    socket.emit('allDeliveries', {
-      // area_code: user.area_code,
-      // type: deliveryType
-      vehicle_id: user.vehicle_id,
-      area_code: user.area_code
-    })
-  }, [])
+		dispatch(getAllDelivery(
+      { 
+        vehicle_id: user.vehicle_id,  
+        area_code: user.area_code,
+        district_code: user.district_code,
+        type: user.typeUser === 'driver_inter' ? 'inter' : 'inner'
+      }
+    ))
+	}, [dispatch, user.vehicle_id, user.area_code, user.district_code, user.typeUser])
+
+	useEffect(() => {
+		setAllDeliveries(deliveries)
+	}, [deliveries])
 
   useEffect(() => {
-    socket.on('allDeliveries', (data) => {
-      console.log('allDeliveries', data)
-      setAllDeliveries(data);
-    })
+    // socket.on('allDeliveries', (data) => {
+    //   console.log('allDeliveries', data)
+    //   setAllDeliveries(data);
+    // })
     socket.on('newDeliveries', (data) => {
       if (allDeliveries.length === 0) {
-        setAllDeliveries(data);
+        setAllDeliveries(data.filter((delivery) => delivery.type.includes(user.typeUser === 'driver_inter' ? 'inter' : 'inner') && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code)));
       } else {
         let deliveryType = allDeliveries[0].type;
-        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType);
+        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
         setAllDeliveries([...allDeliveries, ...tempDeliveries]);
       }
     })
     socket.on('updatedDelivery', (data) => {
-      // console.log('allDeliveries', allDeliveries)
-      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      // tempDeliveries.forEach((item) => {
-      //   if (item._id === data._id) {
-      //     item.status = data.status
-      //   }
-      // })
-      // setAllDeliveries(tempDeliveries);
       setAllDeliveries((prevDeliveries) => {
         const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
         tempDeliveries.forEach((item) => {
@@ -264,13 +262,6 @@ function DriverHome() {
       })
     })
     socket.on('updateOrderStatus', (data) => {
-      // const tempDeliveries = JSON.parse(JSON.stringify(allDeliveries));
-      // tempDeliveries.forEach((item) => {
-      //   if (item.order._id === data.order_id) {
-      //     item.order.status = data.status
-      //   }
-      // })
-      // setAllDeliveries(tempDeliveries);
       setAllDeliveries((prevDeliveries) => {
         const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
         tempDeliveries.forEach((item) => {
@@ -291,22 +282,22 @@ function DriverHome() {
 
   useEffect(() => {
     if (selectedTab.field === 'waiting') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'waiting' && item.area_code === user.area_code))
+      setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'waiting'))
     }
     if (selectedTab.field === 'accepted') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'accepted' && item.area_code === user.area_code))
+      setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'accepted'))
     }
     if (selectedTab.field === 'picked') {
-      setDeliveries(allDeliveries.filter((item) => item.status === 'picked' && item.area_code === user.area_code))
+      setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'picked'))
     }
     if (selectedTab.field === 'deliveried') {
-      setDeliveries(allDeliveries.filter((item) => (item.status === 'deliveried' || item.status === 'picked') && item.area_code === user.area_code))
+      setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'deliveried' || item.status === 'picked'))
     }
   }, [selectedTab, allDeliveries])
 
   useEffect(() => {
     const { accept, viewOrder, picked, deliveried, cancel } = btns;
-    let tempDeliveries = JSON.parse(JSON.stringify(deliveries));
+    let tempDeliveries = JSON.parse(JSON.stringify(deliveriesByStatus));
     // let deliveryType = tempDeliveries[0].type;
     if (selectedTab.field === 'waiting') {
       tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
@@ -321,15 +312,15 @@ function DriverHome() {
       tempDeliveries.forEach((item) => { item.btns = [viewOrder(item)] })
     }
     setConfigDeliveries(tempDeliveries)
-  }, [deliveries])
+  }, [deliveriesByStatus])
 
   return (
     <div className='driver-home'>
       <div className='checkinBtn' onClick={() => setToggleCheckinPopup(true)}>
         <MdOutlineDonutSmall />
       </div>
-      
       <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
+      <VehicleBoard vehicleInfo={vehicle} vehicleType={user.typeUser.includes('inner') ? 'Xe tải nội thành' : 'Xe tải liên tỉnh'} />
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
       {

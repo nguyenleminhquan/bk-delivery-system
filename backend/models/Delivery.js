@@ -17,6 +17,9 @@ const deliverySchema = mongoose.Schema({
   area_code: {
     type: Number
   },
+  district_code: {
+    type: Number
+  },
   from: {
     type: String
   },

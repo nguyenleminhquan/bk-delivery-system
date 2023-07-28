@@ -76,6 +76,7 @@ const userLogin = async (req, res, next) => {
                 bank_account: exist.bank_account,
                 working_days: exist.working_days,
                 area_code: exist.area_code,
+                district_code: exist.district_code,
                 stock_id: exist.stock_id,
                 vehicle_id: exist.vehicle_id,
                 token, refresh_token 

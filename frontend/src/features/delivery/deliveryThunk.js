@@ -41,6 +41,16 @@ export const updateDeliveryStatusThunk = async(delivery, thunkAPI) => {
     }
 }
 
+export const getAllDeliveryThunk = async(data, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getAllDelivery(data);
+        return res.data
+    } catch(error) {
+        console.log(error);
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
 export const getVehiclesThunk = async(thunkAPI) => {
     try {
         const res = await DeliveryService.getVehicles();
