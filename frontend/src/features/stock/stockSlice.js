@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
-import { addStockThunk, deleteStockThunk, editStockThunk, getExportHistoryThunk, getImportHistoryThunk, getStockOrdersThunk, getStockVehiclesThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
+import { addStockThunk, deleteStockThunk, editStockThunk, getAvailableVehicleOrdersThunk, getExportHistoryThunk, getImportHistoryThunk, getStockOrdersThunk, getStockVehiclesThunk, getStocksThunk, importOrderToStockThunk } from "./stockThunk"
 
 const initialState = {
     stocks: [],
     orders: [],
+    availOrders: [],
     vehicles: [],
     imexData: [],
     isLoading: false,
@@ -70,6 +71,13 @@ export const getStockVehicles = createAsyncThunk(
     'stock/getStockVehicles',
     async(payload, thunkAPI) => {
         return getStockVehiclesThunk(payload, thunkAPI);
+    }
+)
+
+export const getAvailableVehicleOrders = createAsyncThunk(
+    'stock/getAvailableVehicleOrders',
+    async(payload, thunkAPI) => {
+        return getAvailableVehicleOrdersThunk(payload, thunkAPI);
     }
 )
 
@@ -180,13 +188,24 @@ const stockSlice = createSlice({
         [getStockVehicles.pending]: state => {
             state.isLoading = true;
         },
-        [getStockVehicles.rejected]: (state, payload) => {
+        [getStockVehicles.rejected]: (state, {payload}) => {
             state.isLoading = false;
             toast.error(payload);
         },
-        [getStockVehicles.fulfilled]: (state, payload) => {
+        [getStockVehicles.fulfilled]: (state, {payload}) => {
             state.isLoading = true;
             state.vehicles = payload;
+        },
+        [getAvailableVehicleOrders.pending]: state => {
+            state.isLoading = true;
+        },
+        [getAvailableVehicleOrders.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getAvailableVehicleOrders.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.availOrders = payload;
         }
     }
 })

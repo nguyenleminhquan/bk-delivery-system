@@ -21,7 +21,7 @@ const getStockOrders = stock_id => {
 }
 
 const importOrderToStock = payload => {
-    // Payload contains: {order_id: string, stock_id: string, stocker_id: string}
+    // Payload contains: {order_ids: string, stock_id: string, stocker_id: string, vehicle_id}
     return customFetch.post(`/stock/order`, payload);
 }
 
@@ -37,6 +37,10 @@ const getStockVehicles = stock_id => {
     return customFetch.get(`/stock/${stock_id}/vehicles`);
 }
 
+const getAvailableVehicleOrders = ({stock_id, vehicle_id}) => {
+    return customFetch.get(`/stock/${stock_id}/vehicle/${vehicle_id}/avail-orders`);
+}
+
 const StockService = {
     getStocks,
     addStock,
@@ -46,7 +50,8 @@ const StockService = {
     getImportHistory,
     getExportHistory,
     getStockOrders,
-    getStockVehicles
+    getStockVehicles,
+    getAvailableVehicleOrders,
 }
 
 export default StockService;

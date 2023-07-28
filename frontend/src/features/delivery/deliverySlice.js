@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleAvailableOrderThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -79,13 +79,6 @@ export const postVehicleOrders = createAsyncThunk(
     'delivery/postVehicleOrders',
     async(vehicle, thunkAPI) => {
         return postVehicleOrdersThunk(vehicle, thunkAPI);
-    }
-)
-
-export const getVehicleAvailableOrder = createAsyncThunk(
-    'delivery/getVehicleAvailableOrder',
-    async(vehicle, thunkAPI) => {
-        return getVehicleAvailableOrderThunk(vehicle, thunkAPI);
     }
 )
 
@@ -220,17 +213,6 @@ const deliverySlice = createSlice({
             const activeVehicleIndex = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
             state.vehicles[activeVehicleIndex] = payload;
             toast.success('Thêm đơn hàng thành công.');
-        },
-        [getVehicleAvailableOrder.pending]: state => {
-            state.isLoading = true;
-        },
-        [getVehicleAvailableOrder.rejected]: (state, {payload}) => {
-            state.isLoading = false;
-            toast.error(payload);
-        },
-        [getVehicleAvailableOrder.fulfilled]: (state, {payload}) => {
-            state.isLoading = false;
-            state.orders = payload;
         },
         [getVehicleByRoute.pending]: state => {
             state.isLoading = true;

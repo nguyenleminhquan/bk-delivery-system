@@ -80,3 +80,12 @@ export const getStockVehiclesThunk = async(payload, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const getAvailableVehicleOrdersThunk = async(payload, thunkAPI) => {
+    try {
+        const res = await StockService.getAvailableVehicleOrders(payload);
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}

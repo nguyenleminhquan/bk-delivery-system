@@ -13,6 +13,7 @@ import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, get
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
+import { getAvailableVehicleOrders } from 'features/stock/stockSlice';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -234,7 +235,8 @@ function LoadOrderToTruck() {
 
     useEffect(() => {
         if (truckId) {
-            dispatch(getVehicleAvailableOrder(truckId));
+            const payload = { stock_id: user.stock_id, vehicle_id: truckId }
+            dispatch(getAvailableVehicleOrders(payload));
             if (vehicles.length > 0) {
                 setTruckInfo(vehicles.find(vehicle => vehicle?._id === truckId));
             } else {

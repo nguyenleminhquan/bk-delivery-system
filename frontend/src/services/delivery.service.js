@@ -50,10 +50,6 @@ const deleteVehicleOrder = ({order_id, vehicle_id}) => {
     return customFetch.delete(`/vehicle/order/${order_id}`, {data: {vehicle_id}});
 }
 
-const getVehicleAvailableOrder = (vehicle_id) => {
-    return customFetch.get(`/vehicle/${vehicle_id}/avail-order`);
-}
-
 const getVehicleByRoute = ({from, to}) => {
     return customFetch.get(`/vehicle/search?from=${from}&to=${to}`);
 }
@@ -73,7 +69,6 @@ const DeliveryService = {
     getVehicleOrders,
     deleteVehicleOrder,
     postVehicleOrders,
-    getVehicleAvailableOrder,
     getVehicleByRoute,
     exportOrderOnVehicle,
 }
