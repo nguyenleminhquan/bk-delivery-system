@@ -31,7 +31,7 @@ const vehicleModels = {
       width: 200
     },
     {
-      label: 'Khối lượng',
+      label: 'Trọng tải(Kg)',
       field: 'net',
       sort: 'asc',
       width: 200
