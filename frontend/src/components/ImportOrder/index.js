@@ -20,7 +20,7 @@ function ImportOrder({closePopup}) {
 
 	const handleSearch = (e) => {
 		e.preventDefault();
-		dispatch(getVehicleOrders(vehicleId));
+		dispatch(getVehicleOrders({vehicle_id: vehicleId, stock_id: user.stock_id}));
 	}
 
 	const handleImport = () => {

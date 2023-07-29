@@ -42,8 +42,8 @@ const getVehicleByRegion = (region_id) => {
     return customFetch.get(`/vehicle/region/${region_id}`);
 }
 
-const getVehicleOrders = (vehicle_id) => {
-    return customFetch.get(`/vehicle/${vehicle_id}/order`);
+const getVehicleOrders = ({vehicle_id, stock_id}) => {
+    return customFetch.get(`/vehicle/${vehicle_id}/order?filter=stock&stock_id=${stock_id}`);
 }
 
 const postVehicleOrders = ({vehicle_id, list_orders}) => {
