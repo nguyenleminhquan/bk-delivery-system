@@ -145,7 +145,7 @@ function SenderHome() {
 			<div className='d-flex'>
 				<div className={styles.searchBar}>
 					<BsSearch />
-					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-5' />
+					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-3 w-100' />
 				</div>
 				<Link className='btn fs-6' to="/create-order">
 					<BiPencil className='me-3'/> Tạo đơn hàng

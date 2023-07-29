@@ -342,7 +342,7 @@ function CreateOrder() {
             <div className='d-flex'>
                 <div className={styles.searchBar}>
                     <BsSearch />
-                    <input type="text" className='form-control ms-5' placeholder='Nhập mã đơn hàng' />
+                    <input type="text" className='ms-3 w-100' placeholder='Nhập mã đơn hàng' />
                 </div>
                 <Link className='btn fs-6' to="/create-order">
                     <BiPencil className='me-3'/> Tạo đơn hàng
@@ -362,11 +362,11 @@ function CreateOrder() {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="col-6 mt-2">
+                                <div className={`mt-2 ${editSender ? 'col-6' : 'col-12'}`}>
                                     <span className='fw-semibold'>{user.fullname} - {user.phone}</span>
                                     <p>{senderAddress}</p>
                                 </div>
-                                {editSender ? (
+                                {editSender && (
                                     <div className="col-6 mt-2">
                                         <AddressForm 
                                             stateInfo={senderInfo}
@@ -385,21 +385,6 @@ function CreateOrder() {
                                                 <button className='btn btn-medium me-3' onClick={handleUpdateSenderAddress}>Lưu</button>
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div className="col-6 mt-2">
-                                        <p className='fw-semibold'>Các địa chỉ gửi gần đây:</p>
-                                        {recentlyAddress.map((address, index) => (
-                                            <div className={styles.optionWrap} key={index}>
-                                                <input type="radio" 
-                                                    name='recentlyAddress'
-                                                    className='me-3'
-                                                    checked={address === senderAddress}
-                                                    value={address}
-                                                    onChange={e => setSenderAddress(e.target.value)}/> 
-                                                <label htmlFor="recentlyAddress" className='ms-2' onClick={() => setSenderAddress(address)}>{address}</label>
-                                            </div>
-                                        ))}
                                     </div>
                                 )}
                             </div>
