@@ -18,6 +18,7 @@ import { getAvailableVehicleOrders } from 'features/stock/stockSlice';
 
 const ConfirmOrderLists = ({vehicle}) => {
     const dispatch = useDispatch();
+    const { user } = useSelector(state => state.user);
     const [toggleFilter, setToggleFilter] = useState(false);
     const { vehicleOrders } = useSelector(state => state.delivery);
     const [showOrderDetail, setShowOrderDetail] = useState(null);
@@ -44,7 +45,7 @@ const ConfirmOrderLists = ({vehicle}) => {
     }
 
     useEffect(() => {
-        dispatch(getVehicleOrders(vehicle._id));
+        dispatch(getVehicleOrders({vehicle_id: vehicle._id, stock_id: user.stock_id}));
     }, [])
 
     return (
