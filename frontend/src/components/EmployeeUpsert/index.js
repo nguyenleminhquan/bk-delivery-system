@@ -102,7 +102,7 @@ function EmployeeUpsert({object, handleClose}) {
   }, []);
 
   return (
-    <form className='employee-upsert-wrapper'>
+    <div className='employee-upsert-wrapper'>
       <div className="form-group">
         <label>Họ và tên</label>
         <input type="text"
@@ -166,7 +166,7 @@ function EmployeeUpsert({object, handleClose}) {
           {object?.fullname ? 'Chỉnh sửa' : 'Thêm mới'}
         </button>
       </div>
-    </form>
+    </div>
   )
 }
 
