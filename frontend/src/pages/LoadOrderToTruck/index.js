@@ -155,7 +155,6 @@ function LoadOrderToTruck() {
     }
 
     const handleOpenTruckOrders = () => {
-        console.log(truckLoad);
         setOpenPopup(true);
     }
 
@@ -174,7 +173,7 @@ function LoadOrderToTruck() {
     }
 
     const isAllChecked = () => {
-        return truckOrders?.every(order => order.checked);
+        return truckOrders.length > 0 && truckOrders?.every(order => order.checked);
     }
 
     const handleSortCol = () => {
