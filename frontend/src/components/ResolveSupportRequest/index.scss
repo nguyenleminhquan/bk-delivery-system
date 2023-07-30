@@ -1,0 +1,17 @@
+.resolve-support-request {
+    .click-here {
+        color: #0000ee;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 5px;
+    }
+    p {
+        margin-bottom: 0;
+    }
+}
