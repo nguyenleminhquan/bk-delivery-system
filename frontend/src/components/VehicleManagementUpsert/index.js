@@ -78,11 +78,10 @@ function VehicleManagementUpsert({ object, handleClose }) {
     dispatch(getStocks());
     setRouteData(Object.values(DeliveryRoutes).map(el => ({ label: el.full_name, value: el.short_name })));
     setCityData(AreaDelivery.map(el => ({label: el.label, value: el.code})));
-    console.log(object);
   }, []);
 
   return (
-    <form className='vehicle-management-upsert-wrapper'>
+    <div className='vehicle-management-upsert-wrapper'>
       <div className="form-group">
         <label>Loại xe</label>
         <SelectOption name="type"
@@ -149,7 +148,7 @@ function VehicleManagementUpsert({ object, handleClose }) {
           {object?.fullname ? 'Chỉnh sửa' : 'Thêm mới'}
         </button>
       </div>
-    </form>
+    </div>
   )
 }
 
