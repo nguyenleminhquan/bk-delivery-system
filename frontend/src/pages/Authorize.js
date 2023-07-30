@@ -14,6 +14,8 @@ import AdminEmployeeManagement from './Roles/Admin/AdminEmployeeManagement';
 import AdminStockManagement from './Roles/Admin/AdminStockManagement';
 import ImportExportHistory from './Roles/Stocker/ImportExportHistory';
 import AdminVehicleManagement from './Roles/Admin/AdminVehicleManagement';
+import SupportRequest from 'components/SupportRequest';
+import ResolveSupportRequest from 'components/ResolveSupportRequest';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -24,6 +26,7 @@ function Authorize() {
 				<Route index element={<SenderHome />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
 				<Route path='/create-order' element={<CreateOrder />}></Route>
+				<Route path='/request' element={<SupportRequest />}></Route>
 			</Routes>
 		)
 	}
@@ -34,6 +37,7 @@ function Authorize() {
 				<Route index element={<DriverHome />}></Route>
 				<Route path='/delivery-history' element={<DriverHistory />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
+				<Route path='/request' element={<SupportRequest />}></Route>
 			</Routes>
 		)
 	}
@@ -46,6 +50,7 @@ function Authorize() {
 				<Route path='/export-order' element={<ExportOrder />}></Route>
 				<Route path='/load-order' element={<LoadOrderToTruck />}></Route>
 				<Route path='/import-export-history' element={<ImportExportHistory />}></Route>
+				<Route path='/request' element={<SupportRequest />}></Route>
 			</Routes>
 		)
 	}
@@ -57,6 +62,7 @@ function Authorize() {
 				<Route path='/employee-management' element={<AdminEmployeeManagement />}></Route>
 				<Route path='/stock-management' element={<AdminStockManagement />}></Route>
 				<Route path='/vehicle-management' element={<AdminVehicleManagement />}></Route>
+				<Route path='/request' element={<ResolveSupportRequest />}></Route>
 			</Routes>
 		)
 	}

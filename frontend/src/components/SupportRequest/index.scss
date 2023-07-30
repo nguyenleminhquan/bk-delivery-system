@@ -1,0 +1,27 @@
+.support-request {
+    background-color: #fff;
+    box-shadow: var(--shadow);
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 5px;
+    h5 {
+        margin-bottom: 20px;
+    }
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 5px;
+    }
+    p {
+        margin-bottom: 5px;
+        font-family: var(--primary-font);
+    }
+    .click-here {
+        color: #0000ee;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
