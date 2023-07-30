@@ -1,0 +1,18 @@
+.admin-order-management {
+    .form-wrapper {
+        background-color: #fff;
+        box-shadow: var(--shadow);
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 5px;
+        .title {
+            margin-bottom: 20px;
+        }
+        .driver-info {
+            input {
+                visibility: hidden;
+            }
+        }
+    }
+}
