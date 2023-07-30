@@ -335,7 +335,7 @@ function LoadOrderToTruck() {
                             </div>
 
                         </div>
-                        <button className='btn mt-2 d-flex jc_c' onClick={handleAddToTruck}>Thêm vào xe tải</button>
+                        <button className='btn btn-medium mt-2 d-flex jc_c' onClick={handleAddToTruck}>Thêm vào xe tải</button>
                     </div>
                 </div>
             </div>
