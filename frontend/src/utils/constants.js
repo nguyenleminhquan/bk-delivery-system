@@ -1,5 +1,5 @@
 import { AiOutlineHistory } from 'react-icons/ai'
-import { BiLogOut } from 'react-icons/bi'
+import { BiLogOut, BiPackage } from 'react-icons/bi'
 import { BsPersonCircle } from 'react-icons/bs'
 import { FaAddressCard, FaChartBar, FaEnvelope, FaHistory, FaHome, FaListUl, FaLock, FaPaypal, FaPhone, FaTruck, FaUser, FaWarehouse} from 'react-icons/fa'
 import { IoMdNotificationsOutline } from 'react-icons/io'
@@ -349,6 +349,13 @@ export const adminSidebar = [
         path: '/vehicle-management',
         icon: <FaTruck />,
         text: 'Quản lý phương tiện',
+        type: 'beneath'
+    },
+    {
+        id: 9,
+        path: '/order-management',
+        icon: <BiPackage />,
+        text: 'Quản lý đơn hàng',
         type: 'beneath'
     },
 ]

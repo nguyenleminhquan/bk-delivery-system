@@ -16,6 +16,7 @@ import ImportExportHistory from './Roles/Stocker/ImportExportHistory';
 import AdminVehicleManagement from './Roles/Admin/AdminVehicleManagement';
 import SupportRequest from 'components/SupportRequest';
 import ResolveSupportRequest from 'components/ResolveSupportRequest';
+import AdminOrderManagement from './Roles/Admin/AdminOrderManagement';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -63,6 +64,7 @@ function Authorize() {
 				<Route path='/stock-management' element={<AdminStockManagement />}></Route>
 				<Route path='/vehicle-management' element={<AdminVehicleManagement />}></Route>
 				<Route path='/request' element={<ResolveSupportRequest />}></Route>
+				<Route path='/order-management' element={<AdminOrderManagement />}></Route>
 			</Routes>
 		)
 	}
