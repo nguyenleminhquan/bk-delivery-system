@@ -130,7 +130,7 @@ const updateUserInfo = async (req, res, next) => {
         });
     } catch (err) {
         console.log(err);
-        next(err);
+        return next(createError(400));
     }
 }
 

@@ -96,7 +96,7 @@ const getOrderInStocks = async (req, res, next) => {
     
     return res.json(orders)
   } catch (error) {
-    return next(createError(402))
+    return next(createError(400))
   }
 }
 
