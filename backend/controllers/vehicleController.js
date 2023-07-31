@@ -57,6 +57,7 @@ const addVehicle = async (req, res, next) => {
     }
 
     let vehicle = new Vehicle(req.body)
+    vehicle.current_address_code = req.body.from
     await vehicle.save()
     
     return res.json(vehicle)
@@ -84,6 +85,11 @@ const pushOrderToVehicle = async (req, res, next) => {
     for (let i = 0; i < orders.length; i++) {
       if (vehicle.orders.some(id => id == orders[i]._id.toString())) {
         return next(createError(400, 'The order has been pushed to the vehicle'))
+      }
+
+      let areaCodeDistrictCode = getAreaCodeAndDistrictCodeFromString(orders[i].sender_address)
+      if (vehicle.from != areaCodeDistrictCode[0]) {
+        return next(createError(400, 'Địa chỉ nơi gửi phải giống với nơi đi của xe tải!'))
       }
 
       if (orders[i].status != 'import') {
@@ -167,8 +173,19 @@ const getAllOrdersByVehicle = async (req, res, next) => {
 
     let result = vehicle.orders
     if (stockAreaCode != -1) {
+      // Check if at sender stock or receiver stock
+      let isAtSendStock = false
+      isAtSendStock = result.every(order => order.status == "arrived_send_stock")
+      
+      console.log(`--->Is at sender stock: ${isAtSendStock}`)
+
       result = result.filter(order => {
-        let orderAreaCode = getAreaCodeAndDistrictCodeFromString(order.receiver_address)[0]
+        let orderAreaCode
+        if (isAtSendStock) {
+          orderAreaCode = getAreaCodeAndDistrictCodeFromString(order.sender_address)[0]
+        } else {
+          orderAreaCode = getAreaCodeAndDistrictCodeFromString(order.receiver_address)[0]
+        }
         return orderAreaCode == stockAreaCode
       })
     }
