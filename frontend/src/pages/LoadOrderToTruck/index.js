@@ -86,7 +86,7 @@ function LoadOrderToTruck() {
     const dispatch = useDispatch();
     const { orders } = useSelector(state => state.delivery);
     const { user } = useSelector(state => state.user);
-    const { vehicles } = useSelector(state => state.stock); 
+    const { vehicles, availOrders } = useSelector(state => state.stock);
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -161,9 +161,9 @@ function LoadOrderToTruck() {
     const handleToggleAll = e => {
         if (e.target.checked) {
             setTruckOrders(prev => prev.map(item => ({...item, checked: true})));
-            setTruckLoad(orders);
-            setTotalWeight(orders.reduce((acc, cur) => acc + cur.weight, 0));
-            setSelected(orders.length);
+            setTruckLoad(availOrders);
+            setTotalWeight(availOrders.reduce((acc, cur) => acc + cur.weight, 0));
+            setSelected(availOrders.length);
         } else {
             setTruckOrders(prev => prev.map(item => ({...item, checked: false})));
             setTruckLoad([]);
@@ -230,8 +230,8 @@ function LoadOrderToTruck() {
     }, [truckOrders]);
 
     useEffect(() => {
-        setTruckOrders(orders.map(order => ({...order, checked: false})));
-    }, [orders])
+        setTruckOrders(availOrders.map(order => ({...order, checked: false})));
+    }, [availOrders])
 
     useEffect(() => {
         if (truckId) {
