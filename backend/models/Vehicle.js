@@ -40,6 +40,7 @@ const vehicleSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Delivery'
   }],
+  type: String
 })
 
 export default mongoose.model('Vehicle', vehicleSchema)
