@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersListsThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -66,6 +66,13 @@ export const getVehicleOrders = createAsyncThunk(
     'delivery/getVehicleOrders',
     async(vehicle, thunkAPI) => {
         return getVehicleOrdersThunk(vehicle, thunkAPI);
+    }
+)
+
+export const getVehicleOrderLists = createAsyncThunk(
+    'delivery/getVehicleOrderLists',
+    async(vehicle, thunkAPI) => {
+        return getVehicleOrdersListsThunk(vehicle, thunkAPI);
     }
 )
 
@@ -216,6 +223,17 @@ const deliverySlice = createSlice({
             state.vehicleOrders = payload;
         },
         [getVehicleOrders.rejected]: (state, { payload }) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getVehicleOrderLists.pending]: state => {
+            state.isLoading = true;
+        },
+        [getVehicleOrderLists.fulfilled]: (state, { payload }) => {
+            state.isLoading = false;
+            state.vehicleOrders = payload;
+        },
+        [getVehicleOrderLists.rejected]: (state, { payload }) => {
             state.isLoading = false;
             toast.error(payload);
         },

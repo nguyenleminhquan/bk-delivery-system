@@ -46,8 +46,12 @@ const getVehicleOrders = ({vehicle_id, stock_id}) => {
     return customFetch.get(`/vehicle/${vehicle_id}/order?filter=stock&stock_id=${stock_id}`);
 }
 
-const postVehicleOrders = ({vehicle_id, list_orders}) => {
-    return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders});
+const getVehicleOrderLists = ({vehicle_id}) => {
+    return customFetch.get(`/vehicle/${vehicle_id}/order`);
+}
+
+const postVehicleOrders = ({vehicle_id, list_orders, stock_id}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders, stock_id});
 }
 
 const deleteVehicleOrder = ({order_id, vehicle_id}) => {
@@ -72,6 +76,7 @@ const DeliveryService = {
     addVehicle,
     getVehicleByRegion,
     getVehicleOrders,
+    getVehicleOrderLists,
     deleteVehicleOrder,
     postVehicleOrders,
     getVehicleByRoute,
