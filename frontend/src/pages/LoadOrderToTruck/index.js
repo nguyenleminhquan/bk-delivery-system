@@ -9,7 +9,7 @@ import {useState, useEffect, Fragment} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrderLists, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
@@ -45,7 +45,7 @@ const ConfirmOrderLists = ({vehicle}) => {
     }
 
     useEffect(() => {
-        dispatch(getVehicleOrders({vehicle_id: vehicle._id, stock_id: user.stock_id}));
+        dispatch(getVehicleOrderLists({vehicle_id: vehicle._id }));
     }, [])
 
     return (
@@ -150,6 +150,7 @@ function LoadOrderToTruck() {
             dispatch(postVehicleOrders({
                 vehicle_id: truckInfo._id,
                 list_orders: truckOrders.filter(order => order.checked).map(item => item._id),
+                stock_id: user.stock_id
             }));
         }
     }

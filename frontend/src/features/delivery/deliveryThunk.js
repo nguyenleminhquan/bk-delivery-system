@@ -87,6 +87,15 @@ export const getVehicleOrdersThunk = async(vehicle, thunkAPI) => {
     }
 }
 
+export const getVehicleOrdersListsThunk = async(vehicle, thunkAPI) => {
+    try {
+        const res = await DeliveryService.getVehicleOrderLists(vehicle);
+        return res.data;
+    } catch(error) {
+        return checkForUnauthorizedResponse(error, thunkAPI);
+    }
+}
+
 export const deleteVehicleOrderThunk = async(vehicle, thunkAPI) => {
     try {
         const res = await DeliveryService.deleteVehicleOrder(vehicle);
