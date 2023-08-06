@@ -47,8 +47,17 @@ const importOrderToStock = async (req, res, next) => {
         await orders[i].save()
 
         stock.orders.push(orders[i]._id)
+
+        // Gỡ đơn hàng ra khỏi xe tải
+        let orderIndexInVehicle = vehicle.orders.indexOf(orders[i]._id)
+        if (orderIndexInVehicle !== -1) {
+          console.info(`--->Remove order ${orders[i]._id} from vehicle`)
+          vehicle.orders.splice(orderIndexInVehicle, 1)
+          console.info(`--->Orders on vehicle after deleting: ${vehicle.orders}`)
+        }
       }
 
+      await vehicle.save()
     } else {
       console.info("--->Stock at: receiver")
 
