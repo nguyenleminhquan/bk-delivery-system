@@ -79,11 +79,20 @@ const styles = StyleSheet.create({
     marginTop: 5, 
     fontSize: 14,
     fontWeight: 600
+  },
+  orders: {
+    marginBottom: '15px',
+    fontWeight: 600,
+    fontSize: '18px'
+  },
+  orderList: {
+    borderBottom: '1px dashed #000',
+    paddingBottom: '10px',
+    marginBottom: '10px'
   }
 });
 
 function PDFFile({type, formId, stockerInfo, driverInfo, orders, createdAt, stock}) {
-    console.log('orders', orders)
   return (
     <Document>
         <Page size="A4" style={styles.page} wrap>
@@ -105,70 +114,20 @@ function PDFFile({type, formId, stockerInfo, driverInfo, orders, createdAt, stoc
                 <Text>Thủ kho: {stockerInfo?.fullname}, {stockerInfo?.phone}, {stockerInfo?.email} </Text>
                 <Text>{type === 'import' ? 'Nhập' : 'Xuất'} tại kho: {stock?.address}</Text>
             </View>
+            <View style={styles.orders}>
+                <Text>Thông tin các đơn hàng</Text>
+            </View>
             <View style={{marginBottom: '20px'}}>
-                <View style={styles.table}>
-                    <View style={styles.tableRow}>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableHeader}>Mã đơn hàng</Text>
+                {
+                    orders.map((order) => 
+                        <View style={styles.orderList}>
+                            <Text style={{marginBottom: '5px'}}>Mã đơn hàng: {order._id}</Text>
+                            <Text style={{marginBottom: '5px'}}>Hàng hóa: { order.items.reduce((list, item) => list + item.name + ' - ' + item.weight + 'kg' + ' - ' + '10 thùng' + ', ', '') }</Text>
+                            <Text style={{marginBottom: '5px'}}>Địa chỉ người gửi: { order.sender_address }</Text>
+                            <Text style={{marginBottom: '5px'}}>Địa chỉ người nhận: { order.receiver_address }</Text>
                         </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableHeader}>Hàng hóa</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableHeader}>Khối lượng</Text>
-                        </View>
-                    </View>
-                    {
-                        orders.map((order) => {
-                            return order.items.map((item) =>
-                                <View style={styles.tableRow}>
-                                    <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{order._id}</Text>
-                                    </View>
-                                    <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{item.name}</Text>
-                                    </View>
-                                    <View style={styles.tableCol}>
-                                        <Text style={styles.tableCell}>{item.weight}kg</Text>
-                                    </View>
-                                </View>
-                            )
-                        })
-                    }
-                    {/* <View style={styles.tableRow}>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>8687584214</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>Máy tính</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200kg</Text>
-                        </View>
-                    </View>
-                    <View style={styles.tableRow}>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>8687584214</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>Máy tính</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200kg</Text>
-                        </View>
-                    </View>
-                    <View style={styles.tableRow}>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>8687584214</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>Máy tính</Text>
-                        </View>
-                        <View style={styles.tableCol}>
-                            <Text style={styles.tableCell}>200kg</Text>
-                        </View>
-                    </View> */}
-                </View>
+                    )
+                }
             </View>
             <View style={styles.footer}>
                 <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

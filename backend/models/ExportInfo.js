@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const exportInfoSchema = mongoose.Schema({
+  stock_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock'
+  },
   vehicle_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vehicle'
