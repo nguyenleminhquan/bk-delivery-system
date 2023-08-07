@@ -193,6 +193,7 @@ const getExportHistory = async(req, res, next) => {
     .find({stock_id: stockId})
     .sort({ createdAt: -1 })
     .populate('stocker_id')
+    .populate('stock_id')
     .populate({
       path: 'orders',
       populate: {

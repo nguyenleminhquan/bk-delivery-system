@@ -274,7 +274,7 @@ const exportOrder = async (req, res, next) => {
     console.log(vehicle)
 
     let exportInfo = 
-      new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, orders: vehicle.orders })
+      new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, orders: vehicle.orders, stock_id: body.stock_id })
     
     await exportInfo.save()
 
