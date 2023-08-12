@@ -161,6 +161,7 @@ const stockSlice = createSlice({
         },
         [importOrderToStock.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
+            state.orders = [...state.orders, ...payload.orders];
             toast.success('Nhập kho thành công!');
         },
         [getImportHistory.pending]: state => {

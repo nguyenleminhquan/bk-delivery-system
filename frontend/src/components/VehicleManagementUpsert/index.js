@@ -54,16 +54,21 @@ function VehicleManagementUpsert({ object, handleClose }) {
       Object.keys(DeliveryRoutes).forEach(key => {
         if (DeliveryRoutes[key].short_name === info.route.value) {
           payload.to = key;
+          payload.to_string = DeliveryRoutes[key].full_name;
         }
       })
       payload.from = info.city.value;
+      payload.from_string = info.city.label;
     } else {
       if (!info?.stock) {
         toast.error('Thiếu thông tin xe!');
         return;
       }
-      payload.from = stocks.find(stock => stock._id === info.stock.value).area_code;
+      const targetStock = stocks.find(stock => stock._id === info.stock.value);
+      payload.from = targetStock?.area_code;
+      payload.from_string = targetStock?.name; 
     }
+
     dispatch(addVehicle(payload));
     handleClose();
   }
