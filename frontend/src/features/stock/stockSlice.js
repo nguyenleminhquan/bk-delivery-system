@@ -148,7 +148,6 @@ const stockSlice = createSlice({
             toast.error(payload);
         },
         [getStockOrders.fulfilled]: (state, {payload}) => {
-            console.log(payload);
             state.isLoading = false;
             state.orders = payload;
         },

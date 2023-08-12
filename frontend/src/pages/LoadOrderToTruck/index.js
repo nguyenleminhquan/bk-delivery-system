@@ -36,7 +36,8 @@ const ConfirmOrderLists = ({vehicle}) => {
         setToggleFilter(!toggleFilter);
     }
 
-    const handleDeleteOrder = id => {
+    const handleDeleteOrder = (e, id) => {
+        e.stopPropagation();
         const payload = {
             order_id: id,
             vehicle_id: vehicle._id
@@ -69,8 +70,8 @@ const ConfirmOrderLists = ({vehicle}) => {
                         <div className={`row p-2 ${styles.ordersRow}`} key={order._id} onClick={() => setShowOrderDetail(order)}>
                             <div className="col-6">{order._id}</div>
                             <div className="col-5">{order.weight}</div>
-                            <div className="col-1">
-                                <div className={styles.deleteBtn} role="button" onClick={() => handleDeleteOrder(order._id)}><RiDeleteBin6Fill /></div>
+                            <div className="col-1" onClick={(e) => handleDeleteOrder(e, order._id)}>
+                                <div className={styles.deleteBtn} role="button"><RiDeleteBin6Fill /></div>
                             </div>
                         </div>
                     ))}
@@ -216,10 +217,6 @@ function LoadOrderToTruck() {
         }
     }
 
-    const enableAddToTruck = () => {
-        return truckOrders.some(el => el.checked);
-    }
-
     function confirmExportOrder() {
         const payload = { vehicle_id: truckInfo._id, stocker_id: user.id };
         dispatch(exportOrderOnVehicle(payload));
@@ -342,9 +339,7 @@ function LoadOrderToTruck() {
                             </div>
 
                         </div>
-                        <button className='btn btn-medium mt-2 d-flex jc_c'
-                            onClick={handleAddToTruck}
-                            disabled={() => !enableAddToTruck()}>Thêm vào xe tải</button>
+                        <button className='btn btn-medium mt-2 d-flex jc_c' onClick={handleAddToTruck}>Thêm vào xe tải</button>
                     </div>
                 </div>
             </div>
