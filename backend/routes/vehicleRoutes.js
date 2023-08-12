@@ -14,6 +14,7 @@ import {
   exportOrder,
   getAvailableOrderForVehicle
 }  from '../controllers/vehicleController.js'
+import { findBestWayBetweenWaypoints } from '../controllers/mapsController.js'
 
 const router = express.Router()
 
@@ -23,9 +24,12 @@ router.get('/:id/order?', verifyRefreshToken, verifyToken, verifyRoles(['stocker
 // router.get('/region/:id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getVehicleByRegion)
 router.get('/region/:id/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), searchVehicleWithCondition)
 router.get('/search?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), filterVehicleByRoute)
+router.get('/:id/best-way', verifyRefreshToken, verifyToken, verifyRoles(['stocker, driver']), findBestWayBetweenWaypoints)
+
 router.post('/', verifyRefreshToken, verifyToken, verifyRoles(['admin']), addVehicle)
 router.post('/:id/order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), pushOrderToVehicle)
 router.post('/:id/export-order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), exportOrder)
+
 router.delete('/order/:order_id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), deleteOrderFromVehicle)
 
 export default router
