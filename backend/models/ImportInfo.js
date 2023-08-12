@@ -10,8 +10,7 @@ const importInfoSchema = mongoose.Schema({
     ref: 'User'
   },
   orders: [{ 
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order'
+    type: mongoose.Schema.Types.Mixed,
   }],
   createTime: {
     type: Date
