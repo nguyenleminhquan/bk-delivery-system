@@ -14,6 +14,7 @@ const importOrderToStock = async (req, res, next) => {
 
     const { order_ids, stock_id, stocker_id, vehicle_id } = req.body
     await User.findById(stocker_id)
+    let resultOfOrders = []
 
     const getOrders = async (ids) => {
       let orders = []
@@ -48,6 +49,8 @@ const importOrderToStock = async (req, res, next) => {
 
         stock.orders.push(orders[i]._id)
 
+        resultOfOrders.push(orders[i])
+
         // Gỡ đơn hàng ra khỏi xe tải
         let orderIndexInVehicle = vehicle.orders.indexOf(orders[i]._id)
         if (orderIndexInVehicle !== -1) {
@@ -74,6 +77,8 @@ const importOrderToStock = async (req, res, next) => {
         }
 
         stock.orders.push(orders[i]._id)
+
+        resultOfOrders.push(orders[i])
       }
 
       await vehicle.save()
@@ -83,7 +88,7 @@ const importOrderToStock = async (req, res, next) => {
     let importInfo = new ImportInfo({
       stocker_id,
       stock_id,
-      orders: order_ids
+      orders: resultOfOrders
     })
     await importInfo.save()
     
