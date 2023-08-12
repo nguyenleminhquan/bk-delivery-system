@@ -5,11 +5,11 @@ import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { TruckIcon } from 'components/Icons';
-import {useState, useEffect, Fragment} from 'react';
+import { useState, useEffect } from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleAvailableOrder, getVehicleOrderLists, getVehicleOrders, postVehicleOrders } from 'features/delivery/deliverySlice';
+import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleOrderLists, postVehicleOrders } from 'features/delivery/deliverySlice';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
@@ -146,12 +146,14 @@ function LoadOrderToTruck() {
             alert('Vượt quá khối lượng hiện tại cho phép của xe!');
             // setTruckLoad([]);
         } else {
-            setTruckAvailable(truckAvailable - totalClickedWeight);
+            setTruckAvailable(totalWeight);
             dispatch(postVehicleOrders({
                 vehicle_id: truckInfo._id,
                 list_orders: truckOrders.filter(order => order.checked).map(item => item._id),
                 stock_id: user.stock_id
             }));
+            const payload = { stock_id: user.stock_id, vehicle_id: truckId }
+            dispatch(getAvailableVehicleOrders(payload));
         }
     }
 
@@ -212,6 +214,10 @@ function LoadOrderToTruck() {
                 actionNo: () => setOpenExportOrderPopup(false)
             });
         }
+    }
+
+    const enableAddToTruck = () => {
+        return truckOrders.some(el => el.checked);
     }
 
     function confirmExportOrder() {
@@ -336,7 +342,9 @@ function LoadOrderToTruck() {
                             </div>
 
                         </div>
-                        <button className='btn btn-medium mt-2 d-flex jc_c' onClick={handleAddToTruck}>Thêm vào xe tải</button>
+                        <button className='btn btn-medium mt-2 d-flex jc_c'
+                            onClick={handleAddToTruck}
+                            disabled={() => !enableAddToTruck()}>Thêm vào xe tải</button>
                     </div>
                 </div>
             </div>
