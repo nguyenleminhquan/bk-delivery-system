@@ -40,3 +40,4 @@
 | /user/create-account | POST | Create account for stocker and driver | Authorization: Bearer <refresh_token> <access_token> | information you want to create |
 | /user/edit-account/:id | POST | Edit account for stocker and driver | Authorization: Bearer <refresh_token> <access_token>  | information you want to create |
 | /exportinfo/:id/download | GET | Get export information | Authorization: Bearer <refresh_token> <access_token> |  |
+| /maps/vehicle/:vehicle_id/best-way | GET | Find best way between multiple points | Authorization: Bearer <refresh_token> <access_token> |  |
