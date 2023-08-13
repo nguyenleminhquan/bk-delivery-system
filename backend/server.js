@@ -12,10 +12,11 @@ import orderRoutes from './routes/orderRoutes.js'
 import deliveryRoutes from './routes/deliveryRoutes.js'
 import stockRoutes from './routes/stockRoutes.js'
 import vehicleRoutes from './routes/vehicleRoutes.js'
+import mapRoutes from './routes/mapRoutes.js'
 import exportInfoRoutes from './routes/exportInfoRoutes.js'
 import { socketOrder } from './controllers/orderController.js'
 
-connectDB()
+await connectDB()
 dotenv.config()
 
 import baseURLFrontend from './config/.env.json' assert { type: "json" }
@@ -34,6 +35,7 @@ app.use('/delivery', deliveryRoutes)
 app.use('/stock', stockRoutes)
 app.use('/vehicle', vehicleRoutes)
 app.use('/exportinfo', exportInfoRoutes)
+app.use('/maps', mapRoutes)
 
 app.get('/', (req, res, next) => {
     res.send('API is running!')

@@ -15,8 +15,17 @@ const vehicleSchema = mongoose.Schema({
   // to: [{
   //   type: Number
   // }],
+  visitedStocks: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock'
+  }],
+  // waypoints: [{
+  //   area_code: Number,
+  //   district_code: Number
+  // }],
   recommend_ways: [{
-    type: Number
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock'
   }],
   from_string: String,
   to_string: String,
