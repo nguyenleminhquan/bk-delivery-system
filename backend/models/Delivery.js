@@ -9,6 +9,10 @@ const deliverySchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  vehicle_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle'
+  },
   status: {
     type: String,
     enum: ['waiting', 'accepted', 'picked', 'deliveried', 'success'],

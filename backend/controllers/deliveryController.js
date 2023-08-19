@@ -3,7 +3,7 @@ import Delivery from '../models/Delivery.js';
 import Stock from '../models/Stock.js';
 import Vehicle from '../models/Vehicle.js';
 import Order from '../models/Order.js';
-import { calculateDistance, convertAddressToCoordinates } from '../utils/order-utils.js';
+import { calculateDistance, convertAddressToCoordinates, getAreaCodeAndDistrictCodeFromString } from '../utils/order-utils.js';
 
 const getDeliveryByStatus = async (req, res, next) => {
     try {
@@ -59,7 +59,7 @@ const getDeliveryHistory = async (req, res, next) => {
     try {
         const id = req.params.driverId
         const delivery = await Delivery
-        .find({ driver: id, status: 'deliveried' })
+        .find({ driver: id, status: 'success' })
         .sort({ createdAt: -1 })
         .populate({
             path: 'order',
@@ -120,24 +120,41 @@ const getAllDelivery = async (req, res, next) => {
         })
         deliveries.push(...vehicleInfo?.deliveries);
         // get waiting deliveries
-        let waitingDeliveries = await Delivery
-        .find({ status: 'waiting', area_code: area_code, district_code: district_code, type: {$regex: type} })
-        .populate({
-            path: 'order',
-            populate: {
-                path: 'items',
-            }
-        })
+        let waitingDeliveries = []
+        if (type === 'inter') {
+            waitingDeliveries = await Delivery
+            .find({ status: 'waiting', area_code: area_code, type: 'inter' })
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'items',
+                }
+            })
+        } else {
+            waitingDeliveries = await Delivery
+            .find({ status: 'waiting', area_code: area_code, district_code: district_code, type: {$regex: 'inner'} })
+            .populate({
+                path: 'order',
+                populate: {
+                    path: 'items',
+                }
+            })
+        }
+        // category into delivery types
         if (vehicleInfo?.deliveries.length > 0) {
             waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
         }
+        // remove deliveries that belongs to other vehicle
+        waitingDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === vehicle_id)
         deliveries.push(...waitingDeliveries);
         return res.json({ 
             deliveries: deliveries, 
             vehicle: { 
                 current_weight: vehicleInfo.current_weight, 
                 max_weight: vehicleInfo.max_weight, 
-                license_plate_number: vehicleInfo.license_plate_number
+                license_plate_number: vehicleInfo.license_plate_number,
+                deliveryCount: vehicleInfo.deliveries.length,
+                type: vehicleInfo.type
             } 
         });
     } catch(err) {
@@ -151,7 +168,11 @@ const findNearestArea = async (area_code, address) => {
     try {
         const stocks = await Stock.find({area_code: area_code});
         if (stocks.length === 0) return next(createError(400, 'Can not find nearest area'))
-        const latlonOfAddress = await convertAddressToCoordinates(address);
+        let parseAddress = address.split(", ")
+        let length_parseAddress = parseAddress.length
+        let areaAddress = parseAddress[length_parseAddress - 1]
+        let districtAddress = parseAddress[length_parseAddress - 2]
+        const latlonOfAddress = await convertAddressToCoordinates(districtAddress + ', ' + areaAddress);
         let nearestStock;
         let minDistance = 999999;
         for (let stock of stocks) {
@@ -181,19 +202,19 @@ const socketDelivery = (io) => {
         socket.on('newDeliveries', async(deliveries) => {
             let deliveriesResponse = [];
             for (let data of deliveries) {
-                let { status, order_id, driver_id, type, from, to, area_code, district_code, from_code, to_code } = data;
+                let { status, order_id, driver_id, type, from, to, area_code, district_code, from_code, to_code, vehicle_id } = data;
                 if (type === 'inner_sender') {
                     let area = await findNearestArea(data.area_code, from.split('&')[1]);
                     area_code = area.area_code;
                     district_code = area.district_code;
                     to = area.name + '&' + area.address;
                 } else if (type === 'inter') {
-                    const stock = await Stock.find({area_code: area_code, district_code: district_code});
+                    const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
-                    let area = await findNearestArea(data.area_code, to.split('&')[0]);
+                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(to)[0], to.split('&')[1]);
                     to = area.name + '&' + area.address
                 } else if (type === 'inner_receiver') {
-                    const stock = await Stock.find({area_code: area_code, district_code: district_code});
+                    const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
                 }
                 // save new delivery
@@ -207,7 +228,8 @@ const socketDelivery = (io) => {
                     to: to,
                     type: type,
                     from_code: from_code,
-                    to_code: to_code
+                    to_code: to_code,
+                    vehicle_id: vehicle_id
                 })
                 let res = await newDelivery.save();
                 let delivery = await Delivery
@@ -222,37 +244,6 @@ const socketDelivery = (io) => {
             }
             io.emit('newDeliveries', deliveriesResponse)
         })
-        socket.on('allDeliveries', async(data) => {
-            let deliveries = [];
-            // get deliveries in vehicle
-            const { vehicle_id, area_code, district_code, type } = data;
-            const vehicleInfo = await Vehicle
-            .findById(vehicle_id)
-            .populate({
-                path: 'deliveries',
-                populate: {
-                    path: 'order',
-                    populate: {
-                        path: 'items'
-                    }
-                }
-            })
-            deliveries.push(...vehicleInfo?.deliveries);
-            // get waiting deliveries
-            let waitingDeliveries = await Delivery
-            .find({ status: 'waiting', area_code: area_code, district_code: district_code, type: {$regex: type} })
-            .populate({
-                path: 'order',
-                populate: {
-                    path: 'items',
-                }
-            })
-            if (vehicleInfo?.deliveries.length > 0) {
-                waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
-            }
-            deliveries.push(...waitingDeliveries);
-            socket.emit('allDeliveries', deliveries)
-        })
         socket.on('acceptDelivery', async(data) => {
             const { delivery_id, vehicle_id, driver_id } = data;
             const waitingDelivery = await Delivery.findById(delivery_id);
@@ -264,8 +255,8 @@ const socketDelivery = (io) => {
                     vehicle.orders.push(waitingDelivery.order);
                 }
                 if (waitingDelivery.type === 'inter') {
-                    let area = await findNearestArea(data.area_code, from.split('&')[1]);
-                    vehicle.visitedStocks.push({area_code: area.area_code, district_code: area.district_code})
+                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(waitingDelivery.to)[0], waitingDelivery.to.split('&')[1]);
+                    vehicle.visitedStocks.push(area._id)
                 }
                 vehicle.save();
                 socket.emit('updatedDelivery', updatedDelivery)
@@ -287,6 +278,17 @@ const socketDelivery = (io) => {
                 const res = await Delivery.findOneAndDelete({order: order_id})
                 io.emit('deleteDelivery', res._id.toString());
             }
+        })
+        socket.on('removeDeliveryFromVehicle', async(data) => {
+            let { delivery_id, vehicle_id, order_id } = data;
+            const vehicle = await Vehicle.findById(vehicle_id);
+            if (order_id) {
+                const res = await Delivery.findOne({order: order_id});
+                delivery_id = res._id.toString();
+            }
+            vehicle.deliveries = vehicle.deliveries.filter((delivery) => delivery.toString() !== delivery_id);
+            await vehicle.save();
+            socket.emit('removeDeliveryFromVehicle', delivery_id);
         })
     });
 }

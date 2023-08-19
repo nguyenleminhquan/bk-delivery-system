@@ -268,7 +268,7 @@ const exportOrder = async (req, res, next) => {
     const body = req.body
     const vehicle_id = req.params.id
     // Send: vehicle_id, stocker_id
-    const vehicle = await Vehicle.findById(vehicle_id)
+    const vehicle = await Vehicle.findById(vehicle_id).populate('orders')
 
     console.debug("vehicle")
     console.log(vehicle)

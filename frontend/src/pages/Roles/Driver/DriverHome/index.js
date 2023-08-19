@@ -142,21 +142,21 @@ function DriverHome() {
             delivery_id: delivery._id,
             status: 'picked'
           })
-          if (order.status === 'accepted') {
+          if (delivery.type === 'inner_sender') {
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'picked',
               date: new Date()
             })
           }
-          if (order.status === 'arrived_send_stock') {
+          if (delivery.type === 'inter') {
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'coming_dest_stock',
               date: new Date()
             })
           }
-          if (order.status === 'arrived_dest_stock') {
+          if (delivery.type === 'inner_receiver') {
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'delivering',
@@ -173,25 +173,37 @@ function DriverHome() {
         id: 'deliveried',
         text: 'Đã giao xong',
         action: () => {
-          socket.emit('updateDeliveryStatus', {
-            delivery_id: delivery._id,
-            status: 'deliveried'
-          })
-          if (order.status === 'picked') {
+          if (delivery.type === 'inner_sender') {
+            socket.emit('updateDeliveryStatus', {
+              delivery_id: delivery._id,
+              status: 'deliveried'
+            })
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'arrived_send_stock',
               date: new Date()
             })
           }
-          if (order.status === 'coming_dest_stock') {
+          if (delivery.type === 'inter') {
+            socket.emit('updateDeliveryStatus', {
+              delivery_id: delivery._id,
+              status: 'deliveried'
+            })
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'arrived_dest_stock',
               date: new Date()
             })
           }
-          if (order.status === 'delivering') {
+          if (delivery.type === 'inner_receiver') {
+            socket.emit('updateDeliveryStatus', {
+              delivery_id: delivery._id,
+              status: 'success'
+            })
+            socket.emit('removeDeliveryFromVehicle', {
+              delivery_id: delivery._id,
+              vehicle_id: user.vehicle_id
+            })
             socket.emit('updateOrderStatus', {
               order_id: order._id,
               status: 'success',
@@ -226,7 +238,7 @@ function DriverHome() {
       { 
         vehicle_id: user.vehicle_id,  
         area_code: user.area_code,
-        district_code: user.district_code,
+        district_code: user.district_code[0],
         type: user.typeUser === 'driver_inter' ? 'inter' : 'inner'
       }
     ))
@@ -242,13 +254,15 @@ function DriverHome() {
     //   setAllDeliveries(data);
     // })
     socket.on('newDeliveries', (data) => {
+      let tempDeliveries = [];
       if (allDeliveries.length === 0) {
-        setAllDeliveries(data.filter((delivery) => delivery.type.includes(user.typeUser === 'driver_inter' ? 'inter' : 'inner') && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code)));
+        tempDeliveries = data.filter((delivery) => delivery.type.includes(user.typeUser === 'driver_inter' ? 'inter' : 'inner') && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
       } else {
         let deliveryType = allDeliveries[0].type;
-        let tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
-        setAllDeliveries([...allDeliveries, ...tempDeliveries]);
+        tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
       }
+      tempDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === user.vehicle_id)
+      setAllDeliveries([...allDeliveries, ...tempDeliveries]);
     })
     socket.on('updatedDelivery', (data) => {
       setAllDeliveries((prevDeliveries) => {
@@ -273,6 +287,9 @@ function DriverHome() {
       })
     })
     socket.on('deleteDelivery', (delivery_id) => {
+      setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
+    })
+    socket.on('removeDeliveryFromVehicle', (delivery_id) => {
       setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
     })
     socket.on("connect_error", (err) => {
@@ -320,7 +337,7 @@ function DriverHome() {
         <MdOutlineDonutSmall />
       </div>
       <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
-      <VehicleBoard vehicleInfo={vehicle} vehicleType={user.typeUser.includes('inner') ? 'Xe tải nội thành' : 'Xe tải liên tỉnh'} />
+      <VehicleBoard vehicleInfo={vehicle} />
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
       {
