@@ -46,8 +46,20 @@ export const getStockOrdersThunk = async(payload, thunkAPI) => {
 }
 
 export const importOrderToStockThunk = async(payload, thunkAPI) => {
+    const { importPayload, socket } = payload;
     try {
-        const res = await StockService.importOrderToStock(payload);
+        const res = await StockService.importOrderToStock(importPayload);
+        importPayload.order_ids.forEach((orderId) => {
+			socket.emit('removeDeliveryFromVehicle', {
+				order_id: orderId,
+				vehicle_id: importPayload.vehicle_id
+			})
+			socket.emit('updateOrderStatus', {
+				order_id: orderId,
+				status: 'import',
+				date: new Date()
+			})
+		})
         return res.data;
     } catch (error) {
         return thunkAPI.rejectWithValue(error.response.data.msg);

@@ -24,20 +24,15 @@ function ImportOrder({closePopup}) {
 	}
 
 	const handleImport = () => {
-		const payload = {
+		const importPayload = {
 			order_ids: vehicleOrders.map(order => order._id),
 			stock_id: user?.stock_id,
 			stocker_id: user?.id,
 			vehicle_id: vehicleId 
 		}
-		dispatch(importOrderToStock(payload));
-		// socket.emit('updateOrderStatus', {
-    //         order_id: payload.order_id,
-    //         status: 'import',
-    //         date: new Date()
-    //     })
-	  setVehicleId('');
-	  setOrders([]);
+		dispatch(importOrderToStock({importPayload, socket}));
+		setVehicleId('');
+		setOrders([]);
 		handleClose();
 		dispatch(resetOrder());
 		dispatch(getStockOrders(user?.stock_id));

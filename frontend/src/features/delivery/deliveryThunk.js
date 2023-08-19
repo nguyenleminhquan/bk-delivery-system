@@ -124,8 +124,21 @@ export const getVehicleByRouteThunk = async(param, thunkAPI) => {
 }
 
 export const exportOrderOnVehicleThunk = async(payload, thunkAPI) => {
+    const { exportPayload, deliveryPayload, socket } = payload
     try {
-        const res = await DeliveryService.exportOrderOnVehicle(payload);
+        const res = await DeliveryService.exportOrderOnVehicle(exportPayload);
+        const deliveries = [];
+        console.log('data of export', res.data)
+        res.data.orders.forEach((order) => {
+            const payload = {
+                ...deliveryPayload,
+                order_id: order._id,
+                from: `${order.sender_name}&${order.sender_address}`,
+                to: `${order.receiver_name}&${order.receiver_address}`,
+            }
+            deliveries.push(payload)
+        })
+        socket.emit('newDeliveries', deliveries);
         return res.data;
     } catch(error) {
         return checkForUnauthorizedResponse(error, thunkAPI);

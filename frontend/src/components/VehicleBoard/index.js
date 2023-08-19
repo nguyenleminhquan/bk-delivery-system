@@ -2,13 +2,14 @@ import React from 'react'
 import './index.scss'
 
 function VehicleBoard({ vehicleInfo }) {
-    const { current_weight, max_weight, license_plate_number } = vehicleInfo;
+    console.log('vehicle', vehicleInfo)
+    const { current_weight, max_weight, license_plate_number, deliveryCount, type } = vehicleInfo;
     return (
         <div className='vehicle-board'>
             {/* <img className='white-pattern' src={require('assests/images/white-pattern.jpg')}/> */}
             <div className='vehicle-board-wrapper'>
                 <div className='vehicle-info'>
-                    <p className='title'>Xe tải nội thành</p>
+                    <p className='title'>{type === 'inner' ? 'Xe tải nội thành' : 'Xe tải liên tỉnh'}</p>
                     <div className='vehicle-desc'>
                         <p>
                             <span>Trọng tải</span> 
@@ -20,7 +21,7 @@ function VehicleBoard({ vehicleInfo }) {
                         </p>
                         <p>
                             <span>Số lượng đơn hàng</span>
-                            <span className='value'>15 đơn hàng</span>
+                            <span className='value'>{ deliveryCount } đơn hàng</span>
                         </p>
                         <p>
                             <span>Biển số xe</span> 

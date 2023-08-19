@@ -5,7 +5,7 @@ import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { TruckIcon } from 'components/Icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect , useContext} from 'react';
 import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import { getAvailableVehicleOrders } from 'features/stock/stockSlice';
+import { SocketContext } from 'index';
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -108,6 +109,8 @@ function LoadOrderToTruck() {
     const [exportPopupObject, setExportPopupObject] = useState({});
     const [toggleImportPopup, setToggleImportPopup] = useState(false);
     const [showOrderDetail, setShowOrderDetail] = useState(null);
+
+    const socket = useContext(SocketContext);
 
     const handleLoadOrder = (order, e) => {
         e.preventDefault();
@@ -218,8 +221,16 @@ function LoadOrderToTruck() {
     }
 
     function confirmExportOrder() {
-        const payload = { vehicle_id: truckInfo._id, stocker_id: user.id };
-        dispatch(exportOrderOnVehicle(payload));
+        const exportPayload = { vehicle_id: truckInfo._id, stocker_id: user.id };
+        const deliveryType = truckInfo.type === 'inter' ? 'inter' : 'inner_receiver';
+        const deliveryPayload = {
+            status: 'waiting',
+            area_code: user.area_code,
+            district_code: user.district_code[0],
+            type: deliveryType,
+            vehicle_id: truckInfo._id,
+        }
+        dispatch(exportOrderOnVehicle({ exportPayload, deliveryPayload, socket }));
         setOpenExportOrderPopup(false);
         navigate('/');
     }
