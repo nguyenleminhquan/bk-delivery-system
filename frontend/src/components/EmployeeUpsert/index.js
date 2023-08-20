@@ -1,5 +1,4 @@
 import SelectOption from 'components/SelectOption';
-import './index.scss';
 import { useEffect, useState } from 'react';
 import { EmployeeRole } from 'utils/enums';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +6,9 @@ import { getStocks } from 'features/stock/stockSlice';
 import { getVehicles } from 'features/delivery/deliverySlice';
 import { toast } from 'react-toastify';
 import { isArray } from 'lodash';
-import { createEmployee } from 'features/user/userSlice';
+import { createEmployee, editEmployee } from 'features/user/userSlice';
+
+import './index.scss';
 
 const infoModel = {
   fullname: '',
@@ -77,10 +78,21 @@ function EmployeeUpsert({object, handleClose}) {
 
       payload.password = DEFAULT_PASSWORD
 
-      dispatch(createEmployee(payload));
+      if (object) {
+        dispatch(editEmployee({id: object._id, info: payload}));
+      } else {
+        dispatch(createEmployee(payload));
+      }
       handleClose();
     } else {
       toast.error('Thiếu thông tin nhân viên!');
+    }
+  }
+
+  const findStockById = id => {
+    const stock = stocks.find(stock => stock?._id === id);
+    if (stock) {
+      return { label: stock.name, value: id };
     }
   }
 
@@ -91,8 +103,9 @@ function EmployeeUpsert({object, handleClose}) {
   }, [vehicles]);
 
   useEffect(() => {
-    if (stocks) {
+    if (stocks?.length > 0) {
       setStockData(stocks.map(stock => ({label: stock.name, value: stock._id})));
+      info.stocks = findStockById(info.stock_id);
     }
   }, [stocks]);
 
