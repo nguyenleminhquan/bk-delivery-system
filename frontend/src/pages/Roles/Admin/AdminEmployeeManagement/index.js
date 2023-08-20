@@ -90,31 +90,6 @@ function AdminEmployeeManagement() {
     const [editPopup, setEditPopup] = useState(null);
     const [deletePopup, setDeletePopup] = useState('');
 
-    const handleAddEmployee = (formData) => {
-        if (formData.fullname && formData.phone && formData.email && formData.typeUser && formData.area_code) {
-            // Create new employee with default password: 1234567890
-            const payload = {
-                ...formData,
-                area_code: formData.area_code.value,
-                typeUser: formData.typeUser.value
-            }
-            dispatch(createEmployee({ ...payload, password: DEFAULT_PASSWORD }));
-            setEditPopup(false);
-        } else {
-            return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
-        }
-    }
-
-    const handleEditEmployee = (formData) => {
-        const updatedData = {...editPopup, ...formData};
-        if (updatedData?.fullname && updatedData?.phone && updatedData?.email && updatedData?.typeUser && updatedData.area_code) {
-            dispatch(editEmployee({ id: editPopup._id, info: updatedData }));
-            setEditPopup(null);
-        } else {
-            return toast.error(EmployeeManagementToast.MISSING_EMPLOYEE_INFO);
-        }
-    }
-
     const handleDeleteEmployee = () => {
         // Call api for PUT employee
         dispatch(deleteUser(deletePopup));
@@ -174,9 +149,9 @@ function AdminEmployeeManagement() {
             {editPopup && (
                 <GeneralConfirm 
                     title={editPopup?.email ? 'Chỉnh sửa' : 'Thêm mới'}
-                    onConfirm={editPopup?.email ? handleEditEmployee : handleAddEmployee}
                     message={<EmployeeUpsert object={editPopup} handleClose={() => setEditPopup(null)}/>}
-                    disableCancel={true}/>
+                    disableCancel={true}
+                />
             )}
 
             {deletePopup && (

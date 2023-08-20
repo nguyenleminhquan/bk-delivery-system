@@ -348,7 +348,7 @@ const editAccount = async (req, res, next) => {
         const stockId = stocks[0]._id;
         const area_code = stocks[0].area_code;
         const district_code = stocks.map((stock) => stock.district_code)
-        const userInfo = {...body, stock_id: stockId, area_code: area_code, district_code: district_code};
+        const userInfo = {...info, stock_id: stockId, area_code: area_code, district_code: district_code};
         const updatedUser = await User.findByIdAndUpdate(
             accountId,
             userInfo,
