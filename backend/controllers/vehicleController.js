@@ -124,9 +124,11 @@ const pushOrderToVehicle = async (req, res, next) => {
 
 const deleteOrderFromVehicle = async (req, res, next) => {
   try {
+    await Order.findById(order_id)
     const order_id = req.params.order_id
-    const { vehicle_id } = req.body
+    const { vehicle_id, stock_id } = req.body
     let vehicle = await Vehicle.findById(vehicle_id)
+    let stock = await Stock.findById(stock_id)
 
     if (!vehicle.orders.some(id => id == order_id)) {
       return next(createError(400, 'The order is not on the vehicle'))
@@ -139,6 +141,10 @@ const deleteOrderFromVehicle = async (req, res, next) => {
       }
     }
 
+    // Đưa đơn hàng trở lại vào kho
+    stock.orders.push(order_id)
+    await stock.save()
+    
     vehicle.orders = vehicle.orders.filter(id => id != order_id)
     await vehicle.save()
     

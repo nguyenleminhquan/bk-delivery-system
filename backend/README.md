@@ -33,7 +33,7 @@
 | /vehicle | POST | Add vehicle | Authorization: Bearer <refresh_token> <access_token> | max_weight: string <br/> from: string <br/> to: string <br/> license_plate_number: string |
 | /vehicle/search?from=`number`&to=`number` | GET | Filter vehicle by route | Authorization: Bearer <refresh_token> <access_token> | |
 | /vehicle/:id/order | POST | Push order to vehicle | Authorization: Bearer <refresh_token> <access_token> | { list_orders: [array of order_id] <br>stock_id: id } |
-| /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | vehicle_id: string |
+| /vehicle/order/:order_id | DELETE | Delete order from vehicle | Authorization: Bearer <refresh_token> <access_token> | {vehicle_id: string <br/>stock_id: string <br/>} |
 | **OBSELETED** /vehicle/:id/avail-order | GET | Get available orders for the vehicle | Authorization: Bearer <refresh_token> <access_token> |  |
 | /vehicle/:id/export-order | POST | Export order on vehicle | Authorization: Bearer <refresh_token> <access_token> | { stocker_id: id } |
 | /vehicle/region/:id/search?exported=<true\|false> | GET | Get all vehicle by region and status | Authorization: Bearer <refresh_token> <access_token> |  |
