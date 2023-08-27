@@ -76,11 +76,10 @@ function EmployeeUpsert({object, handleClose}) {
         payload.stocks = [stocks.find(stock => stock._id === info.stocks.value)];
       }
 
-      payload.password = DEFAULT_PASSWORD
-
       if (object) {
         dispatch(editEmployee({id: object._id, info: payload}));
       } else {
+        payload.password = DEFAULT_PASSWORD;
         dispatch(createEmployee(payload));
       }
       handleClose();
