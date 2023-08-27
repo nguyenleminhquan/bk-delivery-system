@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getStocks } from 'features/stock/stockSlice';
 import { getVehicles } from 'features/delivery/deliverySlice';
 import { toast } from 'react-toastify';
-import { isArray } from 'lodash';
+import { isArray, isEmpty } from 'lodash';
 import { createEmployee, editEmployee } from 'features/user/userSlice';
 
 import './index.scss';
@@ -76,11 +76,11 @@ function EmployeeUpsert({object, handleClose}) {
         payload.stocks = [stocks.find(stock => stock._id === info.stocks.value)];
       }
 
-      if (object) {
-        dispatch(editEmployee({id: object._id, info: payload}));
-      } else {
+      if (isEmpty(object)) {
         payload.password = DEFAULT_PASSWORD;
         dispatch(createEmployee(payload));
+      } else {
+        dispatch(editEmployee({id: object._id, info: payload}));
       }
       handleClose();
     } else {
@@ -104,7 +104,9 @@ function EmployeeUpsert({object, handleClose}) {
   useEffect(() => {
     if (stocks?.length > 0) {
       setStockData(stocks.map(stock => ({label: stock.name, value: stock._id})));
-      info.stocks = findStockById(info.stock_id);
+      if (info.stock_id) {
+        info.stocks = findStockById(info.stock_id);
+      }
     }
   }, [stocks]);
 
