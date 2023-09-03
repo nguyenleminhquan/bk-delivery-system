@@ -12,13 +12,15 @@ import {
   searchVehicleWithCondition,
   filterVehicleByRoute,
   exportOrder,
-  getAvailableOrderForVehicle
+  getAvailableOrderForVehicle,
+  getVehicleById
 }  from '../controllers/vehicleController.js'
 import { findBestWayBetweenWaypoints } from '../controllers/mapsController.js'
 
 const router = express.Router()
 
 router.get('/', verifyRefreshToken, verifyToken, verifyRoles(['admin', 'stocker']), getAllVehicle)
+router.get('/:id', verifyRefreshToken, verifyToken, verifyRoles(['driver_inner', 'driver_inter']), getVehicleById)
 router.get('/:id/order?', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAllOrdersByVehicle)
 // router.get('/:id/avail-order', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getAvailableOrderForVehicle)
 // router.get('/region/:id', verifyRefreshToken, verifyToken, verifyRoles(['stocker']), getVehicleByRegion)
