@@ -27,6 +27,10 @@ function DeliveryOrder({ delivery }) {
 	return (
 		<div className='delivery-order'>
 			{/* <div className='timeout'> 60 </div> */}
+			<div className='orderId'>
+				<span>Order#: </span>  
+				<span>{ order._id }</span>
+			</div>
 			<div className='info'>
 				<div className='address'>
 					<div className='circle circle-1'></div>

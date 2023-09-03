@@ -4,7 +4,7 @@ import ConfirmPopup from 'components/ConfirmPopup';
 import WorkCheckIn from 'components/WorkCheckIn';
 import DeliveryOrder from 'components/DeliveryOrder';
 import { useDispatch, useSelector } from 'react-redux';
-import { acceptDelivery, getAllDelivery, updateDeliveryStatus } from 'features/delivery/deliverySlice';
+import { acceptDelivery, getAllDelivery, getVehicleById, updateDeliveryStatus, updateVehicle } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
 import { checkInDay } from 'features/user/userSlice';
 import Tabs from 'components/Tabs';
@@ -95,7 +95,8 @@ function DriverHome() {
           socket.emit('acceptDelivery', {
             driver_id: user.id,
             vehicle_id: user.vehicle_id,
-            delivery_id: delivery._id
+            delivery_id: delivery._id,
+            order: order
           })
           if (order.status === 'waiting') {
             socket.emit('updateOrderStatus', {
@@ -196,10 +197,6 @@ function DriverHome() {
             })
           }
           if (delivery.type === 'inner_receiver') {
-            socket.emit('updateDeliveryStatus', {
-              delivery_id: delivery._id,
-              status: 'success'
-            })
             socket.emit('removeDeliveryFromVehicle', {
               delivery_id: delivery._id,
               vehicle_id: user.vehicle_id
@@ -241,7 +238,7 @@ function DriverHome() {
         district_code: user.district_code[0],
         type: user.typeUser === 'driver_inter' ? 'inter' : 'inner'
       }
-    ))
+    ));
 	}, [dispatch, user.vehicle_id, user.area_code, user.district_code, user.typeUser])
 
 	useEffect(() => {
@@ -261,35 +258,25 @@ function DriverHome() {
         let deliveryType = allDeliveries[0].type;
         tempDeliveries = data.filter((delivery) => delivery.type === deliveryType && delivery.area_code === user.area_code && user.district_code.includes(delivery.district_code));
       }
-      tempDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === user.vehicle_id)
+      tempDeliveries = tempDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === user.vehicle_id)
       setAllDeliveries([...allDeliveries, ...tempDeliveries]);
     })
     socket.on('updatedDelivery', (data) => {
-      setAllDeliveries((prevDeliveries) => {
-        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
-        tempDeliveries.forEach((item) => {
-          if (item._id === data._id) {
-            item.status = data.status
-          }
+      if (data.status === 'success') {
+        setAllDeliveries(allDeliveries.filter((item) => item._id !== data._id))
+      } else {
+        setAllDeliveries((prevDeliveries) => {
+          const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
+          tempDeliveries.forEach((item) => {
+            if (item._id === data._id) {
+              item.status = data.status
+            }
+          })
+          return tempDeliveries
         })
-        return tempDeliveries
-      })
-    })
-    socket.on('updateOrderStatus', (data) => {
-      setAllDeliveries((prevDeliveries) => {
-        const tempDeliveries = JSON.parse(JSON.stringify(prevDeliveries));
-        tempDeliveries.forEach((item) => {
-          if (item.order._id === data.order_id) {
-            item.order.status = data.status
-          }
-        })
-        return tempDeliveries
-      })
+      }
     })
     socket.on('deleteDelivery', (delivery_id) => {
-      setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
-    })
-    socket.on('removeDeliveryFromVehicle', (delivery_id) => {
       setAllDeliveries(allDeliveries.filter((item) => item._id !== delivery_id))
     })
     socket.on("connect_error", (err) => {
@@ -298,16 +285,20 @@ function DriverHome() {
   }, [socket, allDeliveries])
 
   useEffect(() => {
+    dispatch(getVehicleById(user.vehicle_id))
+  }, [allDeliveries])
+
+  useEffect(() => {
     if (selectedTab.field === 'waiting') {
       setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'waiting'))
     }
-    if (selectedTab.field === 'accepted') {
+    else if (selectedTab.field === 'accepted') {
       setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'accepted'))
     }
-    if (selectedTab.field === 'picked') {
+    else if (selectedTab.field === 'picked') {
       setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'picked'))
     }
-    if (selectedTab.field === 'deliveried') {
+    else if (selectedTab.field === 'deliveried') {
       setDeliveriesByStatus(allDeliveries.filter((item) => item.status === 'deliveried' || item.status === 'picked'))
     }
   }, [selectedTab, allDeliveries])
@@ -319,13 +310,13 @@ function DriverHome() {
     if (selectedTab.field === 'waiting') {
       tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
     }
-    if (selectedTab.field === 'accepted') {
+    else if (selectedTab.field === 'accepted') {
       tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })
     }
-    if (selectedTab.field === 'picked') {
+    else if (selectedTab.field === 'picked') {
       tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item)] })
     }
-    if (selectedTab.field === 'deliveried') {
+    else if (selectedTab.field === 'deliveried') {
       tempDeliveries.forEach((item) => { item.btns = [viewOrder(item)] })
     }
     setConfigDeliveries(tempDeliveries)

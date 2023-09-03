@@ -145,18 +145,9 @@ const getAllDelivery = async (req, res, next) => {
             waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
         }
         // remove deliveries that belongs to other vehicle
-        waitingDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === vehicle_id)
+        waitingDeliveries = waitingDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === vehicle_id)
         deliveries.push(...waitingDeliveries);
-        return res.json({ 
-            deliveries: deliveries, 
-            vehicle: { 
-                current_weight: vehicleInfo.current_weight, 
-                max_weight: vehicleInfo.max_weight, 
-                license_plate_number: vehicleInfo.license_plate_number,
-                deliveryCount: vehicleInfo.deliveries.length,
-                type: vehicleInfo.type
-            } 
-        });
+        return res.json(deliveries);
     } catch(err) {
         console.log(err)
         return next(createError(400))
@@ -248,17 +239,18 @@ const socketDelivery = (io) => {
             const { delivery_id, vehicle_id, driver_id } = data;
             const waitingDelivery = await Delivery.findById(delivery_id);
             if (waitingDelivery.status === 'waiting') {
-                const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true})
+                const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'accepted', driver: driver_id}, {new: true}).populate('order');
                 const vehicle = await Vehicle.findById(vehicle_id);
                 vehicle.deliveries.push(delivery_id);
-                if (!vehicle.orders.includes(waitingDelivery.order)) {
-                    vehicle.orders.push(waitingDelivery.order);
+                if (!vehicle.orders.includes(updatedDelivery.order._id)) {
+                    vehicle.orders.push(updatedDelivery.order._id);
+                    vehicle.current_weight += updatedDelivery.order.weight;
                 }
-                if (waitingDelivery.type === 'inter') {
-                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(waitingDelivery.to)[0], waitingDelivery.to.split('&')[1]);
+                if (updatedDelivery.type === 'inter') {
+                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(updatedDelivery.to)[0], updatedDelivery.to.split('&')[1]);
                     vehicle.visitedStocks.push(area._id)
                 }
-                vehicle.save();
+                await vehicle.save();
                 socket.emit('updatedDelivery', updatedDelivery)
             }
         })
@@ -281,14 +273,16 @@ const socketDelivery = (io) => {
         })
         socket.on('removeDeliveryFromVehicle', async(data) => {
             let { delivery_id, vehicle_id, order_id } = data;
-            const vehicle = await Vehicle.findById(vehicle_id);
             if (order_id) {
                 const res = await Delivery.findOne({order: order_id});
                 delivery_id = res._id.toString();
             }
+            const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'success'}, {new: true}).populate('order');
+            const vehicle = await Vehicle.findById(vehicle_id);
             vehicle.deliveries = vehicle.deliveries.filter((delivery) => delivery.toString() !== delivery_id);
+            vehicle.current_weight -= updatedDelivery.order.weight;
             await vehicle.save();
-            socket.emit('removeDeliveryFromVehicle', delivery_id);
+            io.emit('updatedDelivery', updatedDelivery)
         })
     });
 }

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersListsThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByIdThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersListsThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -111,6 +111,14 @@ export const exportOrderOnVehicle = createAsyncThunk(
     }
 )
 
+export const getVehicleById = createAsyncThunk(
+    'delivery/getVehicleById',
+    async(payload, thunkAPI) => {
+        return getVehicleByIdThunk(payload, thunkAPI);
+    }
+)
+
+
 const deliverySlice = createSlice({
     name: 'delivery',
     initialState,
@@ -118,7 +126,7 @@ const deliverySlice = createSlice({
         clearAllDeliveriesState: (state) => initialState,
         clearVehicleOrders: state => {
             state.vehicleOrders = [];
-        },
+        }
     },
     extraReducers: {
         [getDeliveryHistory.pending]: (state) => {
@@ -178,8 +186,7 @@ const deliverySlice = createSlice({
             state.isLoading = true;
         },
         [getAllDelivery.fulfilled]: (state, { payload }) => {
-            state.deliveries = payload.deliveries;
-            state.vehicle = payload.vehicle;
+            state.deliveries = payload;
             state.isLoading = false;
         },
         [getAllDelivery.rejected]: (state, { payload }) => {
@@ -288,6 +295,17 @@ const deliverySlice = createSlice({
             state.isLoading = false;
             toast.success('Xuất đơn hàng lên xe tải thành công');
             // Save order data...
+        },
+        [getVehicleById.pending]: state => {
+            state.isLoading = true;
+        }, 
+        [getVehicleById.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.vehicle = payload
+        },
+        [getVehicleById.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
         }
     }
 })

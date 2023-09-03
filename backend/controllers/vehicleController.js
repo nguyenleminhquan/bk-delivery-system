@@ -290,6 +290,23 @@ const exportOrder = async (req, res, next) => {
   }
 }
 
+const getVehicleById = async (req, res, next) => {
+  try {
+    const vehicle_id = req.params.id
+    const vehicle = await Vehicle.findById(vehicle_id);
+    return res.json({
+      current_weight: vehicle.current_weight, 
+      max_weight: vehicle.max_weight, 
+      license_plate_number: vehicle.license_plate_number,
+      deliveryCount: vehicle.deliveries.length,
+      type: vehicle.type
+    })
+  } catch (error) {
+    console.log(error);
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
@@ -300,5 +317,6 @@ export {
   searchVehicleWithCondition,
   filterVehicleByRoute,
   exportOrder,
-  getAvailableOrderForVehicle
+  getAvailableOrderForVehicle,
+  getVehicleById
 }

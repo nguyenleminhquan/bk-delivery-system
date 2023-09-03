@@ -26,6 +26,7 @@ const orderSchema = mongoose.Schema({
     accepted: mongoose.Schema.Types.Date,
     picked: mongoose.Schema.Types.Date,
     arrived_send_stock: mongoose.Schema.Types.Date,
+    import: mongoose.Schema.Types.Date,
     coming_dest_stock: mongoose.Schema.Types.Date,
     arrived_dest_stock: mongoose.Schema.Types.Date,
     delivering: mongoose.Schema.Types.Date,

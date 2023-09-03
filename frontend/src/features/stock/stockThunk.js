@@ -53,7 +53,7 @@ export const importOrderToStockThunk = async(payload, thunkAPI) => {
 			socket.emit('removeDeliveryFromVehicle', {
 				order_id: orderId,
 				vehicle_id: importPayload.vehicle_id
-			})
+			});
 			socket.emit('updateOrderStatus', {
 				order_id: orderId,
 				status: 'import',
