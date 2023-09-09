@@ -15,6 +15,8 @@ function parseAddressString(address) {
 }
 
 function getDomainFromString(address) {
+  console.info("**** getDomainFromString ****")
+  console.info(`--->address: ${address}`)
   let parseAddress = parseAddressString(address)
   let domain = ""
 
@@ -25,11 +27,12 @@ function getDomainFromString(address) {
       domain = getDomainFromProvinceCode(province.code)
     }
   })
-
+  console.info(`result: ${domain}`)
   return domain
 }
 
 function getAreaCodeAndDistrictCodeFromString(address) {
+  console.info("**** getAreaCodeAndDistrictCodeFromString ****")
   let parseAddress = parseAddressString(address)
 
   let areaCode = -1
@@ -52,6 +55,7 @@ function getAreaCodeAndDistrictCodeFromString(address) {
   })
 
   if (areaCode != -1 && districtCode != -1) {
+    console.info(`result: ${[areaCode, districtCode]}`)
     return [areaCode, districtCode]
   } else {
     return new Error("Invalid address")

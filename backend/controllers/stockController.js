@@ -6,7 +6,7 @@ import Stock from '../models/Stock.js'
 import ImportInfo from '../models/ImportInfo.js'
 import { getOrderById } from './orderController.js'
 import ExportInfo from '../models/ExportInfo.js'
-import { getDomainFromString } from '../utils/order-utils.js'
+import { getDomainFromString, getAreaCodeAndDistrictCodeFromString } from '../utils/order-utils.js'
 
 const importOrderToStock = async (req, res, next) => {
   try {
@@ -229,7 +229,7 @@ const getAllVehicleAtStock = async (req, res, next) => {
 
 const getAvailableOrderForVehicle = async (req, res, next) => {
   try {
-    console.info("Get available order for vehicle at stock")
+    console.info("[API] Get available order for vehicle at stock")
     const stockId = req.params.stockId
     const vehicleId = req.params.vehicleId
     
@@ -239,14 +239,28 @@ const getAvailableOrderForVehicle = async (req, res, next) => {
     if (vehicle.current_address_code != stock.area_code) {
       return next(createError(404, "Địa chỉ hiện tại của xe tải phải giống với kho!"))
     }
+    
+    let domainOfVehicle = -1
+    if (vehicle.type == "inner") {
+      domainOfVehicle = vehicle.from
+    }
+    else {
+      domainOfVehicle = vehicle.to
+    }
+    console.info(`domainOfVehicle: ${domainOfVehicle}`)
 
-    let domainOfVehicle = vehicle.to
     const getOrders = async (orders) => {
       let result = []
       for (let i = 0; i < orders.length; i++) {
         let order = await Order.findById(orders[i])
-        if (getDomainFromString(order.receiver_address) == domainOfVehicle) {
-          result.push(order)
+        if (vehicle.type == "inner"){
+          if (getAreaCodeAndDistrictCodeFromString(order.receiver_address)[0] == domainOfVehicle) {
+            result.push(order)
+          }
+        } else {
+          if (getDomainFromString(order.receiver_address) == domainOfVehicle) {
+            result.push(order)
+          }
         }
       }
       return result
