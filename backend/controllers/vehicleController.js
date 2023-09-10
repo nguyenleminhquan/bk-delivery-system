@@ -84,20 +84,22 @@ const pushOrderToVehicle = async (req, res, next) => {
     let orders = await getOrdersByListID(list_orders)
     for (let i = 0; i < orders.length; i++) {
       if (vehicle.orders.some(id => id == orders[i]._id.toString())) {
-        return next(createError(400, 'The order has been pushed to the vehicle'))
+        return next(createError(400, 'Một hoặc nhiều đơn hàng đã được thêm vào xe tải!'))
       }
 
       let areaCodeDistrictCode = getAreaCodeAndDistrictCodeFromString(orders[i].sender_address)
-      if (vehicle.from != areaCodeDistrictCode[0]) {
-        return next(createError(400, 'Địa chỉ nơi gửi phải giống với nơi đi của xe tải!'))
+      if (vehicle.type != "inner") {
+        if (vehicle.from != areaCodeDistrictCode[0]) {
+          return next(createError(400, 'Địa chỉ nơi gửi phải giống với nơi đi của xe tải!'))
+        }
       }
 
-      if (orders[i].status != 'import') {
-        return next(createError(400, 'The order has not been imported'))
+      if (orders[i].status != 'import' && orders[i].status != 'imported_dest_stock') {
+        return next(createError(400, 'Đơn hàng phải được nhập kho!'))
       }
 
       if ((vehicle.current_weight + orders[i].weight) > vehicle.max_weight) {
-        return next(createError(400, 'The order weight exceeds the maximum vehicle weight'))
+        return next(createError(400, 'Không thể thêm đơn hàng vì sức chứa xe tải đã đầy!'))
       }
       
       let orderIndexInStock = stock.orders.indexOf(orders[i]._id)
@@ -110,7 +112,11 @@ const pushOrderToVehicle = async (req, res, next) => {
       }
 
       vehicle.current_weight += orders[i].weight
-      await Order.findByIdAndUpdate(orders[i]._id, {status: 'on_vehicle'})
+      if (vehicle.type == "inner") {
+        await Order.findByIdAndUpdate(orders[i]._id, {status: 'on_vehicle_dest_stock'})
+      } else {
+        await Order.findByIdAndUpdate(orders[i]._id, {status: 'on_vehicle'})
+      }
       vehicle.orders.push(orders[i])
     }
     await stock.save()
@@ -125,13 +131,13 @@ const pushOrderToVehicle = async (req, res, next) => {
 const deleteOrderFromVehicle = async (req, res, next) => {
   try {
     const order_id = req.params.order_id
-    await Order.findById(order_id)
+    let order = await Order.findById(order_id)
     const { vehicle_id, stock_id } = req.body
     let vehicle = await Vehicle.findById(vehicle_id)
     let stock = await Stock.findById(stock_id)
 
     if (!vehicle.orders.some(id => id == order_id)) {
-      return next(createError(400, 'The order is not on the vehicle'))
+      return next(createError(400, 'Đơn hàng không có trên xe tải!'))
     }
 
     for (let i = 0; i < vehicle.orders.length; i++) {
@@ -149,7 +155,11 @@ const deleteOrderFromVehicle = async (req, res, next) => {
     await vehicle.save()
     
     // Fix: update order status after deleting from vehicle
-    await Order.findByIdAndUpdate(order_id, { status: 'import' })
+    if (order.status == "on_vehicle") {
+      await Order.findByIdAndUpdate(order_id, { status: 'import' })
+    } else {
+      await Order.findByIdAndUpdate(order_id, { status: 'imported_dest_stock'})
+    }
 
     return res.json(vehicle)
   } catch (error) {
