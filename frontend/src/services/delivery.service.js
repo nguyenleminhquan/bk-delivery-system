@@ -54,8 +54,8 @@ const postVehicleOrders = ({vehicle_id, list_orders, stock_id}) => {
     return customFetch.post(`/vehicle/${vehicle_id}/order`, {list_orders, stock_id});
 }
 
-const deleteVehicleOrder = ({order_id, vehicle_id}) => {
-    return customFetch.delete(`/vehicle/order/${order_id}`, {data: {vehicle_id}});
+const deleteVehicleOrder = ({order_id, vehicle_id, stock_id}) => {
+    return customFetch.delete(`/vehicle/order/${order_id}`, {data: {vehicle_id, stock_id}});
 }
 
 const getVehicleByRoute = ({from, to}) => {

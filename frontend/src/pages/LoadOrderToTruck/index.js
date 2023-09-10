@@ -41,7 +41,8 @@ const ConfirmOrderLists = ({vehicle}) => {
         e.stopPropagation();
         const payload = {
             order_id: id,
-            vehicle_id: vehicle._id
+            vehicle_id: vehicle._id,
+            stock_id: user.stock_id,
         }
         dispatch(deleteVehicleOrder(payload));
     }
