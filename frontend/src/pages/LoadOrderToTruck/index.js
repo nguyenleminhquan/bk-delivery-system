@@ -144,7 +144,7 @@ function LoadOrderToTruck() {
         } else return '#ff0000';
     }
 
-    const handleAddToTruck = () => {
+    const handleAddToTruck = async () => {
         const totalClickedWeight = truckLoad.reduce((acc, cur) => acc + cur.weight, 0);
         const totalWeight = truckAvailable - totalClickedWeight;
         if (totalWeight < 0) {
@@ -152,7 +152,7 @@ function LoadOrderToTruck() {
             // setTruckLoad([]);
         } else {
             setTruckAvailable(totalWeight);
-            dispatch(postVehicleOrders({
+            await dispatch(postVehicleOrders({
                 vehicle_id: truckInfo._id,
                 list_orders: truckOrders.filter(order => order.checked).map(item => item._id),
                 stock_id: user.stock_id
