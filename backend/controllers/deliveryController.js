@@ -145,7 +145,7 @@ const getAllDelivery = async (req, res, next) => {
             waitingDeliveries = waitingDeliveries.filter((delivery) => delivery.type === vehicleInfo?.deliveries[0].type)
         }
         // remove deliveries that belongs to other vehicle
-        waitingDeliveries = waitingDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id === vehicle_id)
+        waitingDeliveries = waitingDeliveries.filter((delivery) => !delivery.vehicle_id || delivery.vehicle_id.toString() === vehicle_id)
         deliveries.push(...waitingDeliveries);
         return res.json(deliveries);
     } catch(err) {
