@@ -46,19 +46,27 @@ export const getStockOrdersThunk = async(payload, thunkAPI) => {
 }
 
 export const importOrderToStockThunk = async(payload, thunkAPI) => {
-    const { importPayload, socket } = payload;
+    const { importPayload, socket, vehicleOrders } = payload;
     try {
         const res = await StockService.importOrderToStock(importPayload);
-        importPayload.order_ids.forEach((orderId) => {
+        vehicleOrders.forEach((order) => {
 			socket.emit('removeDeliveryFromVehicle', {
-				order_id: orderId,
+				order_id: order._id,
 				vehicle_id: importPayload.vehicle_id
 			});
-			socket.emit('updateOrderStatus', {
-				order_id: orderId,
-				status: 'import',
-				date: new Date()
-			})
+            if (order.status === 'arrived_send_stock') {
+                socket.emit('updateOrderStatus', {
+                    order_id: order._id,
+                    status: 'import',
+                    date: new Date()
+                })
+            } else {
+                socket.emit('updateOrderStatus', {
+                    order_id: order._id,
+                    status: 'imported_dest_stock',
+                    date: new Date()
+                })
+            }
 		})
         return res.data;
     } catch (error) {

@@ -30,7 +30,7 @@ function ImportOrder({closePopup}) {
 			stocker_id: user?.id,
 			vehicle_id: vehicleId 
 		}
-		dispatch(importOrderToStock({importPayload, socket}));
+		dispatch(importOrderToStock({importPayload, vehicleOrders, socket}));
 		setVehicleId('');
 		setOrders([]);
 		handleClose();
