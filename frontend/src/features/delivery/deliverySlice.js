@@ -249,9 +249,8 @@ const deliverySlice = createSlice({
         },
         [deleteVehicleOrder.fulfilled]: (state, { payload }) => {
             state.isLoading = false;
-            const index = state.vehicles.findIndex(vehicle => vehicle?._id === payload?._id);
-            state.vehicles[index] = payload;
-            state.vehicleOrders = state.vehicles[index].orders;
+            const ordersUpdated = state.vehicleOrders.filter(order => payload.orders.includes(order._id));
+            state.vehicleOrders = ordersUpdated;
             toast.success('Xóa đơn hàng thành công');
         },
         [deleteVehicleOrder.rejected]: (state, { payload }) => {
