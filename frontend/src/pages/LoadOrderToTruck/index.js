@@ -1,3 +1,4 @@
+import { useState, useEffect , useContext} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { TbFileExport } from 'react-icons/tb';
@@ -5,16 +6,16 @@ import { BiPencil, BiPackage } from 'react-icons/bi';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { TruckIcon } from 'components/Icons';
-import { useState, useEffect , useContext} from 'react';
-import styles from './LoadOrderToTruck.module.scss'
 import ConfirmPopup from 'components/ConfirmPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleOrderLists, postVehicleOrders } from 'features/delivery/deliverySlice';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
-import { getAvailableVehicleOrders } from 'features/stock/stockSlice';
+import { getAvailableVehicleOrders, getStockVehicles } from 'features/stock/stockSlice';
+import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleOrderLists, postVehicleOrders } from 'features/delivery/deliverySlice';
 import { SocketContext } from 'index';
+
+import styles from './LoadOrderToTruck.module.scss'
 
 
 const ConfirmOrderLists = ({vehicle}) => {
@@ -68,15 +69,17 @@ const ConfirmOrderLists = ({vehicle}) => {
                     <div className="col-1"></div>
                 </div>
                 <div className={styles.ordersWrap}>
-                    {vehicleOrders.map(order => (
-                        <div className={`row p-2 ${styles.ordersRow}`} key={order._id} onClick={() => setShowOrderDetail(order)}>
-                            <div className="col-6">{order._id}</div>
-                            <div className="col-5">{order.weight}</div>
-                            <div className="col-1" onClick={(e) => handleDeleteOrder(e, order._id)}>
-                                <div className={styles.deleteBtn} role="button"><RiDeleteBin6Fill /></div>
+                    {vehicleOrders.length > 0 ? (
+                        vehicleOrders.map(order => (
+                            <div className={`row p-2 ${styles.ordersRow}`} key={order._id} onClick={() => setShowOrderDetail(order)}>
+                                <div className="col-6">{order._id}</div>
+                                <div className="col-5">{order.weight}</div>
+                                <div className="col-1" onClick={(e) => handleDeleteOrder(e, order._id)}>
+                                    <div className={styles.deleteBtn} role="button"><RiDeleteBin6Fill /></div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (<div className='p-2 fs-14'>Không có đơn hàng nào</div>)}
                 </div>
             </div>
 
@@ -95,7 +98,6 @@ function LoadOrderToTruck() {
     const queryParams = new URLSearchParams(location.search);
     const truckId = queryParams.get('truckId');
     const [truckInfo, setTruckInfo] = useState({});
-    // const {truckInfo} = location.state;
     const [truckAvailable, setTruckAvailable] = useState(truckInfo.max_weight - truckInfo.current_weight);
 
     const [truckOrders, setTruckOrders] = useState([]);
@@ -149,7 +151,6 @@ function LoadOrderToTruck() {
         const totalWeight = truckAvailable - totalClickedWeight;
         if (totalWeight < 0) {
             alert('Vượt quá khối lượng hiện tại cho phép của xe!');
-            // setTruckLoad([]);
         } else {
             setTruckAvailable(totalWeight);
             await dispatch(postVehicleOrders({
@@ -157,8 +158,7 @@ function LoadOrderToTruck() {
                 list_orders: truckOrders.filter(order => order.checked).map(item => item._id),
                 stock_id: user.stock_id
             }));
-            const payload = { stock_id: user.stock_id, vehicle_id: truckId }
-            dispatch(getAvailableVehicleOrders(payload));
+            dispatch(getStockVehicles(user.stock_id));
         }
     }
 
@@ -185,10 +185,7 @@ function LoadOrderToTruck() {
     }
 
     const handleSortCol = () => {
-        /**
-         * order (true) -> sort asc
-         * order (false) -> sort desc
-         */
+        
         if (!toggleFilter) {
             orders.sort((a, b) => a.weight - b.weight);
         } else {
@@ -236,13 +233,17 @@ function LoadOrderToTruck() {
         navigate('/');
     }
 
+    const handleCloseConfirmOrder = () => {
+        setOpenPopup(false);
+        dispatch(getStockVehicles(user.stock_id));
+    }
+
     useEffect(() => {
         const checkedOrders = truckOrders.filter(order => order.checked);
         const totalWeight = checkedOrders.reduce((acc, cur) => acc + cur.weight, 0);
         setToggleAll(isAllChecked());
         setSelected(checkedOrders.length);
         setTotalWeight(totalWeight);
-        // setTruckInfo(prev => ({...prev, current_weight: prev.current_weight + totalWeight}));
     }, [truckOrders]);
 
     useEffect(() => {
@@ -346,7 +347,6 @@ function LoadOrderToTruck() {
                                             </div>)))
                                         : (<div className='p-2'>Không có đơn hàng nào</div>)
                                     }
-
                                 </div>
                             </div>
 
@@ -360,7 +360,7 @@ function LoadOrderToTruck() {
                 <ConfirmPopup title="Danh sách đơn hàng"
                     content={<ConfirmOrderLists vehicle={truckInfo}/>}
                     okLabel="OK"
-                    actionYes={() => setOpenPopup(false)}
+                    actionYes={handleCloseConfirmOrder}
                 />
             )}
         
@@ -380,4 +380,3 @@ function LoadOrderToTruck() {
 }
 
 export default LoadOrderToTruck;
-
