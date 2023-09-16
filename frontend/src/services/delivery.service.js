@@ -62,8 +62,8 @@ const getVehicleByRoute = ({from, to}) => {
     return customFetch.get(`/vehicle/search?from=${from}&to=${to}`);
 }
 
-const exportOrderOnVehicle = ({vehicle_id, stocker_id}) => {
-    return customFetch.post(`/vehicle/${vehicle_id}/export-order`, { stocker_id });
+const exportOrderOnVehicle = ({vehicle_id, stocker_id, stock_id}) => {
+    return customFetch.post(`/vehicle/${vehicle_id}/export-order`, { stocker_id, stock_id });
 }
 
 const getVehicleById = (vehicle_id) => {
