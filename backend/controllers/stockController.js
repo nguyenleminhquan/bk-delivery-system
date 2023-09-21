@@ -119,13 +119,13 @@ const addStock = async (req, res, next) => {
     const { area_code, district_code } = req.body
     // Check area_code is number
     if (typeof area_code != "number" || typeof district_code != "number") {
-      return next(createError(400, 'Type of area_code and district_code must be number'))
+      return next(createError(400, 'Kiểu của area_code và district_code phải là số!'))
     }
 
     // Check duplicate area_code
     let existStock = await Stock.find({ area_code, district_code })
     if (existStock != "") {
-      return next(createError(400, 'The stock has been added'))
+      return next(createError(400, 'Kho hàng đã được thêm!'))
     }
 
     let newStock = new Stock(req.body)
@@ -160,7 +160,7 @@ const deleteStock = async (req, res, next) => {
 const editStock = async (req, res, next) => {
   try {
     if (req.body.name || req.body.area_code) {
-      return next(createError(400, 'You can\'t modify this field'))
+      return next(createError(400, 'Bạn không thể thay đổi giá trị này!'))
     }
 
     await Stock.findByIdAndUpdate(req.params.id, { address: req.body.address })

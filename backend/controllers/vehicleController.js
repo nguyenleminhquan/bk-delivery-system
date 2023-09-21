@@ -47,13 +47,13 @@ const getAllVehicle = async (req, res, next) => {
 const addVehicle = async (req, res, next) => {
   try {
     if (!(req.body.max_weight && req.body.from && req.body.license_plate_number)) {
-      return next(createError(400, 'Please provide enough information!'))
+      return next(createError(400, 'Vui lòng cung cấp đủ thông tin!'))
     }
     
     const { license_plate_number } = req.body
     const existsVehicle = await Vehicle.findOne({ license_plate_number })
     if (existsVehicle) {
-      return next(createError(400, 'Vehicle has been added!'))
+      return next(createError(400, 'Xe tải đã được thêm!'))
     }
 
     let vehicle = new Vehicle(req.body)

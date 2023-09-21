@@ -71,7 +71,7 @@ const findBestWayBetweenWaypoints = async (req, res, next) => {
 
     console.info("--->Origin stock: ", originStock)
     if (stocks.length == 0) {
-      return next(createError(400, 'The vehicle doesn\'t have visitedStocks'))
+      return next(createError(400, 'Xe tải chưa có thông tin các kho cần ghé!'))
     }
     console.info(`--->visitedStocks length: ${stocks.length}`)
 

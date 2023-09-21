@@ -94,7 +94,7 @@ const acceptDelivery = async (req, res, next) => {
             return res.json(data)
         }
         else {
-            return next(createError(400, "This delivery is accepted by other driver"))
+            return next(createError(400, "Đơn giao hàng đã được chấp nhận bởi tài xế khác!"))
         }
     } catch (err) {
         console.log(err)
@@ -158,7 +158,7 @@ const getAllDelivery = async (req, res, next) => {
 const findNearestArea = async (area_code, address) => {
     try {
         const stocks = await Stock.find({area_code: area_code});
-        if (stocks.length === 0) return next(createError(400, 'Can not find nearest area'))
+        if (stocks.length === 0) return next(createError(400, 'Không thể tìm thấy khu vực gần nhất!'))
         let parseAddress = address.split(", ")
         let length_parseAddress = parseAddress.length
         let areaAddress = parseAddress[length_parseAddress - 1]
