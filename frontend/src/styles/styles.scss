@@ -322,3 +322,55 @@ span.icon-xlg {
         }
     }
 }
+
+// Mobile header action
+.mobile-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    right: 15px;
+    z-index: 1;
+    height: 52px;
+    cursor: pointer;
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 22px;
+        width: 22px;
+        border-radius: 3px;
+        &.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    }
+    .search-bar-wrapper {
+        display: flex;
+        align-items: center;
+        .search-bar {
+            position: relative;
+            input {
+                border: 1px solid var(--border-color);
+                padding: 6px;
+                border-radius: 3px;
+                &::placeholder {
+                    font-size: 12px;
+                    color: var(--placeholder-input-color);
+                }
+                &:focus {
+                    border-color: var(--primary-color);
+                    border-width: 2px;
+                }
+            }
+            .search-icon {
+                position: absolute;
+                right: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                background-color: white;
+            }
+        }
+    }
+}

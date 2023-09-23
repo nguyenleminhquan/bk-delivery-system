@@ -1,20 +1,30 @@
-import { BsSearch } from 'react-icons/bs'
-import { BiPencil } from 'react-icons/bi'
+// Libraries import
 import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Sender.module.scss'
-import { getOrdersByUserId } from 'features/user/orderSlice';
-import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
-import { orderStatusList } from 'utils/constants';
-import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import moment from 'moment/moment';
-import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
+
+// Components import
+import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import ConfirmPopup from 'components/ConfirmPopup';
-import Tabs from 'components/Tabs';
 import GeneralConfirm from 'components/GeneralConfirm';
+import Tabs from 'components/Tabs';
+
+// Utils import
+import { getOrdersByUserId } from 'features/user/orderSlice';
+import { orderStatusList } from 'utils/constants';
+import { SocketContext } from 'index';
+
+// Icons import
+import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
+import { BsSearch } from 'react-icons/bs'
+import { BiPencil } from 'react-icons/bi'
 import { MdMoreVert } from 'react-icons/md';
+import { IoMdAdd, IoMdClose } from 'react-icons/io';
+
+// Css import
+import styles from './Sender.module.scss'
 
 const tabs = [
 	{
@@ -53,6 +63,7 @@ function SenderHome() {
 	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const [toggleDeletePopup, setToggleDeletePopup] = useState(false);
 	const [emptyAddressInfo, setEmptyAddressInfo] = useState(false);
+	const [showMobileSearch, setShowMobileSearch] = useState(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const socket = useContext(SocketContext);
@@ -157,6 +168,26 @@ function SenderHome() {
 				</div>
 				<Link className='btn fs-6' to="/create-order">
 					<BiPencil className='me-3'/> Tạo đơn hàng
+				</Link>
+			</div>
+
+			<div className='d-flex d-sm-none mobile-actions'>
+				{showMobileSearch 
+					? (<div className="search-bar-wrapper">
+							<div className="search-bar">
+								<input type="text" placeholder='Nhập mã đơn hàng' className='w-100 fs-14' />
+								<div className="search-icon"><BsSearch /></div>
+							</div>
+							<div className="action-btn ms-1" onClick={() => setShowMobileSearch(false)}>
+								<IoMdClose />
+							</div>
+						</div>)
+					: (<div className='action-btn' onClick={() => setShowMobileSearch(true)}>
+							<BsSearch />
+						</div>)
+				}
+				<Link className='action-btn primary ms-2' to="/create-order">
+					<IoMdAdd />
 				</Link>
 			</div>
 
