@@ -2,7 +2,6 @@ import React from 'react'
 import './index.scss'
 
 function VehicleBoard({ vehicleInfo }) {
-    console.log('vehicle', vehicleInfo)
     const { current_weight, max_weight, license_plate_number, deliveryCount, type } = vehicleInfo;
     return (
         <div className='vehicle-board'>

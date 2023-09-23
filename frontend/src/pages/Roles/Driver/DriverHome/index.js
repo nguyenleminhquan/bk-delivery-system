@@ -327,7 +327,7 @@ function DriverHome() {
       <div className='checkinBtn' onClick={() => setToggleCheckinPopup(true)}>
         <MdOutlineDonutSmall />
       </div>
-      <h2 className='pb-3 fs-5'>Đơn hàng thực hiện</h2>
+      <h2 className='d-none d-sm-block pb-3 fs-5'>Đơn hàng thực hiện</h2>
       <VehicleBoard vehicleInfo={vehicle} />
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 

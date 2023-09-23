@@ -1,3 +1,5 @@
+@import '../../../../styles/breakpoints';
+
 .driver-home {
     .tabHeader {
         display: flex;
@@ -45,7 +47,7 @@
     }
     .allText {
         position: relative;
-        z-index: 10;
+        z-index: 1;
         padding-left: 30px;
         padding-right: 20px;
         border-top-right-radius: 20px;
@@ -56,7 +58,7 @@
     }
     .checkIcon {
         position: relative;
-        z-index: 20;
+        z-index: 2;
         width: 40px;
         display: flex;
         align-items: center;
@@ -66,5 +68,13 @@
         color: #344a5e;
         // border: 1px solid #344a5e;
         box-shadow: -2px 2px 5px 0px #344a5e;
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .deliveryList {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
     }
 }
