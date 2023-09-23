@@ -83,6 +83,14 @@ function SenderHome() {
 		navigate('/profile?tab=address');
 	}
 
+	function findOrderStatusCount(status) {
+		return orders.reduce((acc, cur) => cur.status === status ? acc + 1 : acc, 0);
+	}
+
+	function setTabByWidget(status) {
+		setSelectedTab(tabs.find(tab => tab.field === status));
+	}
+
 	useEffect(() => {
 		console.log(user);
 		if (!user?.area_code) {
@@ -156,21 +164,51 @@ function SenderHome() {
 			{/* General */}
 			<div className='mb-3'>
 				<h2 className='pt-sm-4 pb-3 fs-5'>Tổng quan</h2>
-				<div className="filter d-flex align-items-center">
-					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
-						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</p>
-						<p>Đã lấy hàng</p>
+				<div className={styles.filterWrapper}>
+					<div className={`${styles.orderFilter} ${styles.waiting}`}
+						onClick={() => setTabByWidget('waiting')}>
+						<span className={styles.count}>{findOrderStatusCount('waiting')}</span>
+						<span>Đang xử lí</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.accepted}`}
+						onClick={() => setTabByWidget('accepted')}>
+						<span className={styles.count}>{findOrderStatusCount('accepted')}</span>
+						<span>Đã chấp nhận</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.picked}`}
+						onClick={() => setTabByWidget('picked')}>
+						<span className={styles.count}>{findOrderStatusCount('picked')}</span>
+						<span>Đã lấy hàng</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.delivering}`}
+						onClick={() => setTabByWidget('delivering')}>
+						<span className={styles.count}>{findOrderStatusCount('delivering')}</span>
+						<span>Đang giao hàng</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.success}`}
+						onClick={() => setTabByWidget('success')}>
+						<span className={styles.count}>{findOrderStatusCount('success')}</span>
+						<span>Giao thành công</span>
+					</div>
+					
+					{/* <div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
+						<span className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</span>
+						<span>Đã lấy hàng</span>
 					</div>
 
 					<div className={`${styles.orderFilter} ${styles.orderFilter2}`}>
-						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status === 'waiting' || order.status === 'accepted').length}</p>
-						<p>Chưa lấy hàng</p>
-					</div>
+						<span className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status === 'waiting' || order.status === 'accepted').length}</span>
+						<span>Chưa lấy hàng</span>
+					</div> */}
 
 				</div>
 			</div>
 
-			<h2 className='pt-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
+			<h2 className='pt-sm-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
 			<Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
 			{/* Order List */}

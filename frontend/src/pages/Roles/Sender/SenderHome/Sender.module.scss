@@ -15,32 +15,58 @@
     }
 }
 
-.orderFilter {
-    color: var(--white-color);
+.filterWrapper {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 12px 24px;
-    width: 200px;
-    height: 100px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 1px 0 4px #BEBEBE;
-    color: #000;
-    cursor: pointer;
-    &.orderFilter1 {
-        background: linear-gradient(to right bottom, #c1d6fc, #f4cdff);
-    }
-    &.orderFilter2 {
-        background: linear-gradient(to right bottom, #a4e6f6, #bef0ef);
-    }
-    &.orderFilterActive,
-    p:first-child {
-        margin: 0;
-        color: #000;
+    .orderFilter {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 24px;
+        width: 200px;
+        height: 100px;
+        border-radius: 5px;
+        margin-right: 24px;
+        box-shadow: 1px 0 4px #BEBEBE;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        border-top-width: 5px;
+        background-color: white;
+        &.waiting {
+            border-color: #FFD700;
+        }
+        &.accepted {
+            border-color: #00AA00;
+        }
+        &.picked {
+            border-color: #1E90FF;
+        }
+        &.delivering {
+            border-color: #FFA500;
+        }
+        &.success {
+            border-color: #008000;
+        }
+    
+        // &.orderFilter1 {
+        //     background: linear-gradient(to right bottom, #c1d6fc, #f4cdff);
+        // }
+        // &.orderFilter2 {
+        //     background: linear-gradient(to right bottom, #a4e6f6, #bef0ef);
+        // }
+        // &.orderFilterActive,
+        // p:first-child {
+        //     margin: 0;
+        //     color: #000;
+        // }
+        .count {
+            font-weight: 500;
+            font-size: 30px;
+        }
     }
 }
+
 
 .orderList {
     display: grid;
@@ -173,6 +199,22 @@
         flex-wrap: wrap;
         gap: 5px;
       }
+    }
+
+    .filterWrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        .orderFilter {
+            margin-right: 0;
+            width: 100%;
+            flex-direction: row;
+            justify-content: flex-start;
+            height: 60px;
+            .count {
+                min-width: 35px;
+            }
+        }
     }
   }
   

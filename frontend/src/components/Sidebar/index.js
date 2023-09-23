@@ -129,7 +129,7 @@ function Sidebar({ sidebarItems }) {
 								{sidebarItems.filter(item => item?.type === 'above').map(item => (
 									<Link to={item.path}
 										className={"sidebar-item " + `${activeTab.id === item.id ? 'active' : ''}`}
-										onClick={() => setActiveTab(item)}>
+										onClick={() => item.path === '/logout' ? dispatch(clearStore('Logging out...')) : setActiveTab(item.id)}>
 										<div className="sidebar-icon me-3">{item.icon}</div>
 										<div className="sidebar-text">{item.text}</div>
 									</Link>
