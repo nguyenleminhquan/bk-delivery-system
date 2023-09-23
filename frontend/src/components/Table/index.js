@@ -12,6 +12,7 @@ function Table( { data } ) {
                 striped
                 bordered
                 small
+                responsiveSm={true}
                 data={data}
             />
         </div>
