@@ -5,6 +5,7 @@
 @import './variables.scss';
 @import './variabless';
 @import './utils';
+@import './breakpoints';
 
 * {
     padding: 0;
@@ -142,6 +143,7 @@ body {
     padding: 15px;
     width: calc(100% - $sidebar-width);
     overflow-y: auto;
+    flex: 1;
 }
 
 // Check in button for driver, stocker
@@ -256,6 +258,65 @@ span.icon-xlg {
             height: 100%;
             .select__indicator-separator {
                 display: none;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .routes {
+        margin-top: 52px;
+        padding: 10px;
+    }
+}
+
+// Dropdown Menu
+.dropdown-wrapper {
+    .dropdown-toggle-btn {
+        background-color: white;
+        padding: 4px;
+        font-size: 18px;
+    }
+    .dropdown-menu {
+        font-size: 14px;
+    }
+}
+
+// Mobile sidebar
+.sidebar-container {
+    background-color: white;
+
+    .user {
+        display: flex;
+        align-items: center;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid $border-color;
+        }
+    }
+
+    .sidebar-lists {
+        margin-top: 25px;
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0 4px 15px;
+            width: 100%;
+            color: unset;
+            .sidebar-icon {
+                font-size: 24px;
+            }
+            .sidebar-text {
+                font-weight: 500;
+            }
+            &.active {
+                border-left: 2px solid $primary-color;
+                color: $primary-color;
+            }
+            &:hover {
+                color: $primary-color;
             }
         }
     }

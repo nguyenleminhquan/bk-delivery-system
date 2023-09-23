@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import ConfirmPopup from 'components/ConfirmPopup';
 import Tabs from 'components/Tabs';
 import GeneralConfirm from 'components/GeneralConfirm';
+import { MdMoreVert } from 'react-icons/md';
 
 const tabs = [
 	{
@@ -142,7 +143,7 @@ function SenderHome() {
 	return (
 		<div>
 			{/* Header bar */}
-			<div className='d-flex'>
+			<div className='d-none d-sm-flex'>
 				<div className={styles.searchBar}>
 					<BsSearch />
 					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-3 w-100' />
@@ -154,7 +155,7 @@ function SenderHome() {
 
 			{/* General */}
 			<div className='mb-3'>
-				<h2 className='pt-4 pb-3 fs-5'>Tổng quan</h2>
+				<h2 className='pt-sm-4 pb-3 fs-5'>Tổng quan</h2>
 				<div className="filter d-flex align-items-center">
 					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
 						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</p>
@@ -181,7 +182,7 @@ function SenderHome() {
 					{
 						ordersByStatus.map((order) => (
 							<div key={order._id} className={styles.order}>
-								<ul className={styles.orderIcons}>
+								<ul className={`d-none d-sm-block ${styles.orderIcons}`}>
 									<li className={styles.orderIcon} onClick={() => {
 										setShowSpecificOrder(true)
 										setSpecificOrder(order)}}>
@@ -197,13 +198,46 @@ function SenderHome() {
 										<FaTrashAlt />
 									</li>
 								</ul>
+
+								<div className={`d-block d-sm-none dropdown-wrapper ${styles.orderIcons}`}>
+									<button className='dropdown-toggle-btn' data-bs-toggle="dropdown" aria-expanded="false">
+										<MdMoreVert />
+									</button>
+									<ul className="dropdown-menu">
+										<li onClick={() => {
+											setShowSpecificOrder(true);
+											setSpecificOrder(order);
+										}}>
+											<a className="dropdown-item">
+												<FaEye />
+												<span className='ms-2'>Theo dõi</span>
+											</a>
+										</li>
+										<li><a className="dropdown-item">
+											<FaEdit />
+											<span className='ms-2'>Chỉnh sửa</span>
+										</a></li>
+										<li onClick={() => {
+											setToggleDeletePopup(true);
+											setSpecificOrder(order);
+										}}>
+											<a className="dropdown-item">
+												<FaTrashAlt />
+												<span className='ms-2'>Xóa</span>
+											</a>
+										</li>
+									</ul>
+								</div>
 								<div className={styles.orderInfo}>
-									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
+									<div>
+										<p className={styles.orderTitles}>Mã đơn hàng</p>
+										<span class='text-ellipsis'>{order._id}</span>
+									</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
 									<div>
 										<p className={styles.orderTitles}>Trạng thái</p> 
-										<span className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status === 'on_vehicle' ? 'import' : order.status]}</span>
+										<div className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status === 'on_vehicle' ? 'import' : order.status]}</div>
 									</div>
 								</div>
 								<div className=''>
