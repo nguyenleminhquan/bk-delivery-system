@@ -57,7 +57,7 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
         return combination
             ? ''
             : isActiveField('fullname') || isActiveField('phone') 
-                ? 'col-6' 
+                ? 'col-12 col-sm-6' 
                 : 'col-12';
     }
 

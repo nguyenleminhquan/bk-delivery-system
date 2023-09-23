@@ -339,7 +339,7 @@ function CreateOrder() {
     return (
         <div className={styles.wrapper}>
             {/* Header bar */}
-            <div className='d-flex'>
+            <div className='d-none d-sm-flex'>
                 <div className={styles.searchBar}>
                     <BsSearch />
                     <input type="text" className='ms-3 w-100' placeholder='Nhập mã đơn hàng' />
@@ -348,11 +348,11 @@ function CreateOrder() {
                     <BiPencil className='me-3'/> Tạo đơn hàng
                 </Link>
             </div>
-            <h2 className='pt-5 pb-3 fs-3'>Tạo đơn hàng mới</h2>
+            <span className={styles.pageTitle}>Tạo đơn hàng mới</span>
             <div className='flex-fill mx-100 overflow-auto'>
-                <div className="container-fluid bg-white p-5">
+                <div className="container-fluid bg-white p-sm-5">
                     <div className="row">
-                        <div className="col-8">
+                        <div className="col-12 col-sm-8">
                             <div className={`${styles.createOrderSection} row`}>
                                 <div className="col-12">
                                     <div className={styles.title}>
@@ -362,12 +362,12 @@ function CreateOrder() {
                                         </button>
                                     </div>
                                 </div>
-                                <div className={`mt-2 ${editSender ? 'col-6' : 'col-12'}`}>
+                                <div className={`${editSender ? 'col-12 col-sm-6' : 'col-12'} mt-2`}>
                                     <span className='fw-semibold'>{user.fullname} - {user.phone}</span>
                                     <p>{senderAddress}</p>
                                 </div>
                                 {editSender && (
-                                    <div className="col-6 mt-2">
+                                    <div className="col-12 col-sm-6 mt-2">
                                         <AddressForm 
                                             stateInfo={senderInfo}
                                             setStateInfo={setSenderInfo}
@@ -428,7 +428,7 @@ function CreateOrder() {
                                                             value={product.name}
                                                             onChange={e => handleUpdateProduct(e.target.value, index, 'name')}/>
                                                     </div>
-                                                    <div className={`${styles.orderItemField}`}>
+                                                    <div className={`${styles.orderItemField} mt-2 mt-sm-0`}>
                                                         <label className='fw-semibold me-1'>KL(Kilogram)</label>
                                                         <input type="text" 
                                                             placeholder='0' 
@@ -463,7 +463,6 @@ function CreateOrder() {
                                                             <AiOutlinePlusCircle className={styles.addItemBtn}/>
                                                         </button>
                                                     )}
-                                                    <button></button>
                                                 </div>
                                             </div>
                                         </div> 
@@ -471,7 +470,7 @@ function CreateOrder() {
                                 </div>  
                             </div>
                         </div>
-                        <div className="col-4">
+                        <div className="col-12 col-sm-4">
                             <div className={styles.createOrderSection}>
                                 <div className={styles.formGroup}>
                                     <label>Ghi chú</label>

@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .formGroup {
     display: flex;
     flex-direction: column;
@@ -24,11 +26,14 @@
         }
     }
     select {
-        // appearance: none;
-        // -webkit-appearance: none;
-        // -moz-appearance: none;
         &::after {
             background-color: red;
         }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .formGroup {
+        margin-bottom: 12px;
     }
 }
