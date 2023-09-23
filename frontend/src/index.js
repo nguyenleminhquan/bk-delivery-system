@@ -9,7 +9,6 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 const envConfig = require('./config/.env.json')
 
 const socket = socketIO.connect(envConfig.baseURL);
-console.log('socket', socket)
 export const SocketContext = React.createContext();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

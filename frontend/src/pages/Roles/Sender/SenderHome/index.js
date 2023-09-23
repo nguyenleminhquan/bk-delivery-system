@@ -92,7 +92,6 @@ function SenderHome() {
 	}
 
 	useEffect(() => {
-		console.log(user);
 		if (!user?.area_code) {
 			setEmptyAddressInfo(true);
 		}
@@ -269,7 +268,7 @@ function SenderHome() {
 								<div className={styles.orderInfo}>
 									<div>
 										<p className={styles.orderTitles}>Mã đơn hàng</p>
-										<span class='text-ellipsis'>{order._id}</span>
+										<span>{order._id}</span>
 									</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>

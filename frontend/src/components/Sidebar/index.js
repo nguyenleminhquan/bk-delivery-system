@@ -117,6 +117,7 @@ function Sidebar({ sidebarItems }) {
 					<Modal
 						isOpen={showSidebar}
 						style={customStyles}
+						appElement={document.getElementById('root')}
 						onRequestClose={() => setShowSidebar(false)}
 					>
 						<div className="sidebar-container">
@@ -128,6 +129,7 @@ function Sidebar({ sidebarItems }) {
 							<div className="sidebar-lists">
 								{sidebarItems.filter(item => item?.type === 'above').map(item => (
 									<Link to={item.path}
+										key={item.id}
 										className={"sidebar-item " + `${activeTab.id === item.id ? 'active' : ''}`}
 										onClick={() => item.path === '/logout' ? dispatch(clearStore('Logging out...')) : setActiveTab(item.id)}>
 										<div className="sidebar-icon me-3">{item.icon}</div>
@@ -141,6 +143,7 @@ function Sidebar({ sidebarItems }) {
 							<div className="sidebar-lists">
 								{sidebarItems.filter(item => item?.type === 'beneath').map(item => (
 									<Link to={item.path}
+										key={item.id}
 										className={"sidebar-item " + `${activeTab.id === item.id ? 'active' : ''}`}
 										onClick={() => setActiveTab(item.id)}>
 										<div className="sidebar-icon me-3">{item.icon}</div>
