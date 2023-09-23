@@ -33,6 +33,17 @@ function Sidebar({ sidebarItems }) {
 	const [activeTab, setActiveTab] = useState(sidebarItems.find((item) => item.path === '/'));
 	const [showSidebar, setShowSidebar] = useState(false);
 
+	const onMenuClicked = item => {
+		if (showSidebar) {
+			setShowSidebar(false);
+		}
+		if (item.path === '/logout') {
+			dispatch(clearStore('Logging out...'));
+			return;
+		}
+		setActiveTab(item);
+	}
+
 	return (
 		<div className='sidebar-wrapper'>
 			<div className="d-none d-sm-block">
@@ -131,7 +142,7 @@ function Sidebar({ sidebarItems }) {
 									<Link to={item.path}
 										key={item.id}
 										className={"sidebar-item " + `${activeTab.id === item.id ? 'active' : ''}`}
-										onClick={() => item.path === '/logout' ? dispatch(clearStore('Logging out...')) : setActiveTab(item.id)}>
+										onClick={() => onMenuClicked(item)}>
 										<div className="sidebar-icon me-3">{item.icon}</div>
 										<div className="sidebar-text">{item.text}</div>
 									</Link>
@@ -145,7 +156,7 @@ function Sidebar({ sidebarItems }) {
 									<Link to={item.path}
 										key={item.id}
 										className={"sidebar-item " + `${activeTab.id === item.id ? 'active' : ''}`}
-										onClick={() => setActiveTab(item.id)}>
+										onClick={() => onMenuClicked(item)}>
 										<div className="sidebar-icon me-3">{item.icon}</div>
 										<div className="sidebar-text">{item.text}</div>
 									</Link>

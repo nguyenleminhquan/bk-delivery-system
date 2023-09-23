@@ -50,7 +50,6 @@ function ImportExportHistory() {
     let cloneData = [];
     let tempData = [];
     cloneData = JSON.parse(JSON.stringify(imexData))
-    console.log('importHistory', imexData)
     cloneData.map((item) => {
       let row = {};
       row.id = item._id;
