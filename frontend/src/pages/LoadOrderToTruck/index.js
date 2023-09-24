@@ -1,22 +1,28 @@
+// Libraries import
 import { useState, useEffect , useContext} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { TbFileExport } from 'react-icons/tb';
-import { BiPencil, BiPackage } from 'react-icons/bi';
-import { TbTruckDelivery } from 'react-icons/tb';
-import { RiDeleteBin6Fill } from 'react-icons/ri';
+import { useDispatch, useSelector } from 'react-redux';
+
+// Components import
+import StockerHeader from 'components/StockerHeader';
 import { TruckIcon } from 'components/Icons';
 import ConfirmPopup from 'components/ConfirmPopup';
-import { useDispatch, useSelector } from 'react-redux';
 import ImportOrder from 'components/ImportOrder';
 import GeneralConfirm from 'components/GeneralConfirm';
 import SpecificSenderOrder from 'components/SpecificSenderOrder';
-import { getAvailableVehicleOrders, getStockVehicles } from 'features/stock/stockSlice';
+
+// Utils import
 import { deleteVehicleOrder, exportOrderOnVehicle, getVehicleOrderLists, postVehicleOrders } from 'features/delivery/deliverySlice';
+import { getAvailableVehicleOrders, getStockVehicles } from 'features/stock/stockSlice';
 import { SocketContext } from 'index';
 
-import styles from './LoadOrderToTruck.module.scss'
+// Icons import
+import { BiPackage } from 'react-icons/bi';
+import { TbTruckDelivery } from 'react-icons/tb';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
 
+// Css import
+import styles from './LoadOrderToTruck.module.scss';
 
 const ConfirmOrderLists = ({vehicle}) => {
     const dispatch = useDispatch();
@@ -264,31 +270,15 @@ function LoadOrderToTruck() {
 
     return (
         <div className={styles.wrapper}>
-            <div className="row">
-                <header className='d-flex justify-content-between align-items-center'>
-                    <h2 className='fs-4'>Xuất kho</h2>
-                    <div className={styles.action}>
-                        <Link className={`btn ${styles.customBtn}`} to="/">
-                            <TbFileExport className='me-3'/> Xuất Excel
-                        </Link>
+            <StockerHeader title="Thông tin xe tải" openImportPopup={() => setToggleImportPopup(true)} />
 
-                        <Link className={`btn ${styles.customBtn} ${styles.active}`} to="/export-order">
-                            <BiPencil className='me-3'/> Xuất Kho
-                        </Link>
-
-                        <Link className={`btn ${styles.customBtn}`} onClick={() => setToggleImportPopup(true)}>
-                            <BiPencil className='me-3'/> Nhập Kho
-                        </Link>
-                    </div>
-                </header>
-            </div>
-            <div className="row mt-3">
+            <div className="row mt-sm-3">
                 <div className="col-12">
                     <span className={styles.truckLabel}>{truckInfo.from_string} - {truckInfo.to_string}, {truckInfo.license_plate_number}</span>
                 </div>
             </div>
             <div className="row mt-2">
-                <div className="col-5">
+                <div className="col-12 col-sm-5">
                     <div className={styles.leftCol}>
                         <div className={styles.title}>Truck Load</div>
                         <div className={handleSetStatus((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)}>{(((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)*100).toFixed(2)}%</div>
@@ -313,7 +303,7 @@ function LoadOrderToTruck() {
                         </div>
                     </div>
                 </div>
-                <div className="col-7">
+                <div className="col-12 col-sm-7 mt-2 mt-sm-0">
                     <div className={styles.rightCol}>
                         <div className={styles.title}>
                             <h5 className='fw-semibold'>Danh sách đơn hàng</h5>
@@ -321,35 +311,38 @@ function LoadOrderToTruck() {
                         </div>
                         <div className={styles.customTableWrap}>
                             <div className={styles.customTable}>
-                                <div className={`row p-2 ${styles.ordersHeader}`}>
-                                    <div className='col-1 d-flex'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
-                                    <div className='col-6'>Mã đơn hàng</div>
-                                    <div className='col-5'>
-                                        <div className="d-flex">
-                                            Khối lượng
-                                            <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
-                                                <span className={styles.leftBar}></span>
-                                                <span className={styles.rightBar}></span>
-                                            </a>
+                                <div className="container position-sticky top-0">
+                                    <div className={`row p-2 ${styles.ordersHeader}`}>
+                                        <div className='col-1'><input type="checkbox" checked={toggleAll} onChange={handleToggleAll}/></div>
+                                        <div className='col-8'>Mã đơn hàng</div>
+                                        <div className='col-3'>
+                                            <div className="d-flex">
+                                                Khối lượng
+                                                <a className={`${styles.arrowIcon} ${toggleFilter ? styles.open : ''}`} onClick={handleSortCol}>
+                                                    <span className={styles.leftBar}></span>
+                                                    <span className={styles.rightBar}></span>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className={styles.ordersWrap}>
-                                    {truckOrders.length > 0 
-                                        ? (truckOrders.map(order => (
-                                            <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
-                                                <div className='col-1 d-flex'><input type="checkbox"
-                                                    checked={order.checked}
-                                                    onChange={e => handleLoadOrder(order, e)}
-                                                /></div>
-                                                <div className="col-6" onClick={() => setShowOrderDetail(order)}>{order._id}</div>
-                                                <div className="col-5" onClick={() => setShowOrderDetail(order)}>{order.weight}</div>
-                                            </div>)))
-                                        : (<div className='p-2'>Không có đơn hàng nào</div>)
-                                    }
+                                    <div className="container">
+                                        {truckOrders.length > 0 
+                                            ? (truckOrders.map(order => (
+                                                <div className={`row p-2 ${styles.ordersRow}`} key={order._id}>
+                                                    <div className='col-1'><input type="checkbox"
+                                                        checked={order.checked}
+                                                        onChange={e => handleLoadOrder(order, e)}
+                                                    /></div>
+                                                    <div className="col-8" onClick={() => setShowOrderDetail(order)}>{order._id}</div>
+                                                    <div className="col-3" onClick={() => setShowOrderDetail(order)}>{order.weight}</div>
+                                                </div>)))
+                                            : (<div className='p-2'>Không có đơn hàng nào</div>)
+                                        }
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                         <button className='btn btn-medium mt-2 d-flex jc_c' onClick={handleAddToTruck}>Thêm vào xe tải</button>
                     </div>

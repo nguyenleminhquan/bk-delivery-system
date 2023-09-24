@@ -60,6 +60,10 @@
         .container {
             min-width: 95%;
             max-width: calc(100% - 10px);
+            padding: 8px 18px;
+            .body {
+                font-size: 14px;
+            }
         }
     }
 }
