@@ -70,6 +70,14 @@ const getVehicleById = (vehicle_id) => {
     return customFetch.get(`/vehicle/${vehicle_id}`);
 }
 
+const getVehiclesInOrderManagement = ({type, area_code, district_code}) => {
+    console.log('type', type);
+    console.log('area_code', area_code)
+    console.log('district_code', district_code)
+    return customFetch.get(`/vehicle/specific?type=${type}&area_code=${area_code}&district_code=${district_code}`);
+}
+
+
 const DeliveryService = {
     getDeliveryHistory,
     getDeliveryByStatus,
@@ -85,7 +93,8 @@ const DeliveryService = {
     postVehicleOrders,
     getVehicleByRoute,
     exportOrderOnVehicle,
-    getVehicleById
+    getVehicleById,
+    getVehiclesInOrderManagement
 }
 
 export default DeliveryService

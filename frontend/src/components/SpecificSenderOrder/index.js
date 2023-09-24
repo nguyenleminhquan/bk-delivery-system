@@ -22,7 +22,7 @@ function SpecificSenderOrder({ closeModal, order }) {
 			to: `stock_${user.area_code}`,
 			order_id: order._id
 		}
-		socket.emit('newDelivery', deliveryPayload);
+		socket.emit('newDeliveries', deliveryPayload);
 		socket.emit('updateOrderStatus', {
             order_id: order._id,
             status: 'waiting',

@@ -122,7 +122,7 @@ function PDFFile({type, formId, stockerInfo, driverInfo, orders, createdAt, stoc
                     orders.map((order) => 
                         <View style={styles.orderList}>
                             <Text style={{marginBottom: '5px'}}>Mã đơn hàng: {order._id}</Text>
-                            <Text style={{marginBottom: '5px'}}>Hàng hóa: { order.items.reduce((list, item) => list + item.name + ' - ' + item.weight + 'kg' + ' - ' + '10 thùng' + ', ', '') }</Text>
+                            <Text style={{marginBottom: '5px'}}>Hàng hóa: { order.items?.reduce((list, item) => list + item.name + ' - ' + item.weight + 'kg' + ' - ' + '10 thùng' + ', ', '') }</Text>
                             <Text style={{marginBottom: '5px'}}>Địa chỉ người gửi: { order.sender_address }</Text>
                             <Text style={{marginBottom: '5px'}}>Địa chỉ người nhận: { order.receiver_address }</Text>
                         </View>
