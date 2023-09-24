@@ -15,6 +15,7 @@ import GeneralConfirm from 'components/GeneralConfirm';
 import { VehicleTypes } from 'utils/consts';
 import { getStocks } from 'features/stock/stockSlice';
 import VehicleManagementUpsert from 'components/VehicleManagementUpsert';
+import { IoMdAdd } from 'react-icons/io';
 
 const vehicleModels = {
   columns: [
@@ -105,7 +106,7 @@ function AdminVehicleManagement() {
   return (
     <div className='admin-vehicle-management-wrapper'>
       <div className="container">
-        <div className="row">
+        <div className="row mb-4 d-none d-sm-flex">
             <div className="d-flex align-items-center">
               <h2 className='fs-4'>Quản lí phương tiện</h2>
             <button className='btn btn-medium ms-3' onClick={() => setShowEditPopup(true)}>
@@ -113,7 +114,12 @@ function AdminVehicleManagement() {
               Thêm mới</button>
             </div>
         </div>
-        <div className="row mt-4">
+        <div className='d-flex d-sm-none mobile-actions'>
+          <button className='action-btn primary ms-2' onClick={() => setShowEditPopup(true)}>
+            <IoMdAdd />
+          </button>
+        </div>
+        <div className="row">
             <Table data={data}/>
         </div>
       </div>

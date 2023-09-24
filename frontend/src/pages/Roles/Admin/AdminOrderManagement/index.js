@@ -30,7 +30,7 @@ const vehicleList = [
 function AdminOrderManagement() {
   return (
     <div className='admin-order-management'>
-        <h2 className='fs-5 pb-3'>Quản lý đơn hàng</h2>
+        <h2 className='fs-5 pb-3 d-none d-sm-block'>Quản lý đơn hàng</h2>
         <div className='form-wrapper'>
             <h5 className='title'>Gán đơn hàng cho tài xế vận chuyển</h5>
             <FormInput
@@ -66,7 +66,9 @@ function AdminOrderManagement() {
                 list={vehicleList}
                 icon={<FaTruck />}
             />
-            <button className='btn btn-medium'>Gửi yêu cầu</button>
+            <div className="text-end">
+                <button className='btn btn-medium'>Gửi yêu cầu</button>
+            </div>
         </div>
     </div>
   )

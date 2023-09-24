@@ -1,3 +1,5 @@
+@import '../../../../styles/breakpoints';
+
 .admin-order-management {
     .form-wrapper {
         background-color: #fff;
@@ -13,6 +15,14 @@
             input {
                 visibility: hidden;
             }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .admin-order-management {
+        .form-wrapper {
+            margin: 0;
         }
     }
 }

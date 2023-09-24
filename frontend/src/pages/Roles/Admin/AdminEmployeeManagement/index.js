@@ -8,7 +8,7 @@ import { createEmployee, deleteUser, editEmployee, getAllEmployee, registerUser,
 // Import icon
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { IoMdCall } from 'react-icons/io';
+import { IoMdAdd, IoMdCall } from 'react-icons/io';
 import { FaUser } from 'react-icons/fa';
 import { BiEdit } from 'react-icons/bi';
 import { HiMail } from 'react-icons/hi'
@@ -23,6 +23,7 @@ import { AreaDelivery } from 'utils/consts/Delivery.const';
 import { EmployeeManagementToast, EmployeeRole } from 'utils/enums';
 import { VietNamArea } from 'utils/consts/area.const';
 import EmployeeUpsert from 'components/EmployeeUpsert';
+import { Link } from 'react-router-dom';
 
 const employeeModels = {
     columns: [
@@ -133,7 +134,7 @@ function AdminEmployeeManagement() {
     return (
         <div className={styles.wrapper}>
             <div className="container">
-                <div className="row">
+                <div className="row mb-4 d-none d-sm-flex ">
                     <div className="d-flex align-items-center">
                         <h2 className='fs-4'>Quản lí nhân viên</h2>
                         <button className='btn btn-medium ms-3' onClick={() => setEditPopup({})}>
@@ -141,7 +142,12 @@ function AdminEmployeeManagement() {
                             Thêm mới</button>
                     </div>
                 </div>
-                <div className="row mt-4">
+                <div className='d-flex d-sm-none mobile-actions'>
+                    <button className='action-btn primary ms-2' onClick={() => setEditPopup({})}>
+                        <IoMdAdd />
+                    </button>
+                </div>
+                <div className="row">
                     <Table data={data}/>
                 </div>
             </div>
