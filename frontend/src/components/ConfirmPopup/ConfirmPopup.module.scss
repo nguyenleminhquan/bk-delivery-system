@@ -58,7 +58,7 @@
 @include media-breakpoint-down(sm, $grid-breakpoints) {
     .modal {
         .container {
-            min-width: unset;
+            min-width: 95%;
             max-width: calc(100% - 10px);
         }
     }

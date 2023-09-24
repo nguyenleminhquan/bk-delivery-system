@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .modal {
     position: fixed;
     top: 0;
@@ -14,7 +16,6 @@
         background-color: #fff;
         min-width: 500px;
         max-width: 650px;
-        // max-width: calc(100% - 32px);
         position: relative;
         animation: fadeIn ease 0.5s;
         margin-top: 10px;
@@ -80,6 +81,21 @@
         // -moz-appearance: none;
         &::after {
             background-color: red;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .modal {
+        .container {
+            min-width: 95%;
+            max-width: calc(100% - 10px);
+            .header {
+                font-size: 16px;
+            }
+            .body {
+                font-size: 14px;
+            }
         }
     }
 }

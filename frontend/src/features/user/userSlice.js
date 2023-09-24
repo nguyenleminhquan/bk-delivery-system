@@ -111,7 +111,6 @@ const userSlice = createSlice({
             state.isLoading = true;
         },
         [registerUser.fulfilled]: (state, { payload }) => {
-            console.log(payload);
             const user = payload;
             state.isLoading = false;
             state.user = user;
@@ -126,7 +125,6 @@ const userSlice = createSlice({
             state.isLoading = true;
         },
         [loginUser.fulfilled]: (state, { payload }) => {
-            console.log(payload);
             const user = payload;
             state.isLoading = false;
             state.user = user;

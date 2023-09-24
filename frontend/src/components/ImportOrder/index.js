@@ -1,14 +1,24 @@
-import FormInput from 'components/FormInput'
+// Libraries import
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip } from 'react-tooltip';
+
+// Components import
+import FormInput from 'components/FormInput'
+import { SocketContext } from 'index';
+
+// Ultils import
+import { clearVehicleOrders, getVehicleOrders } from 'features/delivery/deliverySlice';
 import { getStockOrders, importOrderToStock } from 'features/stock/stockSlice';
 import { resetOrder } from 'features/user/orderSlice';
-import { clearVehicleOrders, getVehicleOrders } from 'features/delivery/deliverySlice';
-import { SocketContext } from 'index';
-import { Tooltip } from 'react-tooltip';
-import './index.scss'
 import { formatCurrency } from 'utils/constants';
+
+// Icons import
+import { AiOutlineSearch } from 'react-icons/ai';
+import { FaSearch } from 'react-icons/fa';
+
+// Css import
+import './index.scss'
 
 function ImportOrder({closePopup}) {
 	const { user } = useSelector(state => state.user);
@@ -63,7 +73,10 @@ function ImportOrder({closePopup}) {
 						icon={<FaSearch />}
 					/>
 				</form>
-				<button className='btn ms-2 fs-14 m-0' onClick={handleSearch} >Tìm kiếm</button>
+				<button className='btn ms-2 fs-14 m-0 d-none d-sm-block' onClick={handleSearch}>Tìm kiếm</button>
+				<button className='btn btn-icon d-block d-sm-none' onClick={handleSearch}>
+					<AiOutlineSearch />
+				</button>
 			</div>
 			
 			{vehicleOrders.length > 0 && (
