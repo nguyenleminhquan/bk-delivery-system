@@ -105,7 +105,9 @@ function AddressTab() {
 				wards={wards}
 				setWards={setWards}
 				activeField={['city', 'district', 'province', 'addressDetail']}/>
-			<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+			<div className="text-end">
+				<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+			</div>
 		</div>
 	)
 }

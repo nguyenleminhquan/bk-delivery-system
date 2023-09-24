@@ -73,7 +73,7 @@ const barChartData = {
 function AdminHome() {
   return (
     <div className='admin-dashboard'>
-      <h2 className='pb-3 fs-3'>Thống kê</h2>
+      <h2 className='pb-3 fs-3 d-none d-sm-block'>Thống kê</h2>
       <div className='widget'>
         <div className='widget-item blue-color'>
           <p className='title'>Tài khoản mới</p>

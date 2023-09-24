@@ -1,3 +1,5 @@
+@import '../../../../styles/breakpoints';
+
 .searchBar {
     background-color: var(--white-color);
     width: 50%;
@@ -13,38 +15,65 @@
     }
 }
 
-.orderFilter {
-    color: var(--white-color);
+.filterWrapper {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 12px 24px;
-    width: 200px;
-    height: 100px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 1px 0 4px #BEBEBE;
-    color: #000;
-    cursor: pointer;
-    &.orderFilter1 {
-        background: linear-gradient(to right bottom, #c1d6fc, #f4cdff);
-    }
-    &.orderFilter2 {
-        background: linear-gradient(to right bottom, #a4e6f6, #bef0ef);
-    }
-    &.orderFilterActive,
-    p:first-child {
-        margin: 0;
-        color: #000;
+    .orderFilter {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 24px;
+        width: 200px;
+        height: 100px;
+        border-radius: 5px;
+        margin-right: 24px;
+        box-shadow: 1px 0 4px #BEBEBE;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        border-top-width: 5px;
+        background-color: white;
+        &.waiting {
+            border-color: #FFD700;
+        }
+        &.accepted {
+            border-color: #00AA00;
+        }
+        &.picked {
+            border-color: #1E90FF;
+        }
+        &.delivering {
+            border-color: #FFA500;
+        }
+        &.success {
+            border-color: #008000;
+        }
+    
+        // &.orderFilter1 {
+        //     background: linear-gradient(to right bottom, #c1d6fc, #f4cdff);
+        // }
+        // &.orderFilter2 {
+        //     background: linear-gradient(to right bottom, #a4e6f6, #bef0ef);
+        // }
+        // &.orderFilterActive,
+        // p:first-child {
+        //     margin: 0;
+        //     color: #000;
+        // }
+        .count {
+            font-weight: 500;
+            font-size: 30px;
+        }
     }
 }
+
 
 .orderList {
     display: grid;
     gap: 20px;
     font-size: 14px;
     grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    overflow-y: auto;
     p {
         margin-bottom: 0;
     }
@@ -68,6 +97,7 @@
         font-weight: bold;
         padding: 5px;
         border-radius: 5px;
+        display: inline-block;
     }
     .orderTitlesStatusYellow {
         color: rgba(255, 154, 31, 1);
@@ -85,7 +115,6 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        z-index: 11;
         text-align: center;
     }
     .orderIcon {
@@ -115,8 +144,7 @@
     .orderInfo {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        row-gap: 10px;
-        // margin-bottom: 10px;
+        gap: 10px;
     }
     .itemList {
         display: flex;
@@ -162,3 +190,32 @@
         }
     }
 }
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .filterWrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        .orderFilter {
+            margin-right: 0;
+            width: 100%;
+            flex-direction: row;
+            justify-content: flex-start;
+            height: 60px;
+            .count {
+                min-width: 35px;
+            }
+        }
+    }
+
+    .orderList {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      .itemList {
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+    }
+  }
+  

@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .tab-comp {
   ul {
     border-bottom: 1px solid #c0c3c6;
@@ -47,6 +49,19 @@
     margin-bottom: -1px;
     .icon {
       color: #555;
+    }
+  }
+}
+
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+  .tab-comp {
+    ul {
+      display: flex;
+      overflow-x: auto;
+      .tab {
+        min-width: max-content;
+      }
     }
   }
 }

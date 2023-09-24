@@ -1,19 +1,30 @@
-import { BsSearch } from 'react-icons/bs'
-import { BiPencil } from 'react-icons/bi'
+// Libraries import
 import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Sender.module.scss'
-import { getOrdersByUserId } from 'features/user/orderSlice';
-import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
-import { orderStatusList } from 'utils/constants';
-import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import moment from 'moment/moment';
-import { SocketContext } from 'index';
 import { toast } from 'react-toastify';
+
+// Components import
+import SpecificSenderOrder from 'components/SpecificSenderOrder';
 import ConfirmPopup from 'components/ConfirmPopup';
-import Tabs from 'components/Tabs';
 import GeneralConfirm from 'components/GeneralConfirm';
+import Tabs from 'components/Tabs';
+
+// Utils import
+import { getOrdersByUserId } from 'features/user/orderSlice';
+import { orderStatusList } from 'utils/constants';
+import { SocketContext } from 'index';
+
+// Icons import
+import { FaEdit, FaEye, FaTrashAlt } from 'react-icons/fa';
+import { BsSearch } from 'react-icons/bs'
+import { BiPencil } from 'react-icons/bi'
+import { MdMoreVert } from 'react-icons/md';
+import { IoMdAdd, IoMdClose } from 'react-icons/io';
+
+// Css import
+import styles from './Sender.module.scss'
 
 const tabs = [
 	{
@@ -52,6 +63,7 @@ function SenderHome() {
 	const [selectedTab, setSelectedTab] = useState(tabs[0]);
 	const [toggleDeletePopup, setToggleDeletePopup] = useState(false);
 	const [emptyAddressInfo, setEmptyAddressInfo] = useState(false);
+	const [showMobileSearch, setShowMobileSearch] = useState(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const socket = useContext(SocketContext);
@@ -82,8 +94,15 @@ function SenderHome() {
 		navigate('/profile?tab=address');
 	}
 
+	function findOrderStatusCount(status) {
+		return orders.reduce((acc, cur) => cur.status === status ? acc + 1 : acc, 0);
+	}
+
+	function setTabByWidget(status) {
+		setSelectedTab(tabs.find(tab => tab.field === status));
+	}
+
 	useEffect(() => {
-		console.log(user);
 		if (!user?.area_code) {
 			setEmptyAddressInfo(true);
 		}
@@ -140,9 +159,9 @@ function SenderHome() {
 	}, [selectedTab, updatedOrders])
 
 	return (
-		<div>
+		<div className='h-100 d-flex flex-column'>
 			{/* Header bar */}
-			<div className='d-flex'>
+			<div className='d-none d-sm-flex'>
 				<div className={styles.searchBar}>
 					<BsSearch />
 					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-3 w-100' />
@@ -152,24 +171,74 @@ function SenderHome() {
 				</Link>
 			</div>
 
+			<div className='d-flex d-sm-none mobile-actions'>
+				{showMobileSearch 
+					? (<div className="search-bar-wrapper">
+							<div className="search-bar">
+								<input type="text" placeholder='Nhập mã đơn hàng' className='w-100 fs-14' />
+								<div className="search-icon"><BsSearch /></div>
+							</div>
+							<div className="action-btn ms-1" onClick={() => setShowMobileSearch(false)}>
+								<IoMdClose />
+							</div>
+						</div>)
+					: (<div className='action-btn' onClick={() => setShowMobileSearch(true)}>
+							<BsSearch />
+						</div>)
+				}
+				<Link className='action-btn primary ms-2' to="/create-order">
+					<IoMdAdd />
+				</Link>
+			</div>
+
 			{/* General */}
 			<div className='mb-3'>
-				<h2 className='pt-4 pb-3 fs-5'>Tổng quan</h2>
-				<div className="filter d-flex align-items-center">
-					<div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
-						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</p>
-						<p>Đã lấy hàng</p>
+				<h2 className='pt-sm-4 pb-3 fs-5'>Tổng quan</h2>
+				<div className={styles.filterWrapper}>
+					<div className={`${styles.orderFilter} ${styles.waiting}`}
+						onClick={() => setTabByWidget('waiting')}>
+						<span className={styles.count}>{findOrderStatusCount('waiting')}</span>
+						<span>Đang xử lí</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.accepted}`}
+						onClick={() => setTabByWidget('accepted')}>
+						<span className={styles.count}>{findOrderStatusCount('accepted')}</span>
+						<span>Đã chấp nhận</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.picked}`}
+						onClick={() => setTabByWidget('picked')}>
+						<span className={styles.count}>{findOrderStatusCount('picked')}</span>
+						<span>Đã lấy hàng</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.delivering}`}
+						onClick={() => setTabByWidget('delivering')}>
+						<span className={styles.count}>{findOrderStatusCount('delivering')}</span>
+						<span>Đang giao hàng</span>
+					</div>
+
+					<div className={`${styles.orderFilter} ${styles.success}`}
+						onClick={() => setTabByWidget('success')}>
+						<span className={styles.count}>{findOrderStatusCount('success')}</span>
+						<span>Giao thành công</span>
+					</div>
+					
+					{/* <div className={`${styles.orderFilter} ${styles.orderFilter1}`}>
+						<span className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status !== 'waiting' && order.status !== 'accepted').length}</span>
+						<span>Đã lấy hàng</span>
 					</div>
 
 					<div className={`${styles.orderFilter} ${styles.orderFilter2}`}>
-						<p className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status === 'waiting' || order.status === 'accepted').length}</p>
-						<p>Chưa lấy hàng</p>
-					</div>
+						<span className='font-weight-bold fs-1'>{updatedOrders.filter((order) => order.status === 'waiting' || order.status === 'accepted').length}</span>
+						<span>Chưa lấy hàng</span>
+					</div> */}
 
 				</div>
 			</div>
 
-			<h2 className='pt-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
+			<h2 className='pt-sm-4 pb-3 fs-5'>Danh sách đơn hàng</h2>
 			<Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
 
 			{/* Order List */}
@@ -181,7 +250,7 @@ function SenderHome() {
 					{
 						ordersByStatus.map((order) => (
 							<div key={order._id} className={styles.order}>
-								<ul className={styles.orderIcons}>
+								<ul className={`d-none d-sm-block ${styles.orderIcons}`}>
 									<li className={styles.orderIcon} onClick={() => {
 										setShowSpecificOrder(true)
 										setSpecificOrder(order)}}>
@@ -197,13 +266,46 @@ function SenderHome() {
 										<FaTrashAlt />
 									</li>
 								</ul>
+
+								<div className={`d-block d-sm-none dropdown-wrapper ${styles.orderIcons}`}>
+									<button className='dropdown-toggle-btn' data-bs-toggle="dropdown" aria-expanded="false">
+										<MdMoreVert />
+									</button>
+									<ul className="dropdown-menu">
+										<li onClick={() => {
+											setShowSpecificOrder(true);
+											setSpecificOrder(order);
+										}}>
+											<a className="dropdown-item">
+												<FaEye />
+												<span className='ms-2'>Theo dõi</span>
+											</a>
+										</li>
+										<li><a className="dropdown-item">
+											<FaEdit />
+											<span className='ms-2'>Chỉnh sửa</span>
+										</a></li>
+										<li onClick={() => {
+											setToggleDeletePopup(true);
+											setSpecificOrder(order);
+										}}>
+											<a className="dropdown-item">
+												<FaTrashAlt />
+												<span className='ms-2'>Xóa</span>
+											</a>
+										</li>
+									</ul>
+								</div>
 								<div className={styles.orderInfo}>
-									<div><p className={styles.orderTitles}>Mã đơn hàng</p> {order._id}</div>
+									<div>
+										<p className={styles.orderTitles}>Mã đơn hàng</p>
+										<span>{order._id}</span>
+									</div>
 									<div><p className={styles.orderTitles}>Thời gian tạo</p> {moment(order.createdAt).format('DD-MM-YYYY HH:mm:ss')} </div>
 									<div><p className={styles.orderTitles}>Phí vận chuyển</p> {order.shipping_fee}đ</div>
 									<div>
 										<p className={styles.orderTitles}>Trạng thái</p> 
-										<span className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status === 'on_vehicle' ? 'import' : order.status]}</span>
+										<div className={`${styles.orderTitlesStatus} ${order.status === 'waiting' ? styles.orderTitlesStatusYellow : order.status === 'cancel' ? styles.orderTitlesStatusRed : styles.orderTitlesStatusGreen}`}>{orderStatusList[order.status === 'on_vehicle' ? 'import' : order.status]}</div>
 									</div>
 								</div>
 								<div className=''>

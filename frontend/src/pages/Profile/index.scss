@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .profile {
     background-color: var(--white-color);
     border-top-left-radius: 10px;
@@ -90,4 +92,30 @@
 
 .profile .btn {
     margin-top: 10px;
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .profile {
+        .tabs {
+            overflow-x: auto;
+            padding: 10px;
+            &::before {
+                display: none;
+            }
+            .tab {
+                min-width: max-content;
+                font-size: 14px;
+                font-weight: 500;
+            }
+        }
+        .tab-item {
+            width: unset;
+            padding: 20px;
+            font-size: 14px;
+            .title {
+                margin-bottom: 10px;
+                font-size: 18px;
+            }
+        }
+    }
 }

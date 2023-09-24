@@ -58,7 +58,9 @@ function ChangePassTab() {
 						/>
 					)
 				}
-				<button className='btn' onClick={handleSubmit}>Đổi mật khẩu</button>
+				<div className="text-end">
+					<button className='btn' onClick={handleSubmit}>Đổi mật khẩu</button>
+				</div>
 			</form>
 		</div>
 	)

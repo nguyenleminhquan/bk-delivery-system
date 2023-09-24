@@ -100,7 +100,7 @@ function DriverHistory() {
 
 	return (
 		<div className='driver-history'>
-			<h2 className='fs-5 pb-3'>Lịch sử giao nhận</h2>
+			<h2 className='fs-5 pb-3 d-none d-sm-block'>Lịch sử giao nhận</h2>
 			<Table data={data} />
 		</div>
 	)

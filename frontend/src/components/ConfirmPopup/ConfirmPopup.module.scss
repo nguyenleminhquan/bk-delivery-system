@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .modal {
     position: fixed;
     top: 0;
@@ -50,5 +52,18 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .modal {
+        .container {
+            min-width: 95%;
+            max-width: calc(100% - 10px);
+            padding: 8px 18px;
+            .body {
+                font-size: 14px;
+            }
+        }
     }
 }

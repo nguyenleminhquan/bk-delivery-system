@@ -1,19 +1,10 @@
+@import '../../styles/breakpoints';
+
 .vehicle-board {
     position: relative;
     background-image: url('../../assests/images/white-pattern.jpg');
     background-size: cover;
-    // .white-pattern {
-    //     position: absolute;
-    //     top: 0;
-    //     left: 0;
-    //     // bottom: 0;
-    //     // right: 0;
-    //     width: 100%;
-    //     height: auto;
-    //     overflow: hidden;
-    // }
     &-wrapper {
-        // background-color: #f3f5f9;
         padding: 0px 40px;
         display: grid;
         grid-template-columns: 2fr 3fr;
@@ -47,5 +38,16 @@
     img {
         width: 400px;
         place-self: center;
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .vehicle-board-wrapper {
+        display: flex;
+        flex-direction: column-reverse;
+        padding: 15px;
+        .logo {
+            width: 70%;   
+        }
     }
 }

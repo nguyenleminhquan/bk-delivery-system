@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .support-request {
     background-color: #fff;
     box-shadow: var(--shadow);
@@ -23,5 +25,11 @@
         &:hover {
             text-decoration: underline;
         }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .support-request {
+        margin: 0;
     }
 }

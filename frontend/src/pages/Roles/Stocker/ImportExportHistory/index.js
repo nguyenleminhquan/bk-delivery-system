@@ -50,7 +50,6 @@ function ImportExportHistory() {
     let cloneData = [];
     let tempData = [];
     cloneData = JSON.parse(JSON.stringify(imexData))
-    console.log('importHistory', imexData)
     cloneData.map((item) => {
       let row = {};
       row.id = item._id;
@@ -126,7 +125,7 @@ function ImportExportHistory() {
 
   return (
     <div className='import-export-history'>
-      <h2 className='pb-3 fs-5'>Lịch sử nhập xuất</h2>
+      <h2 className='pb-3 fs-5 d-none d-sm-block'>Lịch sử nhập xuất</h2>
       <Tabs tabs={tabs} changeTab={setSelectedTab} selectedTab={selectedTab} />
       <Table data={tableData} />
       {

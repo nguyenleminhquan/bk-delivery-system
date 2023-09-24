@@ -19,7 +19,7 @@ function SupportRequest() {
 
     return (
         <div className='support-request'>
-            <h5>Yêu cầu xử lí</h5>
+            <h5 className='d-none d-sm-block'>Yêu cầu xử lí</h5>
             <div>
                 <p>Mã đơn hàng</p>
                 <FormInput
@@ -35,7 +35,9 @@ function SupportRequest() {
                 <p>Vấn đề phát sinh</p>
                 <textarea></textarea>
             </div>
-            <button className='btn btn-medium'>Gửi yêu cầu</button>
+            <div className="text-end">
+                <button className='btn btn-medium'>Gửi yêu cầu</button>
+            </div>
         </div>
     )
 }

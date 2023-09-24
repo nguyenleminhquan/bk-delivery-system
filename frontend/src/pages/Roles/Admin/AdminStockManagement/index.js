@@ -1,15 +1,25 @@
+// Libraries import
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+
+// Components import
 import GeneralConfirm from 'components/GeneralConfirm';
 import Table from 'components/Table';
+
+// Utils import
 import { addStock, deleteStock, editStock, getStocks } from 'features/stock/stockSlice';
-import { useEffect, useState } from 'react';
+import { convertAddressToCoordinates } from 'utils/geoTools';
+import { VietNamArea } from 'utils/consts/area.const';
+
+// Icons import
+import { IoMdAdd } from 'react-icons/io';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { BiEdit } from 'react-icons/bi';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
-import { useDispatch, useSelector } from 'react-redux';
+
+// Css import
 import styles from './AdminStockerManagement.module.scss';
-import { VietNamArea } from 'utils/consts/area.const';
-import { toast } from 'react-toastify';
-import { convertAddressToCoordinates } from 'utils/geoTools';
 
 const stockModels = {
     columns: [
@@ -122,7 +132,7 @@ function AdminStockManagement() {
     return (
         <div className={styles.wrapper}>
             <div className="container">
-                <div className="row">
+                <div className="row mb-4 d-none d-sm-flex">
                     <div className="d-flex align-items-center">
                         <h2 className='fs-4'>Quản lí kho</h2>
                     <button className='btn btn-medium ms-3' onClick={() => setShowEditPopup(true)}>
@@ -130,7 +140,12 @@ function AdminStockManagement() {
                             Thêm mới</button>
                     </div>
                 </div>
-                <div className="row mt-4">
+                <div className='d-flex d-sm-none mobile-actions'>
+                    <button className='action-btn primary ms-2' onClick={() => setShowEditPopup(true)}>
+                        <IoMdAdd />
+                    </button>
+                </div>
+                <div className="row">
                     <Table data={data}/>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import { profileTabs } from 'utils/constants';
 import { useLocation } from 'react-router-dom';
+import avatar from '../../assests/images/demo-avatar.png';
 import './index.scss'
 
 function Profile() {
@@ -25,8 +26,8 @@ function Profile() {
 		<div className='profile'>
 			<div className='profile-container'>
 				<div className='card'>
-					<span className='avatar'></span>
-					<span> {user.fullname} </span>
+					<img src={avatar} className='avatar' />
+					<span className='fs-18'> {user.fullname} </span>
 				</div>
 				<ul className='tabs'>
 					{

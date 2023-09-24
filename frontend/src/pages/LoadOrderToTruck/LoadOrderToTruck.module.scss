@@ -1,3 +1,5 @@
+@import '../../styles/breakpoints';
+
 .wrapper {
     .action {
         a {
@@ -153,7 +155,7 @@ $duration: 0.5s;
 .customTableWrap {
     flex: 1;
     margin-top: 12px;
-    overflow: hidden;
+    overflow-y: auto;
     
     .customTable {
         max-height: 100%;
@@ -188,6 +190,20 @@ $duration: 0.5s;
                     
                 }
             }
+        }
+    }
+}
+
+@include media-breakpoint-down(lg, $grid-breakpoints) {
+    .wrapper {
+        .leftCol {
+            height: unset;
+        }
+        .rightCol {
+            height: unset;
+            min-height: max-content;
+            max-height: 500px;
+            padding: 20px;
         }
     }
 }

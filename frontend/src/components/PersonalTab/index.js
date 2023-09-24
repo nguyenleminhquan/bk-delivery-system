@@ -57,7 +57,9 @@ function PersonalTab() {
 						/>
 					)
 				}
-				<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+				<div className='text-end'>
+					<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+				</div>
 			</form>
 		</div>
 	)

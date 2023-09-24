@@ -5,7 +5,7 @@ import { FaStar } from 'react-icons/fa'
 function Tabs({ tabs, changeTab, selectedTab }) {
   return (
     <div className='tab-comp'>
-        <ul>
+        <ul className='pt-1 pt-sm-0'>
             {
                 tabs.map((tab) => 
                     <li key={tab.name}

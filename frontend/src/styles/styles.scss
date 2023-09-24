@@ -5,6 +5,7 @@
 @import './variables.scss';
 @import './variabless';
 @import './utils';
+@import './breakpoints';
 
 * {
     padding: 0;
@@ -83,6 +84,20 @@ input {
     &.btn-small {
         height: 24px;
     }
+    &.btn-icon {
+        line-height: unset;
+        border-radius: 3px;
+    }
+
+    @include media-breakpoint-down(sm, $grid-breakpoints) {
+        height: 36px;
+        font-size: 14px;
+        padding: 0 20px;
+        margin: 0;
+        &.btn-medium {
+            font-size: 14px;
+        }
+    }
 }
 
 .btn .icon-left {
@@ -142,6 +157,8 @@ body {
     padding: 15px;
     width: calc(100% - $sidebar-width);
     overflow-y: auto;
+    flex: 1;
+    height: 100vh;
 }
 
 // Check in button for driver, stocker
@@ -160,6 +177,7 @@ body {
     color: var(--white-color);
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    z-index: 2;
     &:hover {
         background-color: var(--primary-hover-color);
     }
@@ -256,6 +274,119 @@ span.icon-xlg {
             height: 100%;
             .select__indicator-separator {
                 display: none;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .routes {
+        margin-top: 52px;
+        padding: 10px;
+        background-color: white;
+        height: calc(100vh - 52px);
+    }
+}
+
+// Dropdown Menu
+.dropdown-wrapper {
+    .dropdown-toggle-btn {
+        background-color: white;
+        padding: 4px;
+        font-size: 18px;
+    }
+    .dropdown-menu {
+        font-size: 14px;
+    }
+}
+
+// Mobile sidebar
+.sidebar-container {
+    background-color: white;
+
+    .user {
+        display: flex;
+        align-items: center;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid $border-color;
+        }
+    }
+
+    .sidebar-lists {
+        margin-top: 25px;
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0 4px 15px;
+            width: 100%;
+            color: unset;
+            .sidebar-icon {
+                font-size: 24px;
+            }
+            .sidebar-text {
+                font-weight: 500;
+            }
+            &.active {
+                border-left: 2px solid $primary-color;
+                color: $primary-color;
+            }
+            &:hover {
+                color: $primary-color;
+            }
+        }
+    }
+}
+
+// Mobile header action
+.mobile-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    right: 15px;
+    z-index: 1;
+    height: 52px;
+    cursor: pointer;
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 25px;
+        width: 25px;
+        border-radius: 3px;
+        &.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    }
+    .search-bar-wrapper {
+        display: flex;
+        align-items: center;
+        .search-bar {
+            position: relative;
+            input {
+                border: 1px solid var(--border-color);
+                padding: 6px;
+                border-radius: 3px;
+                &::placeholder {
+                    font-size: 12px;
+                    color: var(--placeholder-input-color);
+                }
+                &:focus {
+                    border-color: var(--primary-color);
+                    border-width: 2px;
+                }
+            }
+            .search-icon {
+                position: absolute;
+                right: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                background-color: white;
             }
         }
     }

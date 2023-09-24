@@ -1,5 +1,17 @@
-.table-container {
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: var(--shadow);
+@import '../../styles/breakpoints';
+
+@include media-breakpoint-up(sm, $grid-breakpoints) {
+    .table-container {
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: var(--shadow);
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .table-container {
+        .datatable-table {
+            overflow-x: auto;
+        }
+    }
 }
