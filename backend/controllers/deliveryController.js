@@ -94,7 +94,7 @@ const acceptDelivery = async (req, res, next) => {
             return res.json(data)
         }
         else {
-            return next(createError(400, "This delivery is accepted by other driver"))
+            return next(createError(400, "Đơn giao hàng đã được chấp nhận bởi tài xế khác!"))
         }
     } catch (err) {
         console.log(err)
@@ -158,7 +158,7 @@ const getAllDelivery = async (req, res, next) => {
 const findNearestArea = async (area_code, address) => {
     try {
         const stocks = await Stock.find({area_code: area_code});
-        if (stocks.length === 0) return next(createError(400, 'Can not find nearest area'))
+        if (stocks.length === 0) return next(createError(400, 'Không thể tìm thấy khu vực gần nhất!'))
         let parseAddress = address.split(", ")
         let length_parseAddress = parseAddress.length
         let areaAddress = parseAddress[length_parseAddress - 1]
@@ -193,11 +193,21 @@ const socketDelivery = (io) => {
         socket.on('newDeliveries', async(deliveries) => {
             let deliveriesResponse = [];
             for (let data of deliveries) {
-                let { status, order_id, driver_id, type, from, to, area_code, district_code, from_code, to_code, vehicle_id } = data;
+                let { status, order_id, driver_id, type, from, to, area_code, district_code, from_code, to_code, vehicle_id, admin_assign } = data;
+                if (admin_assign) {
+                    const orderInfo = await Order.findById(order_id);
+                    from = orderInfo.sender_name + '&' + orderInfo.sender_address;
+                    to = orderInfo.receiver_name + '&' + orderInfo.receiver_address;
+                } 
                 if (type === 'inner_sender') {
-                    let area = await findNearestArea(data.area_code, from.split('&')[1]);
-                    area_code = area.area_code;
-                    district_code = area.district_code;
+                    let area;
+                    if (admin_assign) {
+                        area = await Stock.findOne({area_code: area_code, district_code: district_code});
+                    } else {
+                        area = await findNearestArea(data.area_code, from.split('&')[1]);
+                        area_code = area.area_code;
+                        district_code = area.district_code;
+                    }
                     to = area.name + '&' + area.address;
                 } else if (type === 'inter') {
                     const stock = await Stock.findOne({area_code: area_code, district_code: district_code});

@@ -225,7 +225,7 @@ function LoadOrderToTruck() {
     }
 
     function confirmExportOrder() {
-        const exportPayload = { vehicle_id: truckInfo._id, stocker_id: user.id };
+        const exportPayload = { vehicle_id: truckInfo._id, stocker_id: user.id, stock_id: user.stock_id };
         const deliveryType = truckInfo.type === 'inter' ? 'inter' : 'inner_receiver';
         const deliveryPayload = {
             status: 'waiting',

@@ -47,13 +47,13 @@ const getAllVehicle = async (req, res, next) => {
 const addVehicle = async (req, res, next) => {
   try {
     if (!(req.body.max_weight && req.body.from && req.body.license_plate_number)) {
-      return next(createError(400, 'Please provide enough information!'))
+      return next(createError(400, 'Vui lòng cung cấp đủ thông tin!'))
     }
     
     const { license_plate_number } = req.body
     const existsVehicle = await Vehicle.findOne({ license_plate_number })
     if (existsVehicle) {
-      return next(createError(400, 'Vehicle has been added!'))
+      return next(createError(400, 'Xe tải đã được thêm!'))
     }
 
     let vehicle = new Vehicle(req.body)
@@ -317,6 +317,27 @@ const getVehicleById = async (req, res, next) => {
   }
 }
 
+const getVehiclesInOrderManagement = async (req, res, next) => {
+  try {
+    const { type, area_code, district_code } = req.query;
+    let vehicles;
+    if (type === 'inter') {
+      vehicles = await Vehicle.find({ type: 'inter', from: area_code }).populate('deliveries');
+    } else {
+      vehicles = await Vehicle.find({ type: {$regex: 'inner'}, from: area_code }).populate('deliveries');
+      console.log('vehicles', vehicles)
+      vehicles = vehicles.filter((vehicle) => {
+        if (vehicle.deliveries.length !== 0 && vehicle.deliveries[0].type !== type) return false;
+        return true;
+      })
+    }
+    return res.json(vehicles);
+  } catch (error) {
+    console.log(error);
+    return next(createError(400))
+  }
+}
+
 export {
   getAllVehicle,
   addVehicle,
@@ -328,5 +349,6 @@ export {
   filterVehicleByRoute,
   exportOrder,
   getAvailableOrderForVehicle,
-  getVehicleById
+  getVehicleById,
+  getVehiclesInOrderManagement
 }

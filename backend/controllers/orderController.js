@@ -97,7 +97,7 @@ const getOrdersByUserId = async (req, res, next) => {
 const deleteOrderById = async (req, res, next) => {
   try {
     let data = await Order.findByIdAndDelete({ _id: req.params.id })
-    return res.json({ msg: "Delete successfully!"})
+    return res.json({ msg: "Xoá đơn hàng thành công!"})
   } catch (error) {
     return next(createError(400))
   }
@@ -107,7 +107,7 @@ const deleteOrderById = async (req, res, next) => {
 const editOrderById = async (req, res, next) => { 
   try {
     if (req.body.status) {
-      return next(createError(400, 'User was not allowed to change status of order'))
+      return next(createError(400, 'Người dùng không đủ quyền để cập nhật status của đơn hàng!'))
     }
     let data = await Order.findByIdAndUpdate(req.params.id, req.body, {new: true})
     return res.json(data)

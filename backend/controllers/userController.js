@@ -15,9 +15,9 @@ const userRegister = async (req, res, next) => {
     
     // Neu tai khoan ton tai
     if (exist != "" && exist) {
-        return next(createError(400, "Email is exist"))
+        return next(createError(400, "Email đã tồn tại!"))
     } else if (body.typeUser == "admin") {
-        return next(createError(404, "Can not register account with admin role"))
+        return next(createError(404, "Không thể đăng kí account với quyền admin!"))
     } 
     else {
         let newUser = new User(body)
@@ -84,10 +84,10 @@ const userLogin = async (req, res, next) => {
             
             return res.json(data)
         } else {
-            return next(createError(400, "Password doesn't match"))
+            return next(createError(400, "Mật khẩu chưa đúng!"))
         }
     } else {
-        return next(createError(400, "No username found"))
+        return next(createError(400, "Không tìm thấy username!"))
     }
 
 }
@@ -126,7 +126,7 @@ const updateUserInfo = async (req, res, next) => {
                 vehicle_id: data.vehicle_id,
                 token, refresh_token
             },
-            msg: "User updated!"
+            msg: "Cập nhật thông tin user thành công!"
         });
     } catch (err) {
         console.log(err);
@@ -169,13 +169,13 @@ const changePassword = async (req, res, next) => {
                 await exist.save();
                 return res.json({ 
                     data: "",
-                    msg: "Change password successfully!"
+                    msg: "Thay đổi mật khẩu thành công!"
                 });
             } else {
-                return next(createError(400, "Wrong password!"))
+                return next(createError(400, "Sai mật khẩu!"))
             }
         } else {
-            return next(createError(400, "No username found"))
+            return next(createError(400, "Không tìm thấy username!"))
         }
         
     } catch (err) {
@@ -263,7 +263,7 @@ const updateWorkingDays = async (req, res, next) => {
                     }
 
                     if (dayIsExist) {
-                        return next(createError(400, "You already checkin"))
+                        return next(createError(400, "Bạn đã checkin!"))
                     }
                     user.working_days[countYear].months[countMonth].days.push(date)
                 } else {
@@ -288,11 +288,11 @@ const updateWorkingDays = async (req, res, next) => {
 
         return res.json({
             working_days: user.working_days,
-            msg: "Successful"
+            msg: "Cập nhật ngày làm việc thành công"
         })
 
     } catch (error) {
-        return next(createError(404, "Can not update working day"))
+        return next(createError(404, "Không thể cập nhật ngày làm việc!"))
     }
 }
 
@@ -306,7 +306,7 @@ const createAccount = async (req, res, next) => {
     
     // Neu tai khoan ton tai
     if (exist != "" && exist) {
-        return next(createError(400, "Email is exist"))
+        return next(createError(400, "Email đã tồn tại!"))
     }
     else {
         try {
@@ -368,7 +368,7 @@ const editAccount = async (req, res, next) => {
                 district_code: updatedUser.district_code,
                 stock_id:  updatedUser.stock_id
             },
-            msg: "User updated!"
+            msg: "Cập nhật thông tin người dùng thành công!"
         });
     } catch (err) {
         console.log(err);

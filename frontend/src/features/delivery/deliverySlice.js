@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByIdThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersListsThunk, getVehicleOrdersThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
+import { acceptDeliveryThunk, addVehicleThunk, deleteVehicleOrderThunk, exportOrderOnVehicleThunk, getAllDeliveryThunk, getDeliveryHistoryThunk, getOrderDeliveryThunk, getVehicleByIdThunk, getVehicleByRegionThunk, getVehicleByRouteThunk, getVehicleOrdersListsThunk, getVehicleOrdersThunk, getVehiclesInOrderManagementThunk, getVehiclesThunk, postVehicleOrdersThunk, updateDeliveryStatusThunk } from "./deliveryThunk";
 
 const initialState = {
     deliveries: [],
@@ -115,6 +115,13 @@ export const getVehicleById = createAsyncThunk(
     'delivery/getVehicleById',
     async(payload, thunkAPI) => {
         return getVehicleByIdThunk(payload, thunkAPI);
+    }
+)
+
+export const getVehiclesInOrderManagement = createAsyncThunk(
+    'delivery/getVehiclesInOrderManagement',
+    async(payload, thunkAPI) => {
+        return getVehiclesInOrderManagementThunk(payload, thunkAPI);
     }
 )
 
@@ -303,6 +310,17 @@ const deliverySlice = createSlice({
             state.vehicle = payload
         },
         [getVehicleById.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
+        [getVehiclesInOrderManagement.pending]: state => {
+            state.isLoading = true;
+        }, 
+        [getVehiclesInOrderManagement.fulfilled]: (state, {payload}) => {
+            state.isLoading = false;
+            state.vehicles = payload
+        },
+        [getVehiclesInOrderManagement.rejected]: (state, {payload}) => {
             state.isLoading = false;
             toast.error(payload);
         }
