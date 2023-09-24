@@ -74,7 +74,9 @@ function BankAccountTab() {
 					labelText='Số tài khoản'
 					icon={<FaAddressCard />}
 				/>
-				<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+				<div className="text-end">
+					<button className='btn' onClick={handleSubmit}>Cập nhật</button>
+				</div>
 			</form>
 		</div>
 	)

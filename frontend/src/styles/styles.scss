@@ -84,6 +84,12 @@ input {
     &.btn-small {
         height: 24px;
     }
+
+    @include media-breakpoint-down(sm, $grid-breakpoints) {
+        height: 36px;
+        font-size: 14px;
+        padding: 0 20px;
+    }
 }
 
 .btn .icon-left {
