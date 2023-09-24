@@ -99,6 +99,7 @@ function ResolveSupportRequest() {
 
     return (
         <div className='resolve-support-request'>
+            <h2 className='d-none d-sm-block pb-3 fs-5'>Yêu cầu xử lí</h2>
             <Table data={tableData} />
             {
                 togglePopup &&
