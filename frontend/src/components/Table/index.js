@@ -13,6 +13,8 @@ function Table( { data } ) {
                 bordered
                 small
                 responsiveSm={true}
+                responsiveMd={true}
+                responsiveLg={true}
                 data={data}
             />
         </div>

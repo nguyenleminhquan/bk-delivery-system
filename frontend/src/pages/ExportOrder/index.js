@@ -117,7 +117,7 @@ function ExportOrder() {
 
             <div className="row mt-3">
                 {availVehicle.map(route => (
-                    <div className="col-12 col-sm-4 mb-3 mb-sm-4" key={route._id} onClick={() => handleChooseTruck(route)}>
+                    <div className="col-12 col-lg-4 mb-3 mb-sm-4" key={route._id} onClick={() => handleChooseTruck(route)}>
                         <div className={styles.blockItem}>
                             <div className="d-flex justify-content-between">
                                 <div className="d-flex flex-column w-50">

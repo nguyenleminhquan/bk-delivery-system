@@ -194,7 +194,7 @@ $duration: 0.5s;
     }
 }
 
-@include media-breakpoint-down(sm, $grid-breakpoints) {
+@include media-breakpoint-down(lg, $grid-breakpoints) {
     .wrapper {
         .leftCol {
             height: unset;

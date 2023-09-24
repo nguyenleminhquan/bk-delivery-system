@@ -278,7 +278,7 @@ function LoadOrderToTruck() {
                 </div>
             </div>
             <div className="row mt-2">
-                <div className="col-12 col-sm-5">
+                <div className="col-12 col-lg-5">
                     <div className={styles.leftCol}>
                         <div className={styles.title}>Truck Load</div>
                         <div className={handleSetStatus((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)}>{(((truckInfo.current_weight + totalWeight) / truckInfo.max_weight)*100).toFixed(2)}%</div>
@@ -303,7 +303,7 @@ function LoadOrderToTruck() {
                         </div>
                     </div>
                 </div>
-                <div className="col-12 col-sm-7 mt-2 mt-sm-0">
+                <div className="col-12 col-lg-7 mt-2 mt-lg-0">
                     <div className={styles.rightCol}>
                         <div className={styles.title}>
                             <h5 className='fw-semibold'>Danh sách đơn hàng</h5>
