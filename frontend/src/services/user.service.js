@@ -37,6 +37,10 @@ export const deleteUser = (userId) => {
     return customFetch.delete(`/user/${userId}`);
 }
 
+export const getAllSupportRequest = () => {
+    return customFetch.get('/support-request');
+}
+
 const UserService = {
     updateUser,
     changePassword,
@@ -44,7 +48,8 @@ const UserService = {
     getAllEmployee,
     createEmployee,
     editEmployee,
-    deleteUser
+    deleteUser,
+    getAllSupportRequest
 }
 
 export default UserService

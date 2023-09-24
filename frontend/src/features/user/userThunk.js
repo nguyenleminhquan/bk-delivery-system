@@ -99,3 +99,12 @@ export const editEmployeeThunk = async(employee, thunkAPI) => {
         return thunkAPI.rejectWithValue(error.response.data.msg);
     }
 }
+
+export const getAllSupportRequestThunk = async (thunkAPI) => {
+    try {
+        const res = await UserService.getAllSupportRequest();
+        return res.data;
+    } catch(error) {
+        return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+}
