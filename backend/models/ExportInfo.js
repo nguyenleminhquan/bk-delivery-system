@@ -13,9 +13,15 @@ const exportInfoSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  orders: [{ 
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order'
+  dest_stocks: [{
+    stock_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Stock'
+    },
+    orders: [{ 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    }],
   }],
   createTime: {
     type: Date

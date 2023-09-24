@@ -10,7 +10,7 @@ const downloadExportInfo = async (req, res, next) => {
     let driver = await Drive.find({ vehicle_id: exportInfo.vehicle_id }).populate('driver_id')
     console.log(`driver: ${driver.driver_id}`)
     exportInfo = await ExportInfo.findById(req.params.id)
-                      .populate('vehicle_id').populate('stocker_id').populate('orders')
+                      .populate('vehicle_id').populate('stocker_id').populate('orders').populate('dest_stocks')
     return res.json({ exportInfo, driver: driver })
   } catch (error) {
     return next(createError(400))

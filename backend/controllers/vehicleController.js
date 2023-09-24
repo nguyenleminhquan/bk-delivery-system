@@ -5,6 +5,8 @@ import createError from 'http-errors'
 import Order from "../models/Order.js"
 import Delivery from "../models/Delivery.js"
 import { getAreaCodeAndDistrictCodeFromString } from "../utils/order-utils.js"
+import { findNearestArea } from "./deliveryController.js"
+
 // --------------------
 // Utils
 // --------------------
@@ -281,16 +283,42 @@ const filterVehicleByRoute = async (req, res, next) => {
 
 const exportOrder = async (req, res, next) => {
   try {
+    console.info("[API] Export order")
     const body = req.body
     const vehicle_id = req.params.id
     // Send: vehicle_id, stocker_id
     const vehicle = await Vehicle.findById(vehicle_id).populate('orders')
 
-    console.debug("vehicle")
-    console.log(vehicle)
+    // Xap xep don hang theo kho
+    let dest_stocks = []
+    for (let order of vehicle.orders) {
+      let area_code = getAreaCodeAndDistrictCodeFromString(order.receiver_address)[0]
+      console.info(`Order id: ${order._id}`)
+      console.info(`Receiver address of order: ${order.receiver_address}`)
+      console.info(`Area code of order: ${area_code}`)
+      let stock = await findNearestArea(area_code, order.receiver_address)
+      
+      console.info(`nearest stock id: ${stock._id}`)
+      // Kiem tra stock da co trong dest_stocks hay chua?
+      let stockIndexInDestStocks = -1
+      for (let i = 0; i < dest_stocks.length; i++) {
+        if (dest_stocks[i].stock_id.equals(stock._id)) {
+          stockIndexInDestStocks = i;
+          break;
+        }
+      }
+      if (stockIndexInDestStocks == -1) {
+        dest_stocks.push({
+          stock_id: stock._id,
+          orders: [order._id]
+        })
+      } else {
+        dest_stocks[stockIndexInDestStocks].orders.push(order._id)
+      }
+    }
 
     let exportInfo = 
-      new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, orders: vehicle.orders, stock_id: body.stock_id })
+      new ExportInfo({ vehicle_id, stocker_id: body.stocker_id, dest_stocks, stock_id: body.stock_id })
     
     await exportInfo.save()
 
