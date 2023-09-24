@@ -194,17 +194,36 @@ const getImportHistory = async(req, res, next) => {
 const getExportHistory = async(req, res, next) => {
   try {
     const stockId = req.params.stockId;
+    // const data = await ExportInfo
+    // .find({stock_id: stockId})
+    // .sort({ createdAt: -1 })
+    // .populate('stocker_id')
+    // .populate('stock_id')
+    // .populate('dest_stocks')
+    // .populate({
+    //   path: 'orders',
+    //   populate: {
+    //       path: 'items',
+    //   }
+    // });
     const data = await ExportInfo
     .find({stock_id: stockId})
     .sort({ createdAt: -1 })
     .populate('stocker_id')
     .populate('stock_id')
     .populate({
-      path: 'orders',
+      path: 'dest_stocks',
       populate: {
-          path: 'items',
+        path: 'stock_id'
       }
-    });;
+    })
+    .populate({
+      path: 'dest_stocks',
+      populate: {
+        path: 'orders'
+      }
+    });
+    
     return res.json(data)
   } catch(error) {
     console.log(error)

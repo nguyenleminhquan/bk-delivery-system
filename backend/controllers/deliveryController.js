@@ -304,5 +304,6 @@ export {
     updateDeliveryStatus,
     acceptDelivery,
     getAllDelivery,
-    socketDelivery 
+    socketDelivery,
+    findNearestArea
 }
