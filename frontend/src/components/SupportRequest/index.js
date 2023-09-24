@@ -1,14 +1,48 @@
 import FormInput from 'components/FormInput'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { FaFirstOrder } from 'react-icons/fa'
 import './index.scss'
+import { useDispatch, useSelector } from 'react-redux'
+import { SocketContext } from 'index'
+import { toast } from 'react-toastify'
 const initialValues = {
-    id: '',
-    problem: ''
+    order_id: '',
+    content: ''
 }
 
 function SupportRequest() {
     const [values, setValues] = useState(initialValues)
+    const dispatch = useDispatch();
+    const socket = useContext(SocketContext);
+    const { user } = useSelector((state) => state.user);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('values', values)
+        console.log('user', user)
+        let typeUser;
+        switch(user.typeUser) {
+            case 'sender':
+                typeUser = 'Khách hàng'
+                break
+            case 'stocker':
+                typeUser = 'Thủ kho'
+                break
+            case 'driver_inner':
+                typeUser = 'Tài xế'
+                break
+            case 'driver_inter':
+                typeUser = 'Tài xế'
+                break
+        }
+        socket.emit('newSupportRequest', {
+            requester: typeUser + ' ' + user.fullname,
+            order: values.order_id,
+            content: values.content  
+        })
+        setValues(initialValues);
+        toast.success('Tạo yêu cầu thành công')
+    }
 
     const handleChange = (e) => {
 		e.preventDefault()
@@ -24,20 +58,18 @@ function SupportRequest() {
                 <p>Mã đơn hàng</p>
                 <FormInput
                     type='text'
-                    name='id'
+                    name='order_id'
                     placeholderText='Nhập mã đơn hàng cần xử lí'
-                    value={values.id }
+                    value={values.order_id }
                     handleChange={handleChange}
                     icon={<FaFirstOrder />}
                 />
             </div>
             <div>
                 <p>Vấn đề phát sinh</p>
-                <textarea></textarea>
+                <textarea value={values.content} name='content' onChange={handleChange}></textarea>
             </div>
-            <div className="text-end">
-                <button className='btn btn-medium'>Gửi yêu cầu</button>
-            </div>
+            <button className='btn btn-medium' onClick={handleSubmit}>Gửi yêu cầu</button>
         </div>
     )
 }

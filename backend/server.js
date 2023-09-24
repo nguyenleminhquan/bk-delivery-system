@@ -14,7 +14,9 @@ import stockRoutes from './routes/stockRoutes.js'
 import vehicleRoutes from './routes/vehicleRoutes.js'
 import mapRoutes from './routes/mapRoutes.js'
 import exportInfoRoutes from './routes/exportInfoRoutes.js'
+import supportRequestRoutes from './routes/supportRequestRoutes.js'
 import { socketOrder } from './controllers/orderController.js'
+import { socketSupportRequest } from './controllers/supportRequestController.js'
 
 await connectDB()
 dotenv.config()
@@ -35,6 +37,7 @@ app.use('/delivery', deliveryRoutes)
 app.use('/stock', stockRoutes)
 app.use('/vehicle', vehicleRoutes)
 app.use('/exportinfo', exportInfoRoutes)
+app.use('/support-request', supportRequestRoutes)
 app.use('/maps', mapRoutes)
 
 app.get('/', (req, res, next) => {
@@ -56,5 +59,6 @@ const io = new Server(server, {
 });
 socketDelivery(io)
 socketOrder(io)
+socketSupportRequest(io)
 
 

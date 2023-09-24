@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { checkForUnauthorizedResponse } from "services/axios";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "utils/localStorage";
-import { changePasswordThunk, checkInDayThunk, clearStoreThunk, createEmployeeThunk, deleteUserThunk, editEmployeeThunk, getAllEmployeeThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { changePasswordThunk, checkInDayThunk, clearStoreThunk, createEmployeeThunk, deleteUserThunk, editEmployeeThunk, getAllEmployeeThunk, getAllSupportRequestThunk, loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 import AuthService from 'services/auth.service'
 import { toast } from 'react-toastify'
 import { EmployeeManagementToast } from "utils/enums";
@@ -9,6 +9,7 @@ import { EmployeeManagementToast } from "utils/enums";
 const initialState = {
     user: getUserFromLocalStorage(),
     employees: [],
+    supportRequests: [],
     isLoading: false,
 }
 
@@ -72,6 +73,13 @@ export const deleteUser = createAsyncThunk(
     'user/deleteUser',
     async(id, thunkAPI) => {
         return deleteUserThunk(id, thunkAPI);
+    }
+)
+
+export const getAllSupportRequest = createAsyncThunk(
+    'user/getAllSupportRequest',
+    async(thunkAPI) => {
+        return getAllSupportRequestThunk(thunkAPI);
     }
 )
 
@@ -227,7 +235,18 @@ const userSlice = createSlice({
             // Update lai employee...
             state.employees = state.employees.filter(employee => employee._id !== payload._id);
             toast.success(EmployeeManagementToast.DELETE_EMPLOYEE_SUCCESSFUL);
-        }
+        },
+        [getAllSupportRequest.pending]: state => {
+            state.isLoading = true;
+        },
+        [getAllSupportRequest.fulfilled]: (state, {payload}) => {
+            state.supportRequests = payload;
+            state.isLoading = false;
+        },
+        [getAllSupportRequest.rejected]: (state, {payload}) => {
+            state.isLoading = false;
+            toast.error(payload);
+        },
     }
 })
 
