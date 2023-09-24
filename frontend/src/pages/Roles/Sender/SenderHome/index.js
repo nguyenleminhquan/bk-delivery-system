@@ -159,7 +159,7 @@ function SenderHome() {
 	}, [selectedTab, updatedOrders])
 
 	return (
-		<div>
+		<div className='h-100 d-flex flex-column'>
 			{/* Header bar */}
 			<div className='d-none d-sm-flex'>
 				<div className={styles.searchBar}>

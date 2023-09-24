@@ -158,6 +158,7 @@ body {
     width: calc(100% - $sidebar-width);
     overflow-y: auto;
     flex: 1;
+    height: 100vh;
 }
 
 // Check in button for driver, stocker
@@ -283,6 +284,7 @@ span.icon-xlg {
         margin-top: 52px;
         padding: 10px;
         background-color: white;
+        height: calc(100vh - 52px);
     }
 }
 
