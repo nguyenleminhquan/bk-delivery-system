@@ -4,6 +4,8 @@ import Stock from '../models/Stock.js';
 import Vehicle from '../models/Vehicle.js';
 import Order from '../models/Order.js';
 import { calculateDistance, convertAddressToCoordinates, getAreaCodeAndDistrictCodeFromString } from '../utils/order-utils.js';
+import User from '../models/User.js';
+import SupportRequest from '../models/SupportRequest.js';
 
 const getDeliveryByStatus = async (req, res, next) => {
     try {
@@ -194,8 +196,8 @@ const socketDelivery = (io) => {
             let deliveriesResponse = [];
             for (let data of deliveries) {
                 let { status, order_id, driver_id, type, from, to, area_code, district_code, from_code, to_code, vehicle_id, admin_assign } = data;
+                const orderInfo = await Order.findById(order_id);
                 if (admin_assign) {
-                    const orderInfo = await Order.findById(order_id);
                     from = orderInfo.sender_name + '&' + orderInfo.sender_address;
                     to = orderInfo.receiver_name + '&' + orderInfo.receiver_address;
                 } 
@@ -207,6 +209,34 @@ const socketDelivery = (io) => {
                         area = await findNearestArea(data.area_code, from.split('&')[1]);
                         area_code = area.area_code;
                         district_code = area.district_code;
+                        const drivers = await User
+                        .find({ area_code: area_code, district_code: district_code, type: 'driver_inner' })
+                        .populate({
+                            path: 'vehicle_id',
+                            populate: {
+                                path: 'deliveries',
+                            }
+                        });
+                        let flag = false;
+                        for (let driver of drivers) {
+                            let vehicleInfo = driver.vehicle_id;
+                            if (vehicleInfo.deliveries.length > 0 && vehicleInfo.deliveries[0].type === 'inner_receiver') continue;
+                            if (vehicleInfo.current_weight + orderInfo.weight <= vehicleInfo.max_weight) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (!flag) {
+                            const payload = {
+                                requester: 'System',
+                                order: order_id,
+                                content: `Đơn hàng #${order_id} chưa được xử lý do các tài xế trong khu vực đã nhận hàng đầy xe`
+                            }
+                            let newSupportRequest = new SupportRequest(payload);
+                            const res = await newSupportRequest.save();
+                            io.emit('newSupportRequest', res);
+                            return;
+                        }
                     }
                     to = area.name + '&' + area.address;
                 } else if (type === 'inter') {
