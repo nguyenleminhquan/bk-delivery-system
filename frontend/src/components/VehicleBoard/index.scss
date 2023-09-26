@@ -1,4 +1,4 @@
-@import '../../styles/breakpoints';
+@import 'styles/breakpoints';
 
 .vehicle-board {
     position: relative;
@@ -48,6 +48,17 @@
         padding: 15px;
         .logo {
             width: 70%;   
+        }
+        .vehicle-info {
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
+            .title {
+                text-align: center;
+            }
+        }
+        .vehicle-desc {
+            grid-template-columns: 3fr 2fr;
         }
     }
 }

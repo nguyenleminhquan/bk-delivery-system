@@ -1,3 +1,5 @@
+@import 'styles/breakpoints';
+
 .delivery-order {
     box-shadow: var(--shadow);
     border-radius: 10px;
@@ -70,6 +72,14 @@
         .btn {
             text-transform: none;
             font-size: 14px;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .delivery-order {
+        .action-btns {
+            gap: 5px;
         }
     }
 }

@@ -3,6 +3,8 @@ import Logo from 'components/Logo';
 import { BsCheck2 } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 import './index.scss'
+import FormInput from 'components/FormInput';
+import { FaSearch } from 'react-icons/fa';
 
 function Landing() {
 	return (
@@ -10,7 +12,12 @@ function Landing() {
 			<div className='landing-container'>
 				<nav>
 					<Logo />
-					
+					{/* <FormInput
+						name='order_id'
+						icon={<FaSearch />}
+						type='text'
+						placeholderText='Nhập vào mã đơn hàng'
+					/> */}
 				</nav>
 				<div className='hero'>
 					<div className='hero-content'>

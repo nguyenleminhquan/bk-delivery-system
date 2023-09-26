@@ -1,3 +1,5 @@
+@import 'styles/breakpoints';
+
 .outer-template {
     background-color: #9CE4E1;
     display: grid;
@@ -24,4 +26,14 @@
     border-top-left-radius: 36px;
     border-bottom-left-radius: 36px;
     display: grid;
+}
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .outer-template {
+        grid-template-columns: 1fr;
+        background-color: #fff;
+        .left {
+            display: none;
+        }
+    }
 }
