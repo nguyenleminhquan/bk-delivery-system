@@ -1,3 +1,5 @@
+@import 'styles/breakpoints';
+
 .landing-container {
     max-width: 1200px;
     width: 90vw;
@@ -34,3 +36,27 @@
         }
     }
 }
+
+@include media-breakpoint-down(sm, $grid-breakpoints) {
+    .landing-container {
+        .hero {
+            display: flex;
+            flex-direction:column-reverse;
+            align-content: center;
+            justify-content: center;
+            &-content {
+                text-align: center;
+                h2 {
+                    font-size: 28px;
+                }
+                li {
+                    font-size: 14px;
+                }
+            }
+        }
+        .logo {
+            display: none;
+        }
+    }
+}
+  
