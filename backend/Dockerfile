@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ]
 
 HEALTHCHECK --timeout=10s \
     CMD wget --no-verbose --tries=1 --spider http://localhost:5000 || exit 1
