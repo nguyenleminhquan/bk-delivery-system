@@ -210,7 +210,7 @@ const socketDelivery = (io) => {
                         area_code = area.area_code;
                         district_code = area.district_code;
                         const drivers = await User
-                        .find({ area_code: area_code, district_code: district_code, type: 'driver_inner' })
+                        .find({ area_code: area_code, district_code: district_code, typeUser: 'driver_inner' })
                         .populate({
                             path: 'vehicle_id',
                             populate: {
@@ -220,7 +220,7 @@ const socketDelivery = (io) => {
                         let flag = false;
                         for (let driver of drivers) {
                             let vehicleInfo = driver.vehicle_id;
-                            if (vehicleInfo.deliveries.length > 0 && vehicleInfo.deliveries[0].type === 'inner_receiver') continue;
+                            if (vehicleInfo.deliveries?.length > 0 && vehicleInfo.deliveries[0].type === 'inner_receiver') continue;
                             if (vehicleInfo.current_weight + orderInfo.weight <= vehicleInfo.max_weight) {
                                 flag = true;
                                 break;
@@ -242,11 +242,12 @@ const socketDelivery = (io) => {
                 } else if (type === 'inter') {
                     const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
-                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(to)[0], to.split('&')[1]);
+                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(orderInfo.receiver_address), orderInfo.receiver_address);
                     to = area.name + '&' + area.address
                 } else if (type === 'inner_receiver') {
                     const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
+                    to = orderInfo.receiver_name + '&' + orderInfo.receiver_address
                 }
                 // save new delivery
                 let newDelivery = new Delivery({
@@ -308,7 +309,9 @@ const socketDelivery = (io) => {
             }
             else if (order_id) {
                 const res = await Delivery.findOneAndDelete({order: order_id})
-                io.emit('deleteDelivery', res._id.toString());
+                if (res) {
+                    io.emit('deleteDelivery', res._id.toString());
+                }
             }
         })
         socket.on('removeDeliveryFromVehicle', async(data) => {

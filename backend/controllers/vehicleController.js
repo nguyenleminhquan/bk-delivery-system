@@ -179,15 +179,26 @@ const getAllOrdersByVehicle = async (req, res, next) => {
       let stock = await Stock.findById(stock_id)
       stockAreaCode = stock.area_code
     }
-
-    let vehicle = await Vehicle
-    .findById(vehicle_id)
-    .populate({
-      path: 'orders',
-      populate: {
-          path: 'items',
-      }
-    });
+    var vehicle;
+    if (vehicle_id.length > 8 && vehicle_id.length <= 11) {
+      vehicle = await Vehicle.find({ license_plate_number: vehicle_id })
+                  .populate({
+                    path: 'orders',
+                    populate: {
+                        path: 'items',
+                    }
+                  });
+    }
+    else {
+      vehicle = await Vehicle
+      .findById(vehicle_id)
+      .populate({
+        path: 'orders',
+        populate: {
+            path: 'items',
+        }
+      });
+    }
 
     let result = vehicle.orders
     if (stockAreaCode != -1) {
