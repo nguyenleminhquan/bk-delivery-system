@@ -64,6 +64,7 @@ function SenderHome() {
 	const [toggleDeletePopup, setToggleDeletePopup] = useState(false);
 	const [emptyAddressInfo, setEmptyAddressInfo] = useState(false);
 	const [showMobileSearch, setShowMobileSearch] = useState(false);
+	const [orderId, setOrderId] = useState('');
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const socket = useContext(SocketContext);
@@ -102,6 +103,12 @@ function SenderHome() {
 		setSelectedTab(tabs.find(tab => tab.field === status));
 	}
 
+	const handleSearch = e => {
+		if (e.keyCode === 13) {
+			dispatch(getOrdersByUserId({userId: user.id, orderId}))
+		}
+	}
+
 	useEffect(() => {
 		if (!user?.area_code) {
 			setEmptyAddressInfo(true);
@@ -109,7 +116,7 @@ function SenderHome() {
 	}, [user])
 
 	useEffect(() => {
-		dispatch(getOrdersByUserId(user.id))
+		dispatch(getOrdersByUserId({userId: user.id}))
 	}, [dispatch, user.id])
 
 	useEffect(() => {
@@ -164,7 +171,7 @@ function SenderHome() {
 			<div className='d-none d-sm-flex'>
 				<div className={styles.searchBar}>
 					<BsSearch />
-					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-3 w-100' />
+					<input type="text" placeholder='Nhập mã đơn hàng' className='ms-3 w-100' value={orderId} onChange={e => setOrderId(e.target.value)} onKeyUp={handleSearch}/>
 				</div>
 				<Link className='btn fs-6' to="/create-order">
 					<BiPencil className='me-3'/> Tạo đơn hàng

@@ -21,9 +21,9 @@ export const getOrderByIdThunk = async(orderId, thunkAPI) => {
     }
 }
 
-export const getOrdersByUserIdThunk = async(userId, thunkAPI) => {
+export const getOrdersByUserIdThunk = async(payload, thunkAPI) => {
     try {
-        const res = await OrderService.getOrdersByUserId(userId);
+        const res = await OrderService.getOrdersByUserId(payload);
         // console.log(res?.data);
         return res.data;
     } catch(error) {

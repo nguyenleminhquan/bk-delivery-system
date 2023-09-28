@@ -27,8 +27,8 @@ export const getOrderById = createAsyncThunk(
 
 export const getOrdersByUserId = createAsyncThunk(
     'order/getOrdersByUserId',
-    async(userId, thunkAPI) => {
-        return getOrdersByUserIdThunk(userId, thunkAPI);
+    async(payload, thunkAPI) => {
+        return getOrdersByUserIdThunk(payload, thunkAPI);
     }
 )
 

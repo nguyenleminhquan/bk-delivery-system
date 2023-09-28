@@ -12,8 +12,8 @@ const getOrderById = (orderId) => {
     return customFetch.get(`/order/${orderId}`);
 }
 
-const getOrdersByUserId = (userId) => {
-    return customFetch.get(`/order/user/${userId}`)
+const getOrdersByUserId = ({userId, orderId = ''}) => {
+    return customFetch.get(`/order/user/${userId}?orderId=${orderId}`);
 }
 
 const OrderService = {
