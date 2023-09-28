@@ -167,13 +167,13 @@ export const senderSidebar = [
         text: 'Yêu cầu xử lí',
         type: 'above'
     },
-    {
-        id: 2,
-        path: '/notification',
-        icon: <IoMdNotificationsOutline />,
-        text: 'Thông báo',
-        type: 'above'
-    },
+    // {
+    //     id: 2,
+    //     path: '/notification',
+    //     icon: <IoMdNotificationsOutline />,
+    //     text: 'Thông báo',
+    //     type: 'above'
+    // },
     {
         id: 3,
         path: '/logout',
@@ -212,13 +212,13 @@ export const driverSidebar = [
         text: 'Yêu cầu xử lí',
         type: 'above'
     },
-    {
-        id: 2,
-        path: '/notification',
-        icon: <IoMdNotificationsOutline />,
-        text: 'Thông báo',
-        type: 'above'
-    },
+    // {
+    //     id: 2,
+    //     path: '/notification',
+    //     icon: <IoMdNotificationsOutline />,
+    //     text: 'Thông báo',
+    //     type: 'above'
+    // },
     {
         id: 3,
         path: '/logout',
@@ -257,13 +257,13 @@ export const stockerSidebar = [
         text: 'Yêu cầu xử lí',
         type: 'above'
     },
-    {
-        id: 2,
-        path: '/notification',
-        icon: <IoMdNotificationsOutline />,
-        text: 'Thông báo',
-        type: 'above'
-    },
+    // {
+    //     id: 2,
+    //     path: '/notification',
+    //     icon: <IoMdNotificationsOutline />,
+    //     text: 'Thông báo',
+    //     type: 'above'
+    // },
     {
         id: 3,
         path: '/logout',
@@ -302,13 +302,13 @@ export const adminSidebar = [
         text: 'Yêu cầu xử lí',
         type: 'above'
     },
-    {
-        id: 2,
-        path: '/notification',
-        icon: <IoMdNotificationsOutline />,
-        text: 'Thông báo',
-        type: 'above'
-    },
+    // {
+    //     id: 2,
+    //     path: '/notification',
+    //     icon: <IoMdNotificationsOutline />,
+    //     text: 'Thông báo',
+    //     type: 'above'
+    // },
     {
         id: 3,
         path: '/logout',
@@ -375,9 +375,11 @@ export const paymentOptions = [
 export const orderTypes = [
     { value: 'electronic', label: 'Điện tử' },
     { value: 'fragile', label: 'Dễ vỡ' },
-    { value: 'food', label: 'Thức ăn' },
+    { value: 'food', label: 'Thức phẩm' },
     { value: 'cloth', label: 'Quần áo' },
-    { value: 'others', label: 'Còn lại' }
+    { value: 'material', label: 'Vật liệu' },
+    { value: 'medicine', label: 'Dược phẩm' },
+    { value: 'others', label: 'Còn lại' },
 ];
 
 export const orderStatusList = {

@@ -15,6 +15,7 @@ import { getStockVehicles } from 'features/stock/stockSlice';
 
 // Css import
 import styles from './ExportOrder.module.scss';
+import { AreaDelivery } from 'utils/consts';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -89,6 +90,10 @@ function ExportOrder() {
         setRouteFilters(prev => [routeModels, ...uniqueFilters]);
     }
 
+    const findAreaLable = (code) => {
+        return AreaDelivery.find(el => el.code === code)?.label;
+    }
+
     useEffect(() => {
         if (vehicles.length > 0) {
             setAvailVehicle(vehicles.filter(vehicle => vehicle.type === selectedTab.field));
@@ -116,19 +121,23 @@ function ExportOrder() {
             </div>
 
             <div className="row mt-3">
-                {availVehicle.map(route => (
+                {availVehicle.map((route, index) => (
                     <div className="col-12 col-lg-4 mb-3 mb-sm-4" key={route._id} onClick={() => handleChooseTruck(route)}>
                         <div className={styles.blockItem}>
                             <div className="d-flex justify-content-between">
                                 <div className="d-flex flex-column w-50">
-                                    <span className={styles.label}>{route.from_string} - {route.to_string}</span>
+                                    {selectedTab.field === 'inner' ? (
+                                        <span className={styles.label}>{`${findAreaLable(route?.from)} ${index+1}`}</span>
+                                    ) : (
+                                        <span className={styles.label}>{route.from_string} - {route.to_string}</span>
+                                    )}
                                     <span className='mt-2'>Khả dụng, Kg:</span>
                                     <span className={styles.status}>
                                         <span className='fw-semibold'>{route.max_weight - route.current_weight}</span>
                                         /{route.max_weight}
                                     </span>
                                     <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
-                                    <span>Tài xế: <span className='fw-semibold'>{route?.driver_id}</span></span>
+                                    {/* <span>Tài xế: <span className='fw-semibold'>{route?.driver_id}</span></span> */}
                                 </div>
                                 <div className="d-flex flex-column align-items-end w-50">
                                     <h1 className={handleSetStatus(route.current_weight / route.max_weight)}>{((route.current_weight / route.max_weight)*100).toFixed(2)}%</h1>
