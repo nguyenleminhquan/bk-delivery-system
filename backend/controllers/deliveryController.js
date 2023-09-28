@@ -210,7 +210,7 @@ const socketDelivery = (io) => {
                         area_code = area.area_code;
                         district_code = area.district_code;
                         const drivers = await User
-                        .find({ area_code: area_code, district_code: district_code, type: 'driver_inner' })
+                        .find({ area_code: area_code, district_code: district_code, typeUser: 'driver_inner' })
                         .populate({
                             path: 'vehicle_id',
                             populate: {
@@ -220,7 +220,7 @@ const socketDelivery = (io) => {
                         let flag = false;
                         for (let driver of drivers) {
                             let vehicleInfo = driver.vehicle_id;
-                            if (vehicleInfo.deliveries.length > 0 && vehicleInfo.deliveries[0].type === 'inner_receiver') continue;
+                            if (vehicleInfo.deliveries?.length > 0 && vehicleInfo.deliveries[0].type === 'inner_receiver') continue;
                             if (vehicleInfo.current_weight + orderInfo.weight <= vehicleInfo.max_weight) {
                                 flag = true;
                                 break;
