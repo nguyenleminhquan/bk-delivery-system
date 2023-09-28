@@ -24,11 +24,11 @@ function ChangePassTab() {
 		e.preventDefault();
 		const { oldPass, newPass, newPassc } = values;
 		if (!oldPass || !newPass || !newPassc) {
-			toast.error('Please fill out all fields');
+			toast.error('Vui lòng điền đầy đủ thông tin!');
 			return;
 		};
 		if (newPass != newPassc) {
-			toast.error('Confirm password not match');
+			toast.error('Mật khẩu không giống nhau!');
       		return;
 		}
 		dispatch(changePassword(

@@ -142,7 +142,6 @@ const deliverySlice = createSlice({
         [getDeliveryHistory.fulfilled]: (state, {payload}) => {
             state.deliveries = payload;
             state.isLoading = false;
-            // toast.success('Create order successfully');
         },
         [getDeliveryHistory.rejected]: (state, {payload}) => {
             console.log(payload);
@@ -156,7 +155,6 @@ const deliverySlice = createSlice({
             console.log('payload', payload)
             state.deliveries = payload;
             state.isLoading = false;
-            // toast.success('Create order successfully');
         },
         [getOrderDelivery.rejected]: (state, {payload}) => {
             console.log(payload);
@@ -165,14 +163,14 @@ const deliverySlice = createSlice({
         },
         [acceptDelivery.fulfilled]: (state, { payload }) => {
             state.toggleAction = !state.toggleAction;
-            toast.success('Order accepted!')
+            toast.success('Đơn hàng đã được chấp nhận!')
         },
         [acceptDelivery.rejected]: (state, { payload }) => {
             toast.error(payload)
         },
         [updateDeliveryStatus.fulfilled]: (state, { payload }) => {
             state.toggleAction = !state.toggleAction;
-            toast.success('Status updated!')
+            toast.success('Đã cập nhật trạng thái!')
         },
         [updateDeliveryStatus.rejected]: (state, { payload }) => {
             toast.error(payload)
