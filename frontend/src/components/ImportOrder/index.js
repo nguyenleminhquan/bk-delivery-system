@@ -61,14 +61,14 @@ function ImportOrder({closePopup}) {
 
 	return (
 		<div className='import-order'>
-			<label>Mã xe tải</label>
+			<label>Mã xe/Biển số xe tải</label>
 			<div className="d-flex">
 				<form className='flex-fill' onSubmit={handleSearch}>
 					<FormInput
 						name='orderId'
 						type="text"
 						value={vehicleId}
-						placeholderText="Nhập vào mã xe tải"
+						placeholderText="Nhập vào mã xe/biển số xe tải"
 						handleChange={(e) => setVehicleId(e.target.value)}
 						icon={<FaSearch />}
 					/>
@@ -85,7 +85,7 @@ function ImportOrder({closePopup}) {
 						<div className="order-info-wrapper fw-bold">
 							<span>Mã đơn</span>
 							<span>Tên người gửi</span>
-							<span>Tổng tiền</span>
+							<span>Tổng khối lượng</span>
 						</div>
 						<div style={{width: '25px'}}></div>
 					</div>
@@ -96,8 +96,8 @@ function ImportOrder({closePopup}) {
 								<Tooltip id="orderId" />
 								<span data-tooltip-id="orderName" data-tooltip-content={order.sender_name}> {order.sender_name} </span>
 								<Tooltip id="orderName" />
-								<span data-tooltip-id="orderPrice" data-tooltip-content={order.shipping_fee}>{formatCurrency(order.shipping_fee)}</span>
-								<Tooltip id="orderPrice" />
+								<span data-tooltip-id="orderWeight" data-tooltip-content={order.weight}>{order.weight} kg</span>
+								<Tooltip id="orderWeight" />
 							</div>
 						))}
 					</div>
