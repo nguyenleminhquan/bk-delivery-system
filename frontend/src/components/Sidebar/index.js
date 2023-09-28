@@ -72,7 +72,7 @@ function Sidebar({ sidebarItems }) {
 											<Link
 												to={item.path}
 												className={'menu-link' + (activeTab.id === item.id ? ' active' : '')}
-												onClick={() => setActiveTab(item.id)}
+												onClick={() => setActiveTab(item)}
 											>
 												<div className="d-flex align-items-center me-2 icon-md">
 													{item.icon}
