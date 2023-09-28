@@ -129,14 +129,14 @@ export const exportOrderOnVehicleThunk = async(payload, thunkAPI) => {
         const res = await DeliveryService.exportOrderOnVehicle(exportPayload);
         const deliveries = [];
         console.log('data of export', res.data)
-        res.data.orders.forEach((order) => {
-            const payload = {
-                ...deliveryPayload,
-                order_id: order._id,
-                from: `${order.sender_name}&${order.sender_address}`,
-                to: `${order.receiver_name}&${order.receiver_address}`,
-            }
-            deliveries.push(payload)
+        res.data.dest_stocks.forEach((stock) => {
+            stock.orders.forEach((order) => {
+                const payload = {
+                    ...deliveryPayload,
+                    order_id: order,
+                }
+                deliveries.push(payload)
+            })
         })
         socket.emit('newDeliveries', deliveries);
         return res.data;

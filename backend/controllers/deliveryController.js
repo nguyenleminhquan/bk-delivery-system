@@ -242,11 +242,12 @@ const socketDelivery = (io) => {
                 } else if (type === 'inter') {
                     const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
-                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(to)[0], to.split('&')[1]);
+                    let area = await findNearestArea(getAreaCodeAndDistrictCodeFromString(orderInfo.receiver_address), orderInfo.receiver_address);
                     to = area.name + '&' + area.address
                 } else if (type === 'inner_receiver') {
                     const stock = await Stock.findOne({area_code: area_code, district_code: district_code});
                     from = stock.name + '&' + stock.address;
+                    to = orderInfo.receiver_name + '&' + orderInfo.receiver_address
                 }
                 // save new delivery
                 let newDelivery = new Delivery({
