@@ -54,7 +54,7 @@ const orderSlice = createSlice({
         [createOrder.fulfilled]: (state, {payload}) => {
             state.isLoading = false;
             state.newOrder = payload
-            toast.success('Create order successfully');
+            toast.success('Tạo đơn hàng thành công!');
         },
         [createOrder.rejected]: (state, {payload}) => {
             console.log(payload);

@@ -123,7 +123,7 @@ const userSlice = createSlice({
             state.isLoading = false;
             state.user = user;
             addUserToLocalStorage(user);
-            toast.success(`Hello There, ${user.fullname}`);
+            toast.success(`Xin chào ${user.fullname}`);
         },
         [registerUser.rejected]: (state, { payload }) => {
             state.isLoading = false;
@@ -137,7 +137,7 @@ const userSlice = createSlice({
             state.isLoading = false;
             state.user = user;
             addUserToLocalStorage(user);
-            toast.success(`Welcome Back ${user.fullname}`);
+            toast.success(`Chào mừng ${user.fullname} trở lại`);
         },
         [loginUser.rejected]: (state, { payload }) => {
             state.isLoading = false;
@@ -151,7 +151,7 @@ const userSlice = createSlice({
             state.isLoading = false;
             state.user = data;
             addUserToLocalStorage(data);
-            toast.success('User Updated!')
+            toast.success('Đã cập nhật thông tin cá nhân!')
         },
         [updateUser.rejected]: (state, { payload }) => {
             state.isLoading = false;
@@ -162,7 +162,7 @@ const userSlice = createSlice({
         },
         [changePassword.fulfilled]: (state) => {
             state.isLoading = false;
-            toast.success('Change Password Successfully!')
+            toast.success('Đổi mật khẩu thành công!')
         },
         [changePassword.rejected]: (state, { payload }) => {
             state.isLoading = false;

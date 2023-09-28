@@ -24,7 +24,7 @@ function PersonalTab() {
 		e.preventDefault();
 		const { fullname, email, phone } = values;
 		if (!fullname || !email || !phone) {
-			toast.error('Please fill out all fields');
+			toast.error('Vui lòng điền đầy đủ thông tin!');
 			return;
 		};
 		dispatch(updateUser(

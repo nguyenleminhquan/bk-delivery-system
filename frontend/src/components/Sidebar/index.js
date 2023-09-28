@@ -38,7 +38,7 @@ function Sidebar({ sidebarItems }) {
 			setShowSidebar(false);
 		}
 		if (item.path === '/logout') {
-			dispatch(clearStore('Logging out...'));
+			dispatch(clearStore('Đăng xuất...'));
 			return;
 		}
 		setActiveTab(item);
@@ -68,7 +68,7 @@ function Sidebar({ sidebarItems }) {
 							<ul className='menu-lists'>
 								{
 									sidebarItems.filter(item => item.type === 'above').map((item) => (
-										<li className='list-item' key={item.id} onClick={() => item.path === '/logout' && dispatch(clearStore('Logging out...'))}>
+										<li className='list-item' key={item.id} onClick={() => item.path === '/logout' && dispatch(clearStore('Đăng xuất...'))}>
 											<Link
 												to={item.path}
 												className={'menu-link' + (activeTab.id === item.id ? ' active' : '')}

@@ -27,7 +27,7 @@ function BankAccountTab() {
 		e.preventDefault();
 		const { bankName, owner, accNum } = values;
 		if (!bankName || !owner || !accNum) {
-			toast.error('Please fill out all fields');
+			toast.error('Vui lòng điền đầy đủ thông tin!');
 			return;
 		};
 		dispatch(updateUser(
