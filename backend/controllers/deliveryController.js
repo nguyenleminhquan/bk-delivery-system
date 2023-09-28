@@ -309,7 +309,9 @@ const socketDelivery = (io) => {
             }
             else if (order_id) {
                 const res = await Delivery.findOneAndDelete({order: order_id})
-                io.emit('deleteDelivery', res._id.toString());
+                if (res) {
+                    io.emit('deleteDelivery', res._id.toString());
+                }
             }
         })
         socket.on('removeDeliveryFromVehicle', async(data) => {
