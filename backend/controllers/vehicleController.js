@@ -181,7 +181,7 @@ const getAllOrdersByVehicle = async (req, res, next) => {
     }
     var vehicle;
     if (vehicle_id.length > 8 && vehicle_id.length <= 11) {
-      vehicle = await Vehicle.find({ license_plate_number: vehicle_id })
+      vehicle = await Vehicle.findOne({ license_plate_number: vehicle_id })
                   .populate({
                     path: 'orders',
                     populate: {
