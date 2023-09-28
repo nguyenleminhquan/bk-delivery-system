@@ -220,7 +220,10 @@ const getExportHistory = async(req, res, next) => {
     .populate({
       path: 'dest_stocks',
       populate: {
-        path: 'orders'
+        path: 'orders',
+        populate: {
+          path: 'items'
+        }
       }
     });
     

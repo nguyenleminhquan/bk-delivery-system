@@ -38,6 +38,20 @@ function ImportExportHistory() {
     console.log('download data', data)
   }
 
+  const getOrders = (item) => {
+    if (selectedTab.field === 'import') {
+      return item.orders;
+    } else {
+      let orders = [];
+      for (let stock of item.dest_stocks) {
+        for (let order of stock.orders) {
+          orders.push(order);
+        }
+      }
+      return orders;
+    }
+  }
+
   useEffect(() => {
     if (selectedTab.field === 'import') {
       dispatch(getImportHistory(user.stock_id))
@@ -70,13 +84,13 @@ function ImportExportHistory() {
         </div>
       );
       row.time = moment(item.createdAt).format('DD-MM-YYYY HH:mm:ss');
-      row.items = <p className='click-here' onClick={() => { setOrders(item.orders); setTogglePopup(true);  }}>Click vào đây để xem</p>;
+      row.items = <p className='click-here' onClick={() => { setOrders(getOrders(item)); setTogglePopup(true); }}>Click vào đây để xem</p>;
       row.download = <PDFDownloadLink 
                         document={<PDFFile 
                                     type={selectedTab.field === 'import' ? 'import' : 'export'} 
                                     formId={item._id}
                                     stockerInfo={item.stocker_id} 
-                                    orders={item.orders}
+                                    orders={getOrders(item)}
                                     createdAt={item.createdAt}
                                     stock={item.stock_id}
                                   />} 
