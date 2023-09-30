@@ -12,7 +12,13 @@ const importOrderToStock = async (req, res, next) => {
   try {
     console.info("[API] Import order to stock")
 
-    const { order_ids, stock_id, stocker_id, vehicle_id } = req.body
+    let { order_ids, stock_id, stocker_id, vehicle_id } = req.body
+
+    if (vehicle_id.length >= 9 && vehicle_id.length <= 10) {
+      let tempVehicle = await Vehicle.findOne({ license_plate_number: vehicle_id })
+      vehicle_id = tempVehicle._id
+    }
+    
     await User.findById(stocker_id)
     let resultOfOrders = []
 
@@ -93,6 +99,7 @@ const importOrderToStock = async (req, res, next) => {
     await importInfo.save()
     
     return res.json(importInfo)
+    return res.json("ok")
   } catch (error) {
     return next(createError(404))
   }
