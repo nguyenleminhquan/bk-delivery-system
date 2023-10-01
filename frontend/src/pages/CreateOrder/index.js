@@ -169,6 +169,8 @@ function CreateOrder() {
         const missingInputField = isDisabledSubmit();
         if (missingInputField) {
             toast.error(CreateOrderErrorToast.SUBMIT_FORM_WITHOUT_COMPLETED_SECTION(missingInputField));
+        } else if (!isInterShipping()) {
+            toast.error(CreateOrderErrorToast.IS_INNER_SHIPPING);
         } else if (paymentMethod === 'paypal') {
             setPaypalPopup(true);
         } else {
@@ -284,6 +286,12 @@ function CreateOrder() {
             return;
         }
         setCod(value);
+    }
+
+    function isInterShipping() {
+        const senderCode = user.area_code;
+        const receiverCode = AreaDelivery.find(area => area?.label === receiverInfo?.city)?.code;
+        return senderCode !== receiverCode;
     }
 
     useEffect(() => {
