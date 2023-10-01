@@ -317,7 +317,7 @@ const socketDelivery = (io) => {
         socket.on('removeDeliveryFromVehicle', async(data) => {
             let { delivery_id, vehicle_id, order_id } = data;
             if (order_id) {
-                const res = await Delivery.findOne({order: order_id});
+                const res = await Delivery.findOne({order: order_id, status: 'deliveried'});
                 delivery_id = res._id.toString();
             }
             const updatedDelivery = await Delivery.findByIdAndUpdate(delivery_id, {status: 'success'}, {new: true}).populate('order');
