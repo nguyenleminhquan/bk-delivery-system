@@ -373,13 +373,16 @@ export const paymentOptions = [
 ]
 
 export const orderTypes = [
-    { value: 'electronic', label: 'Điện tử' },
-    { value: 'fragile', label: 'Dễ vỡ' },
-    { value: 'food', label: 'Thực phẩm' },
-    { value: 'cloth', label: 'Quần áo' },
-    { value: 'material', label: 'Vật liệu' },
-    { value: 'medicine', label: 'Dược phẩm' },
-    { value: 'others', label: 'Còn lại' },
+    { label: 'Thực phẩm và Đồ uống', value: 'food_and_beverages' },
+    { label: 'Đồ điện tử và Công nghệ', value: 'electronics_and_technology' },
+    { label: 'Hàng hóa chất', value: 'chemicals' },
+    { label: 'Đồ nội thất và Gia đình', value: 'furniture_and_home' },
+    { label: 'Thời trang và Thể thao', value: 'fashion_and_sports' },
+    { label: 'Y tế và Sức khỏe', value: 'healthcare' },
+    { label: 'Vật liệu xây dựng', value: 'construction_materials' },
+    { label: 'Hàng hóa Gia đình và Đồ chơi', value: 'household_and_toys' },
+    { label: 'Hàng thể thao và Giải trí', value: 'sports_and_entertainment' },
+    { label: 'Khác', value: 'others' },
 ];
 
 export const orderStatusList = {
