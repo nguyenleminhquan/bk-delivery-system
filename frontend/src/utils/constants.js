@@ -375,7 +375,7 @@ export const paymentOptions = [
 export const orderTypes = [
     { value: 'electronic', label: 'Điện tử' },
     { value: 'fragile', label: 'Dễ vỡ' },
-    { value: 'food', label: 'Thức phẩm' },
+    { value: 'food', label: 'Thực phẩm' },
     { value: 'cloth', label: 'Quần áo' },
     { value: 'material', label: 'Vật liệu' },
     { value: 'medicine', label: 'Dược phẩm' },

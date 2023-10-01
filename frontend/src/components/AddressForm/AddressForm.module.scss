@@ -24,11 +24,21 @@
             color: var(--placeholder-input-color);
             font-size: 14px;
         }
+        &.error {
+            border-color: red;
+        }
     }
     select {
         &::after {
             background-color: red;
         }
+    }
+    .errorMsg {
+        font-size: 14px;
+        color: red;
+        display: block;
+        margin-bottom: 6px;
+        text-align: left;
     }
 }
 

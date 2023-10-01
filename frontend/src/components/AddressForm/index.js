@@ -1,5 +1,6 @@
 import SelectOption from 'components/SelectOption';
-import styles from './AddressForm.module.scss'
+import styles from './AddressForm.module.scss';
+import validator from "validator";
 import { useEffect, useState } from 'react';
 
 // Props contains: [stateInfo, setStateInfo], cities, districts, wards
@@ -8,10 +9,27 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
     const [citiesData, setCitiesData] = useState([]);
     const [districtsData, setDistrictsData] = useState([]);
     const [wardsData, setWardsData] = useState([]);
+    const [errorMsg, setErrorMsg] = useState({
+        phone: '',
+        addressDetail: ''
+    });
     const handleChangeInfo = (event) => {
         const key = event.target.name;
         const value = event.target.value;
         setStateInfo(prev => ({...prev, [key]: value}));
+    }
+
+    const handleValidate = event => {
+        const key = event.target.name;
+        const value = event.target.value;
+        if (key == 'phone') {
+            const validPhone = validator.isMobilePhone(value, 'vi-VN');
+            if (validPhone || value.length === 0) {
+                setErrorMsg(prev => ({...prev, phone: ''}));
+            } else {
+                setErrorMsg(prev => ({...prev, phone: 'Số điện thoại không hợp lệ'}));
+            }
+        }
     }
 
     const findDistricts = city => {
@@ -104,7 +122,10 @@ function AddressForm({stateInfo, setStateInfo, cities, districts, setDistricts, 
                             placeholder='Nhập số điện thoại'
                             value={stateInfo?.phone}
                             name='phone'
-                            onChange={e => handleChangeInfo(e)}/>
+                            className={errorMsg['phone'] ? styles.error : ''}
+                            onChange={e => handleChangeInfo(e)}
+                            onBlur={e => handleValidate(e)}/>
+                        <span className={styles.errorMsg}>{errorMsg['phone']}</span>
                     </div>
                 )}
 

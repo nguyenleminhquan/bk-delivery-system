@@ -46,8 +46,11 @@
             font-weight: 600;
             font-size: 16px;
             .editBtn {
-                color: #000;
+                color: var(--text-color);
                 cursor: pointer;
+                display: flex;
+                align-items: center;
+                background-color: transparent;
                 &:hover {
                     color: var(--primary-color);
                 }
