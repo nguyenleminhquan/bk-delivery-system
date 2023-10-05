@@ -79,12 +79,12 @@ function ExportOrder() {
     }
 
     const handleChooseTruck = (truckInfo) => {
-        if (truckInfo.status === VehicleStatus.AVAILABLE || truckInfo.type === VehicleType.INNER) {
-            localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
-            navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
-        } else if (truckInfo.status === VehicleStatus.IN_PROGRESS) {
+        if (truckInfo?.status === VehicleStatus.IN_PROGRESS) {
             dispatch(getVehicleOrderLists({vehicle_id: truckInfo._id }));
             setVehicleTracking(truckInfo);
+        } else {
+            localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
+            navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
         }
     }
 
@@ -155,7 +155,7 @@ function ExportOrder() {
                                         /{route.max_weight}
                                     </span>
                                     <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
-                                    {route.type !== VehicleType.INNER && (
+                                    {(route.type !== VehicleType.INNER && route?.status) && (
                                         <span className={`${styles.currentStatus} ${styles[route.status]}`}>
                                             {getVehicleStatusIcon(route.status)}
                                             <span className='ms-1'>{getVehicleStatus(route.status)}</span>
