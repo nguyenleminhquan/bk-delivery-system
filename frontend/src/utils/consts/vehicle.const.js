@@ -1,4 +1,4 @@
-import { VehicleType, VehicleTypeLabel } from "utils/enums/vehicle.enum";
+import { VehicleStatus, VehicleType, VehicleTypeLabel } from "utils/enums/vehicle.enum";
 
 export const VehicleTypes = [
   {
@@ -10,3 +10,18 @@ export const VehicleTypes = [
     value: VehicleType.INTER
   }
 ];
+
+export const VehicleStatuses = [
+  {
+    label: 'Đang chờ xác nhận',
+    value: VehicleStatus.WAITING,
+  },
+  {
+    label: 'Sẵn Sàng',
+    value: VehicleStatus.AVAILABLE,
+  },
+  {
+    label: 'Đang vận chuyển',
+    value: VehicleStatus.IN_PROGRESS,
+  }
+]
