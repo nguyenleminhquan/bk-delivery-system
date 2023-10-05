@@ -2,6 +2,7 @@ import React from 'react';
 import Chart from 'chart.js/auto';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import { FaMoneyBillAlt, FaShoppingBag, FaUserPlus } from 'react-icons/fa';
+import ComingSoon from '../../../../assests/images/coming-soon.png'; 
 import './index.scss'
 
 const areaChartData = {
@@ -73,7 +74,7 @@ const barChartData = {
 function AdminHome() {
   return (
     <div className='admin-dashboard'>
-      <h2 className='pb-3 fs-3 d-none d-sm-block'>Thống kê</h2>
+      {/* <h2 className='pb-3 fs-3 d-none d-sm-block'>Thống kê</h2>
       <div className='widget'>
         <div className='widget-item blue-color'>
           <p className='title'>Tài khoản mới</p>
@@ -129,7 +130,8 @@ function AdminHome() {
             <Bar data={barChartData} />
           </div>
         </div>
-      </div>
+      </div> */}
+      <img src={ComingSoon} alt="Coming Soon" className='coming-soon' />
     </div>
   )
 }

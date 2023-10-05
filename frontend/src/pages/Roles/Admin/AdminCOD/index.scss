@@ -1,0 +1,10 @@
+.admin-cod-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  .coming-soon {
+    height: max-content;
+    width: 50%;
+  }
+}
