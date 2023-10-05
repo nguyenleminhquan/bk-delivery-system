@@ -1,3 +1,10 @@
+$available-color: #4CAF50;
+$available-bg-color: rgba(76, 175, 80, 0.1);
+$inprogress-color: #FF5722;
+$inprogress-bg-color: rgba(255, 87, 34, 0.1);
+$waiting-color: #F44336;
+$waiting-bg-color: rgba(244, 67, 54, 0.1);
+
 .wrapper {
     .action {
         a {
@@ -42,10 +49,11 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         padding: 18px;
         font-size: 14px;
+        height: 100%;
         cursor: pointer;
         .label {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 700;
         }
         .status {
             font-size: 24px;
@@ -59,8 +67,114 @@
         .dangerStatus {
             color: #ff0000;
         }
+        .currentStatus {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            max-width: max-content;
+            &.waiting {
+                color: $waiting-color;
+                background-color: $waiting-bg-color;
+            }
+            &.inprogress {
+                color: $waiting-color;
+                background-color: $inprogress-bg-color;
+            }
+            &.available {
+                color: $available-color;
+                background-color: $available-bg-color;
+            }
+        }
         &:hover {
             background-color: #f8f8f8;
+        }
+    }
+    .vehicleTracking {
+        width: 100%;
+        border: 2px solid var(--success-color);
+        border-radius: 3px;
+        padding: 20px;
+        margin-bottom: 20px;
+        .vehicleInfo {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--text-color);
+            span:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            .point {
+                display: flex;
+                .status {
+                    width: 24px;
+                    height: 24px;
+                    background-color: var(--grey-color);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    font-size: 24px;
+                    position: relative;
+                    &.active {
+                        background-color: var(--success-color);
+                    }
+                }
+                .info {
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 10px;
+                }
+                &.notLastPoint {
+                    margin-bottom: 25px;
+                    .status::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -45px;
+                        display: block;
+                        width: 2px;
+                        height: 45px;
+                        background-color: var(--grey-color);
+                    }
+                }
+                &.active {
+                    .status::after {
+                        background-color: var(--primary-color);
+                    }
+                }
+            }
+        }
+    }
+    .vehicleOrders {
+        flex: 1;
+        overflow-y: auto;
+        .vehicleOrdersTable {
+            border-collapse: collapse;
+            width: 100%;
+            td, th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            tr:hover {
+                background-color: #ddd;
+            }
+            th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: var(--success-color);
+                color: white;
+            }
         }
     }
 }

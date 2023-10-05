@@ -397,3 +397,44 @@ span.icon-xlg {
         }
     }
 }
+
+// Tracking items popup 
+.tracking-items {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 99;
+    .container {
+        background-color: white;
+        max-width: 100vw;
+        width: 680px;
+        height: 100vh;
+        position: absolute;
+        right: 0;
+        padding: 15px;
+        overflow-y: scroll;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            .title {
+                font-size: 18px;
+                font-weight: 600;
+            }
+            .close-btn {
+                border: none;
+                outline: none;
+                background-color: transparent;
+            }
+        }
+        .body {
+            display: flex;
+            flex-direction: column;
+            max-height: 95%;
+        }
+    }
+}

@@ -15,7 +15,14 @@ import { getStockVehicles } from 'features/stock/stockSlice';
 
 // Css import
 import styles from './ExportOrder.module.scss';
-import { AreaDelivery } from 'utils/consts';
+import { AreaDelivery, VehicleStatuses, VehicleTypes } from 'utils/consts';
+import { VehicleStatus, VehicleType } from 'utils/enums/vehicle.enum';
+import { FaTimes } from 'react-icons/fa';
+import { BsCheck2Circle } from 'react-icons/bs';
+import { FiLoader } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
+import { BiCheck } from 'react-icons/bi';
+import { getVehicleOrderLists } from 'features/delivery/deliverySlice';
 
 /** Dựa vào địa điểm làm việc của stocker, khi xuất kho sẽ hiển thị các xe tải phù hợp:
  * VD: - Stocker ở kho tổng Hồ Chí Minh -> hiển thị các xe tải về các tỉnh
@@ -45,6 +52,7 @@ const tabs = [
 function ExportOrder() {
     const { vehicles } = useSelector(state => state.stock);
     const { user } = useSelector(state => state.user);
+    const { vehicleOrders } = useSelector(state => state.delivery);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [selectedTab, setSelectedTab] = useState(tabs[0]);
@@ -52,6 +60,7 @@ function ExportOrder() {
     const [routeFilters,  setRouteFilters] = useState([routeModels]);
     const [selectedRouteFilter, setSelectedRouteFilter] = useState(routeFilters[0].label);
     const [toggleImportPopup, setToggleImportPopup] = useState(false);
+    const [vehicleTracking, setVehicleTracking] = useState(null);
 
     const handleChooseColor = (percent) => {
         if (percent < 0.5) {
@@ -70,28 +79,37 @@ function ExportOrder() {
     }
 
     const handleChooseTruck = (truckInfo) => {
-        localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
-        navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
-    }
-
-    function generateVehicleFilter() {
-        const filters = vehicles.map(vehicle => ({
-            source: vehicle.from,
-            destination: vehicle.to,
-            label: `${vehicle.from_string} - ${vehicle.to_string}`
-        }));
-        // Filtered filter data
-        const uniqueFilters = filters.filter((value, index) => {
-            const _value = JSON.stringify(value);
-            return index === filters.findIndex(obj => {
-              return JSON.stringify(obj) === _value;
-            });
-        });
-        setRouteFilters(prev => [routeModels, ...uniqueFilters]);
+        if (truckInfo.status === VehicleStatus.AVAILABLE || truckInfo.type === VehicleType.INNER) {
+            localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
+            navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
+        } else if (truckInfo.status === VehicleStatus.IN_PROGRESS) {
+            dispatch(getVehicleOrderLists({vehicle_id: truckInfo._id }));
+            setVehicleTracking(truckInfo);
+        }
     }
 
     const findAreaLable = (code) => {
         return AreaDelivery.find(el => el.code === code)?.label;
+    }
+
+    const getVehicleStatus = (status) => {
+        return VehicleStatuses.find(el => el?.value === status)?.label;
+    }
+
+    const getVehicleType = type => {
+        return VehicleTypes.find(el => el?.value === type)?.label;
+    }
+
+    const getVehicleStatusIcon = (status) => {
+        return status === VehicleStatus.AVAILABLE 
+            ? <BsCheck2Circle />
+            : status === VehicleStatus.IN_PROGRESS
+                ? <FiLoader />
+                : <CiCircleMore />
+    }
+
+    const getTotalOrderWeight = () => {
+        return vehicleOrders?.reduce((acc, cur) => acc + cur.weight, 0);
     }
 
     useEffect(() => {
@@ -124,8 +142,8 @@ function ExportOrder() {
                 {availVehicle.map((route, index) => (
                     <div className="col-12 col-lg-4 mb-3 mb-sm-4" key={route._id} onClick={() => handleChooseTruck(route)}>
                         <div className={styles.blockItem}>
-                            <div className="d-flex justify-content-between">
-                                <div className="d-flex flex-column w-50">
+                            <div className="d-flex justify-content-between h-100">
+                                <div className="d-flex flex-column justify-content-between w-50">
                                     {selectedTab.field === 'inner' ? (
                                         <span className={styles.label}>{`${findAreaLable(route?.from)} ${index+1}`}</span>
                                     ) : (
@@ -137,6 +155,12 @@ function ExportOrder() {
                                         /{route.max_weight}
                                     </span>
                                     <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
+                                    {route.type !== VehicleType.INNER && (
+                                        <span className={`${styles.currentStatus} ${styles[route.status]}`}>
+                                            {getVehicleStatusIcon(route.status)}
+                                            <span className='ms-1'>{getVehicleStatus(route.status)}</span>
+                                        </span>
+                                    )}
                                     {/* <span>Tài xế: <span className='fw-semibold'>{route?.driver_id}</span></span> */}
                                 </div>
                                 <div className="d-flex flex-column align-items-end w-50">
@@ -160,6 +184,70 @@ function ExportOrder() {
                     message={<ImportOrder closePopup={() => setToggleImportPopup(false)} />}
                     disableCancel={true}
                 />
+            )}
+
+            {vehicleTracking && (
+                <div className="tracking-items">
+                    <div className="container">
+                        <div className="header">
+                            <span className='title'>Thông tin vận chuyển</span>
+                            <button className='close-btn' onClick={() => setVehicleTracking(null)}> <FaTimes /> </button>
+                        </div>
+                        <div className="body">
+                            <div className={styles.vehicleTracking}>
+                                <div className={styles.vehicleInfo}>
+                                    <span>Mã xe tải: <span className='fw-600'>{vehicleTracking._id}</span></span>
+                                    <span>Biển số xe: <span className='fw-600'>{vehicleTracking?.license_plate_number}</span></span>
+                                    <span>Loại xe: <span className='fw-600'>{getVehicleType(vehicleTracking?.type)}</span></span>
+                                </div>
+                                <div className={styles.timeline}>
+                                    {vehicleTracking.deliveryStatus.map((row, index) => (
+                                        <div key={index}
+                                            className={`
+                                                ${styles.point}
+                                                ${index !== vehicleTracking.deliveryStatus.length - 1 ? styles.notLastPoint : ''}
+                                                ${row.traversed ? styles.active : ''}
+                                            `
+                                        }>
+                                            <div className={`${styles.status} ${row?.traversed ? styles.active : ''}`}>
+                                                <BiCheck />
+                                            </div>
+                                            <div className={styles.info}>
+                                                <span className='fw-600'>{row.stock_id.name}</span>
+                                                <span className='fs-12'>01-10-2023 16:53:54</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className={styles.vehicleOrders}>
+                                <div className="d-flex-center justify-content-between mb-3">
+                                    <span className='fs-18 fw-600'>Thông tin đơn hàng</span>
+                                    <span>{vehicleOrders.length} đơn hàng / {getTotalOrderWeight()}kg</span>
+                                </div>
+                                <table className={styles.vehicleOrdersTable}>
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn hàng</th>
+                                            <th>Người gửi</th>
+                                            <th>Khối lượng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {vehicleOrders?.map((item) => (
+                                            <tr key={item._id}>
+                                                <td> {item._id} </td>
+                                                <td> {item.sender_name} </td>
+                                                <td> {item.weight} kg </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
