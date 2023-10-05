@@ -16,7 +16,7 @@ import { getStockVehicles } from 'features/stock/stockSlice';
 // Css import
 import styles from './ExportOrder.module.scss';
 import { AreaDelivery, VehicleStatuses, VehicleTypes } from 'utils/consts';
-import { VehicleStatus } from 'utils/enums/vehicle.enum';
+import { VehicleStatus, VehicleType } from 'utils/enums/vehicle.enum';
 import { FaTimes } from 'react-icons/fa';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { FiLoader } from 'react-icons/fi';
@@ -79,7 +79,7 @@ function ExportOrder() {
     }
 
     const handleChooseTruck = (truckInfo) => {
-        if (truckInfo.status === VehicleStatus.AVAILABLE) {
+        if (truckInfo.status === VehicleStatus.AVAILABLE || truckInfo.type === VehicleType.INNER) {
             localStorage.setItem('activeTruck', JSON.stringify(truckInfo));
             navigate(`/load-order?truckId=${truckInfo?._id}`, {state: {truckInfo}});
         } else if (truckInfo.status === VehicleStatus.IN_PROGRESS) {
@@ -155,10 +155,12 @@ function ExportOrder() {
                                         /{route.max_weight}
                                     </span>
                                     <span>Mã xe: <span className='fw-semibold'>{route.license_plate_number}</span></span>
-                                    <span className={`${styles.currentStatus} ${styles[route.status]}`}>
-                                        {getVehicleStatusIcon(route.status)}
-                                        <span className='ms-1'>{getVehicleStatus(route.status)}</span>
-                                    </span>
+                                    {route.type !== VehicleType.INNER && (
+                                        <span className={`${styles.currentStatus} ${styles[route.status]}`}>
+                                            {getVehicleStatusIcon(route.status)}
+                                            <span className='ms-1'>{getVehicleStatus(route.status)}</span>
+                                        </span>
+                                    )}
                                     {/* <span>Tài xế: <span className='fw-semibold'>{route?.driver_id}</span></span> */}
                                 </div>
                                 <div className="d-flex flex-column align-items-end w-50">
@@ -196,7 +198,6 @@ function ExportOrder() {
                                 <div className={styles.vehicleInfo}>
                                     <span>Mã xe tải: <span className='fw-600'>{vehicleTracking._id}</span></span>
                                     <span>Biển số xe: <span className='fw-600'>{vehicleTracking?.license_plate_number}</span></span>
-                                    <span>Tài xế: <span className='fw-600'>Huỳnh Trấn Thành</span></span>
                                     <span>Loại xe: <span className='fw-600'>{getVehicleType(vehicleTracking?.type)}</span></span>
                                 </div>
                                 <div className={styles.timeline}>
