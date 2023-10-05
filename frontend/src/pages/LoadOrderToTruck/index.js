@@ -274,7 +274,11 @@ function LoadOrderToTruck() {
 
             <div className="row mt-sm-3">
                 <div className="col-12">
-                    <span className={styles.truckLabel}>{truckInfo.from_string} - {truckInfo.to_string}, {truckInfo.license_plate_number}</span>
+                    {truckInfo.type === 'inner' ? (
+                        <span className={styles.truckLabel}>Xe nội thành - {truckInfo.license_plate_number}</span>
+                    ) : (
+                        <span className={styles.truckLabel}>{truckInfo.from_string} - {truckInfo.to_string}, {truckInfo.license_plate_number}</span>
+                    )}
                 </div>
             </div>
             <div className="row mt-2">
