@@ -17,6 +17,10 @@ const supportRequestSchema = mongoose.Schema({
     reply: {
         type: String,
         default: ''
+    },
+    vehicle: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vehicle'
     }
 }, { timestamps: true })
 

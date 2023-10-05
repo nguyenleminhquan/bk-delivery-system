@@ -8,6 +8,7 @@ function DeliveryOrder({ delivery }) {
 	const { from, to, btns } = delivery;
 	const [togglePopup, setTogglePopup] = useState(false);
 	const [selectedBtn, setSelectedBtn] = useState('');
+	const [reason, setReason] = useState('');
 
 	const { order } = delivery;
     const { items } = order;
@@ -66,6 +67,19 @@ function DeliveryOrder({ delivery }) {
 			</div>
 			{
 				togglePopup && (
+					selectedBtn.id === 'cancel' ?
+					<ConfirmPopup
+						title='Lý do hủy đơn hàng'
+						content={<textarea value={reason} onChange={(e) => setReason(e.target.value)}></textarea>}
+						actionNo={() => setTogglePopup(false)}
+						actionYes={() => {
+							selectedBtn.action(reason);
+							setTogglePopup(false);
+							toast.success('Đã gửi yêu cầu hủy đơn hàng')
+						}}
+						cancelLabel="Đóng lại"
+						okLabel="Gửi yêu cầu"
+					/> :
 					selectedBtn.id === 'viewOrder' ?
 					<ConfirmPopup 
 						title='Thông tin đơn hàng'

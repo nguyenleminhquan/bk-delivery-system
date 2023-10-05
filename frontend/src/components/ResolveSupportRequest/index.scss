@@ -14,4 +14,25 @@
     p {
         margin-bottom: 0;
     }
+    .icon-list {
+        .reply-icon,
+        .assign-icon,
+        .delete-icon {
+            display: inline-block;
+            padding: 8px;
+            cursor: pointer;
+            margin: 2px;
+            color: #fff;
+
+        }
+        .reply-icon {
+            background-color: #00c851;
+        }
+        .assign-icon {
+            background-color: #007bff;
+        }
+        .delete-icon {
+            background-color: #dc3545;
+        }
+    }
 }
