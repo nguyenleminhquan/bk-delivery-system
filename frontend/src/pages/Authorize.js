@@ -17,6 +17,7 @@ import AdminVehicleManagement from './Roles/Admin/AdminVehicleManagement';
 import SupportRequest from 'components/SupportRequest';
 import ResolveSupportRequest from 'components/ResolveSupportRequest';
 import AdminOrderManagement from './Roles/Admin/AdminOrderManagement';
+import AdminCOD from './Roles/Admin/AdminCOD';
 
 function Authorize() {
 	const { user } = useSelector((state) => state.user);
@@ -26,6 +27,7 @@ function Authorize() {
 			<Routes>
 				<Route index element={<SenderHome />}></Route>
 				<Route path='/profile' element={<Profile />}></Route>
+				<Route path='/cod' element={<AdminCOD />}></Route>
 				<Route path='/create-order' element={<CreateOrder />}></Route>
 				<Route path='/request' element={<SupportRequest />}></Route>
 			</Routes>
@@ -60,6 +62,7 @@ function Authorize() {
 		return (
 			<Routes>
 				<Route index element={<AdminHome />}></Route>
+				<Route path='/cod' element={<AdminCOD />}></Route>
 				<Route path='/employee-management' element={<AdminEmployeeManagement />}></Route>
 				<Route path='/stock-management' element={<AdminStockManagement />}></Route>
 				<Route path='/vehicle-management' element={<AdminVehicleManagement />}></Route>
