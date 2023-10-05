@@ -216,15 +216,21 @@ function DriverHome() {
       return {
         id: 'cancel',
         text: 'Hủy',
-        action() {
-          socket.emit('deleteDelivery', {
-            delivery_id: delivery._id
+        action: (reason) => {
+          socket.emit('newSupportRequest', {
+            requester: 'Tài xế ' + user.fullname,
+            order: order._id,
+            content: `Yêu cầu hủy đơn hàng vì lý do: ${reason}`,
+            vehicle: user.vehicle_id
           })
-          socket.emit('updateOrderStatus', {
-            order_id: order._id,
-            status: 'cancel',
-            date: new Date()
-          })
+          // socket.emit('deleteDelivery', {
+          //   delivery_id: delivery._id
+          // })
+          // socket.emit('updateOrderStatus', {
+          //   order_id: order._id,
+          //   status: 'cancel',
+          //   date: new Date()
+          // })
         }
       }
     }
@@ -308,13 +314,13 @@ function DriverHome() {
     let tempDeliveries = JSON.parse(JSON.stringify(deliveriesByStatus));
     // let deliveryType = tempDeliveries[0].type;
     if (selectedTab.field === 'waiting') {
-      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [accept(item), viewOrder(item), cancel(item)] })
     }
     else if (selectedTab.field === 'accepted') {
-      tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [picked(item), viewOrder(item), cancel(item)] })
     }
     else if (selectedTab.field === 'picked') {
-      tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item)] })
+      tempDeliveries.forEach((item) => { item.btns = [deliveried(item), viewOrder(item), cancel(item)] })
     }
     else if (selectedTab.field === 'deliveried') {
       tempDeliveries.forEach((item) => { item.btns = [viewOrder(item)] })

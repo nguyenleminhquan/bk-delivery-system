@@ -18,8 +18,8 @@ const socketSupportRequest = (io) => {
           console.log('user disconnected');
       })
       socket.on('newSupportRequest', async(data) => {
-        const { requester, order, content } = data;
-        let newSupportRequest = new SupportRequest({ requester, order, content });
+        const { requester, order, content, vehicle } = data;
+        let newSupportRequest = new SupportRequest({ requester, order, content, vehicle });
         const res = await newSupportRequest.save();
         io.emit('newSupportRequest', res);
       })
