@@ -15,10 +15,9 @@ import { AiOutlinePlusCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 import { createOrder } from 'features/user/orderSlice';
 import { CreateOrderErrorToast, CreateOrderSection, OrderStatus } from 'utils/enum';
-import { paymentMethods, paymentOptions, orderTypes, ProductTypes, AreaDelivery, BASE_FEE, ECOF, COEFFICIENT, MAX_DISTANCE_RANGE, DEBOUNCE_DELAY, formatCurrency } from 'utils/constants';
+import { paymentMethods, paymentOptions, orderTypes, AreaDelivery, BASE_FEE, COEFFICIENT, DEBOUNCE_DELAY, formatCurrency } from 'utils/constants';
 
 import styles from './CreateOrder.module.scss';
-import SearchAddress from 'components/SearchAddress';
 import GeneralConfirm from 'components/GeneralConfirm';
 import Paypal from 'components/Paypal';
 import AddressForm from 'components/AddressForm';
@@ -72,7 +71,7 @@ function CreateOrder() {
     const [products, setProducts] = useState([productModel]);
 
     const [note, setNote] = useState('');
-    const [cod, setCod] = useState(0);
+    const [cod, setCod] = useState(null);
 
     const [paymentOption, setPaymentOption] = useState(paymentOptions[0].code);
     const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].code);
@@ -82,9 +81,11 @@ function CreateOrder() {
     const socket = useContext(SocketContext);
 
     const [paypalPopup, setPaypalPopup] = useState(false);
-    // const [selectedProductType, setSelectedProductType] = useState(null);
 
     const handleUpdateProduct = (newValue, index, field) => {
+        if (field === 'weight' && !/^[0-9]*$/.test(newValue)) {
+            return;
+        }
         setProducts(products.map((product, idx) => {
             if (index === idx) {
                 return {...product, [field]: field === 'type' ? newValue.value : newValue};
@@ -132,7 +133,7 @@ function CreateOrder() {
             receiver_phone: receiverInfo.phone,
             receiver_address: generateFinalAddress(receiverInfo),
             payment_type: paymentMethod,
-            cod_amount: cod,
+            cod_amount: +cod,
             note,
             status: OrderStatus.WAITING,
             shipping_fee: calculateTotalFee(),
@@ -141,7 +142,7 @@ function CreateOrder() {
                 name: product.name,
                 quantity: product.quantity,
                 type: product.type,
-                weight: product.weight,
+                weight: +product.weight,
             })),
             weight: getTotalProductWeight(products)
 
@@ -168,6 +169,8 @@ function CreateOrder() {
         const missingInputField = isDisabledSubmit();
         if (missingInputField) {
             toast.error(CreateOrderErrorToast.SUBMIT_FORM_WITHOUT_COMPLETED_SECTION(missingInputField));
+        } else if (!isInterShipping()) {
+            toast.error(CreateOrderErrorToast.IS_INNER_SHIPPING);
         } else if (paymentMethod === 'paypal') {
             setPaypalPopup(true);
         } else {
@@ -277,6 +280,20 @@ function CreateOrder() {
             .catch((err) => console.log(err))
     }
 
+    const handleSetCOD = e => {
+        const value = e.target.value;
+        if (!/^[0-9]*$/.test(value)) {
+            return;
+        }
+        setCod(value);
+    }
+
+    function isInterShipping() {
+        const senderCode = user.area_code;
+        const receiverCode = AreaDelivery.find(area => area?.label === receiverInfo?.city)?.code;
+        return senderCode !== receiverCode;
+    }
+
     useEffect(() => {
         if (senderCoordinate && receiverCoordinate) {
             const distanceInMeter = getDistance(senderCoordinate, receiverCoordinate);
@@ -316,10 +333,10 @@ function CreateOrder() {
 
     useEffect(() => {
         if (products.at(-1).weight) {
-            const updated = calculateTotalFee() + parseInt(cod);
+            const updated = calculateTotalFee() + parseInt(cod ?? 0);
             setTotalFee(prev => updated ?? prev);
         } else {
-            setTotalFee(prev => parseInt(cod) || prev);
+            setTotalFee(prev => parseInt(cod ?? 0) || prev);
         }
     }, [cod, products])
 
@@ -498,7 +515,7 @@ function CreateOrder() {
                                 <div className={styles.createOrderSection}>
                                     <div className={styles.formGroup}>
                                         <label>Tổng tiền thu hộ COD</label>
-                                        <input type="text" placeholder='0' value={cod} onChange={e => setCod(e.target.value)}/>
+                                        <input type="text" placeholder='0' value={cod} onChange={handleSetCOD}/>
                                     </div>
                                 </div>
                             )}

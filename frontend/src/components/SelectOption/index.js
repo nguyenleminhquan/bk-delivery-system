@@ -6,6 +6,7 @@ function SelectOption(props) {
       className='select-control-wrapper'
       classNamePrefix='select'
       menuPlacement='auto'
+      menuPortalTarget={document.body}
       {...props}
     />
   )

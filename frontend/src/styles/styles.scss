@@ -279,6 +279,12 @@ span.icon-xlg {
     }
 }
 
+.select__menu-portal {
+    .select__menu {
+        min-width: max-content;
+    }
+}
+
 @include media-breakpoint-down(sm, $grid-breakpoints) {
     .routes {
         margin-top: 52px;
